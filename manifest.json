@@ -2,16 +2,22 @@
   "manifest_version": 3,
   "name": "QuickSteps",
   "description": "Create configurable quick step buttons to perform multiple actions on emails with a single click.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Manuel Furrer <furrer.dev@gmail.com>",
   "icons": {
-    "16": "icons/icon.svg",
-    "32": "icons/icon.svg",
-    "64": "icons/icon.svg"
+    "16": "icons/icon_16.png",
+    "32": "icons/icon_32.png",
+    "64": "icons/icon_64.png",
+    "128": "icons/icon_128.png"
   },
   "action": {
     "default_title": "QuickSteps",
-    "default_icon": "icons/icon.svg",
+    "default_icon": {
+        "16": "icons/icon_16.png",
+        "32": "icons/icon_32.png",
+        "64": "icons/icon_64.png",
+        "128": "icons/icon_128.png"
+    },
     "default_popup": "popup/popup.html"
   },
   "options_ui": {
