@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>QuickSteps — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <svg width="16" height="16" viewBox="0 0 48 48">
+              <polygon
+                points="28,4 13,26 22,26 20,44 35,22 26,22"
+                fill="#0078D4"
+              />
+            </svg>
+            QuickSteps
+          </div>
+          <button id="btn-new-step" title="Create a new Quick Step">
+            <span class="plus">+</span> New
+          </button>
+        </div>
+
+        <div id="steps-list"></div>
+
+        <div id="sidebar-empty" class="hidden">
+          <p>No quick steps yet.</p>
+          <p>Click <strong>+ New</strong> to create one.</p>
+        </div>
+      </aside>
+
+      <main id="editor-panel">
+        <div id="editor-placeholder">
+          <div class="placeholder-icon">⚡</div>
+          <h2>QuickSteps</h2>
+          <p>
+            Select a Quick Step on the left to edit it,<br />or click
+            <strong>+ New</strong> to create one.
+          </p>
+          <p class="hint">
+            Quick Steps run a series of actions on selected emails with one
+            click.
+          </p>
+        </div>
+
+        <div id="editor" class="hidden">
+          <div class="editor-header">
+            <div class="editor-title-block">
+              <input
+                type="text"
+                id="step-name"
+                placeholder="Quick Step name…"
+                maxlength="60"
+              />
+              <div id="editor-preview-actions" class="preview-actions"></div>
+            </div>
+          </div>
+
+          <div class="editor-body">
+            <section class="section">
+              <h3 class="section-title">Appearance</h3>
+              <div class="appearance-row">
+                <div class="field-group">
+                  <label>Color</label>
+                  <div id="color-picker" class="color-picker"></div>
+                  <div class="color-picker-container">
+                    <label for="step-color" class="custom-color-picker">
+                      <input type="color" id="step-color" value="#0078D4" />
+                      <span
+                        class="color-swatch"
+                        id="color-swatch"
+                        style="background-color: #0078d4"
+                      ></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h3 class="section-title">
+                Actions
+                <span class="section-hint"
+                  >Executed in order, top to bottom</span
+                >
+              </h3>
+              <div id="actions-list"></div>
+              <button id="btn-add-action" class="btn-add-action">
+                + Add Action
+              </button>
+            </section>
+          </div>
+        </div>
+
+        <div class="editor-footer">
+          <button id="btn-delete-step" class="btn-danger">Delete Step</button>
+          <div class="footer-right">
+            <div id="toast" class="hidden"></div>
+            <button id="btn-save" class="btn-primary">Save</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="confirm-overlay" class="hidden">
+      <div id="confirm-box">
+        <p id="confirm-message"></p>
+        <div class="confirm-btns">
+          <button id="confirm-cancel" class="btn-secondary">Cancel</button>
+          <button id="confirm-ok" class="btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

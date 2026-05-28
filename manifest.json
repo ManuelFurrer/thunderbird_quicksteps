@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "QuickSteps",
+  "description": "Create configurable quick step buttons to perform multiple actions on emails with a single click.",
+  "version": "1.0.0",
+  "author": "Manuel Furrer <furrer.dev@gmail.com>",
+  "icons": {
+    "16": "icons/icon.svg",
+    "32": "icons/icon.svg",
+    "64": "icons/icon.svg"
+  },
+  "action": {
+    "default_title": "QuickSteps",
+    "default_icon": "icons/icon.svg",
+    "default_popup": "popup/popup.html"
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "accountsRead",
+    "messagesMove",
+    "messagesDelete",
+    "messagesRead",
+    "messagesUpdate",
+    "storage"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "quicksteps@thunderbird-addon",
+      "strict_min_version": "128.0"
+    }
+  }
+}
