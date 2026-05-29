@@ -40,42 +40,44 @@ async function saveQuickSteps(steps) {
   return { success: true };
 }
 
-function flattenFolders(folders, accountId, accountName) {
-  const result = [];
-  for (const folder of folders || []) {
-    result.push({
-      accountId,
-      accountName,
-      path: folder.path,
-      name: folder.name,
-      type: folder.type || "",
-    });
+function flattenFolders(folders, accountId, accountName, result = []) {
+  if (!folders) return result;
+
+  for (const folder of folders) {
+    if (folder.name !== "[Gmail]") {
+      result.push({
+        accountId,
+        accountName,
+        path: folder.path,
+        name: folder.name,
+        id: folder.id,
+      });
+    }
+
     if (folder.subFolders && folder.subFolders.length > 0) {
-      result.push(
-        ...flattenFolders(
-          folder.subFolders,
-          accountId,
-          accountName,
-          folder.path,
-        ),
-      );
+      flattenFolders(folder.subFolders, accountId, accountName, result);
     }
   }
+
   return result;
 }
 
 async function getAllFolders() {
   try {
-    const accounts = await messenger.accounts.list();
+    const accounts = await messenger.accounts.list(true);
+
     const allFolders = [];
+
     for (const account of accounts) {
       const accountFolders = flattenFolders(
-        account.folders || [],
+        account.rootFolder?.subFolders || [],
         account.id,
         account.name,
       );
+
       allFolders.push(...accountFolders);
     }
+
     return allFolders;
   } catch (e) {
     console.error("[QuickSteps] Error getting folders:", e);
@@ -94,27 +96,24 @@ async function executeActions(messages, actions) {
         case "move":
           if (!action.folder)
             throw new Error("No destination folder specified");
-          await messenger.messages.move(messageIds, {
-            accountId: action.folder.accountId,
-            path: action.folder.path,
-          });
+
+          await messenger.messages.move(messageIds, action.folder.id);
           break;
 
         case "copy":
           if (!action.folder)
             throw new Error("No destination folder specified");
-          await messenger.messages.copy(messageIds, {
-            accountId: action.folder.accountId,
-            path: action.folder.path,
-          });
+          await messenger.messages.copy(messageIds, action.folder.id);
           break;
 
         case "delete":
-          await messenger.messages.delete(messageIds, false);
+          await messenger.messages.delete(messageIds);
           break;
 
         case "delete_permanent":
-          await messenger.messages.delete(messageIds, true);
+          await messenger.messages.delete(messageIds, {
+            deletePermanently: true,
+          });
           break;
 
         case "archive":
@@ -177,7 +176,7 @@ async function executeQuickStep(quickStepId, tabId) {
     return { success: false, errors: ["No quick steps assigned"] };
 
   const messages =
-    (await messenger.messageDisplay.getDisplayedMessages(tabId)) || [];
+    (await messenger.messageDisplay.getDisplayedMessages(tabId)).messages || [];
 
   if (messages.length === 0) {
     return {

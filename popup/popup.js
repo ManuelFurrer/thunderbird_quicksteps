@@ -21,7 +21,7 @@ async function getCurrentMailTabId() {
       active: true,
       currentWindow: true,
     });
-    if (mailTabs.length > 0) return mailTabs[0].id;
+    if (mailTabs.length > 0) return mailTabs[0].tabId;
   } catch {}
 
   return null;

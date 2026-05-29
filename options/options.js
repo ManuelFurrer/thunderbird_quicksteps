@@ -126,28 +126,32 @@ function buildFolderSelect(action) {
   select.appendChild(blank);
 
   const byAccount = {};
-  for (const f of state.folders) {
-    if (!byAccount[f.accountName]) byAccount[f.accountName] = [];
-    byAccount[f.accountName].push(f);
+  for (const folder of state.folders) {
+    if (!byAccount[folder.accountName]) {
+      byAccount[folder.accountName] = [];
+    }
+    byAccount[folder.accountName].push(folder);
   }
 
   for (const [accountName, folders] of Object.entries(byAccount)) {
     const group = document.createElement("optgroup");
     group.label = accountName;
-    for (const f of folders) {
+    for (const folder of folders) {
       const opt = document.createElement("option");
       opt.value = JSON.stringify({
-        accountId: f.accountId,
-        accountName: f.accountName,
-        path: f.path,
-        name: f.name,
+        accountId: folder.accountId,
+        accountName: folder.accountName,
+        path: folder.path,
+        name: folder.name,
+        id: folder.id,
       });
-      const depth = (f.path.match(/\//g) || []).length;
-      opt.textContent = "\u00a0".repeat(Math.max(0, depth - 1) * 2) + f.name;
+      const depth = (folder.path.match(/\//g) || []).length;
+      opt.textContent =
+        "\u00a0".repeat(Math.max(0, depth - 1) * 2) + folder.name;
       if (
         action.folder &&
-        action.folder.accountId === f.accountId &&
-        action.folder.path === f.path
+        action.folder.accountId === folder.accountId &&
+        action.folder.path === folder.path
       ) {
         opt.selected = true;
       }
