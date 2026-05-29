@@ -1,0 +1,91 @@
+{
+  "extensionName": { "message": "QuickSteps" },
+  "extensionDescription": { "message": "Создавайте настраиваемые кнопки быстрых действий для выполнения нескольких действий с письмами одним щелчком мыши." },
+
+  "popupTitle": { "message": "QuickSteps" },
+  "popupSettingsTitle": { "message": "Управление быстрыми действиями" },
+  "popupLoading": { "message": "Загрузка…" },
+  "popupNoStepsTitle": { "message": "Пока нет быстрых действий." },
+  "popupNoStepsSub": { "message": "Создавайте кнопки, которые автоматизируют действия с вашей почтой." },
+  "popupCreateFirst": { "message": "Создать первое быстрое действие" },
+
+  "statusAppliedSingle": { "message": "«$NAME$» применено к 1 сообщению", "placeholders": { "name": { "content": "$1" } } },
+  "statusAppliedMultiple": { "message": "«$NAME$» применено к $COUNT$ сообщений", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" } } },
+  "statusAppliedWithErrors": { "message": "«$NAME$» применено к $COUNT$ сообщ., но некоторые действия завершились с ошибкой $ERROR$", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" }, "error": { "content": "$3" } } },
+  "statusActionFailed": { "message": "Действие не удалось" },
+  "statusNoMailTab": { "message": "Не удалось найти активную вкладку почты." },
+  "statusLoadError": { "message": "Не удалось загрузить быстрые действия: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "statusError": { "message": "Ошибка: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "actionMoveLabel": { "message": "Переместить → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionCopyLabel": { "message": "Копировать → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionDeleteTrash": { "message": "Удалить (в корзину)" },
+  "actionDeletePermanent": { "message": "Удалить (навсегда)" },
+  "actionArchive": { "message": "Архивировать" },
+  "actionMarkRead": { "message": "Отметить как прочитанное" },
+  "actionMarkUnread": { "message": "Отметить как непрочитанное" },
+  "actionFlag": { "message": "Пометить флажком" },
+  "actionUnflag": { "message": "Снять флажок" },
+
+  "optionsTitle": { "message": "QuickSteps — Настройки" },
+  "optionsSidebarTitle": { "message": "QuickSteps" },
+  "optionsNewStep": { "message": "Создать" },
+  "optionsNoStepsYet": { "message": "Пока нет быстрых действий." },
+  "optionsClickNewHint": { "message": "Нажмите $STRONG$, чтобы создать её.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsClickNewHintStrong": { "message": "+ Создать" },
+
+  "optionsPlaceholderTitle": { "message": "QuickSteps" },
+  "optionsPlaceholderSelectOrCreate": { "message": "Выберите быстрое действие слева для редактирования или нажмите $STRONG$, чтобы создать новое.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsPlaceholderHint": { "message": "Быстрые действия запускают серию действий для выбранных писем одним щелчком мыши." },
+
+  "optionsStepNamePlaceholder": { "message": "Название быстрого действия…" },
+  "optionsSectionAppearance": { "message": "Внешний вид" },
+  "optionsColorLabel": { "message": "Цвет" },
+  "optionsSectionActions": { "message": "Действия" },
+  "optionsSectionActionsHint": { "message": "Выполняются по порядку, сверху вниз" },
+  "optionsNoActionsYet": { "message": "Пока нет действий" },
+  "optionsAddAction": { "message": "+ Добавить действие" },
+  "optionsDeleteStep": { "message": "Удалить шаг" },
+  "optionsSave": { "message": "Сохранить" },
+
+  "optionsMoveUpTitle": { "message": "Вверх" },
+  "optionsMoveDownTitle": { "message": "Вниз" },
+  "optionsRemoveTitle": { "message": "Удалить" },
+
+  "optionsSelectFolderPlaceholder": { "message": "— Выберите целевую папку —" },
+  "optionsFoldersLoading": { "message": "Загрузка папок…" },
+
+  "optionsActionTypeMoveLabel": { "message": "Переместить в папку…" },
+  "optionsActionTypeCopyLabel": { "message": "Копировать в папку…" },
+  "optionsActionTypeMarkReadLabel": { "message": "Отметить как прочитанное" },
+  "optionsActionTypeMarkUnreadLabel": { "message": "Отметить как непрочитанное" },
+  "optionsActionTypeFlagLabel": { "message": "Пометить флажком / звездой" },
+  "optionsActionTypeUnflagLabel": { "message": "Снять флажок" },
+  "optionsActionTypeArchiveLabel": { "message": "Архивировать" },
+  "optionsActionTypeDeleteLabel": { "message": "Удалить (в корзину)" },
+  "optionsActionTypeDeletePermanentLabel": { "message": "Удалить (навсегда)" },
+
+  "optionsConfirmDeleteMessage": { "message": "Удалить «$NAME$»?\n\nЭто действие нельзя отменить.", "placeholders": { "name": { "content": "$1" } } },
+  "optionsConfirmCancel": { "message": "Отмена" },
+  "optionsConfirmDelete": { "message": "Удалить" },
+
+  "optionsToastSaved": { "message": "Изменения сохранены" },
+  "optionsToastDeleted": { "message": "Быстрое действие удалено." },
+  "optionsToastNameRequired": { "message": "Пожалуйста, введите название для этого быстрого действия." },
+  "optionsToastFolderRequired": { "message": "Пожалуйста, выберите целевую папку для всех действий перемещения/копирования." },
+  "optionsToastSaveError": { "message": "Ошибка при сохранении: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastDeleteError": { "message": "Ошибка при удалении: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastLoadError": { "message": "Не удалось загрузить быстрые действия: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "optionsNoActionsAssigned": { "message": "Нет действий" },
+
+  "defaultStep1Name": { "message": "Архивировать и отметить как прочитанное" },
+  "defaultStep2Name": { "message": "Удалить" },
+  "defaultStep3Name": { "message": "Пометить и оставить непрочитанным" },
+
+  "errorNoFolderSpecified": { "message": "Целевая папка не указана" },
+  "errorUnknownActionType": { "message": "Неизвестный тип действия" },
+  "errorQuickStepNotFound": { "message": "Быстрое действие не найдено" },
+  "errorNoActionsAssigned": { "message": "Быстрые действия не назначены" },
+  "errorNoMessageSelected": { "message": "Сообщение не выбрано и не отображается. Сначала откройте или выберите сообщение." }
+}

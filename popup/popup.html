@@ -13,9 +13,9 @@
           <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
             <polygon points="28,4 13,26 22,26 20,44 35,22 26,22" fill="white" />
           </svg>
-          <span>QuickSteps</span>
+          <span data-i18n-content="popupTitle"></span>
         </div>
-        <button id="btn-settings" title="Manage Quick Steps">
+        <button id="btn-settings" data-i18n-title="popupSettingsTitle">
           <svg
             width="16"
             height="16"
@@ -35,25 +35,25 @@
       <div id="content">
         <div id="loading">
           <div class="spinner"></div>
-          <span>Loading…</span>
+          <span data-i18n-content="popupLoading"></span>
         </div>
 
         <div id="steps-container" class="hidden"></div>
 
         <div id="empty-state" class="hidden">
           <div class="empty-icon">⚡</div>
-          <p>No Quick Steps yet.</p>
-          <p class="empty-sub">
-            Create buttons that automate your email actions.
-          </p>
-          <button id="createFirstBtn" class="btn-primary">
-            Create first Quick Step
-          </button>
+          <p data-i18n-content="popupNoStepsTitle"></p>
+          <p class="empty-sub" data-i18n-content="popupNoStepsSub"></p>
+          <button
+            id="createFirstBtn"
+            class="btn-primary"
+            data-i18n-content="popupCreateFirst"
+          ></button>
         </div>
       </div>
 
       <div id="status-bar" class="hidden"></div>
     </div>
-    <script src="popup.js"></script>
+    <script src="popup.js" type="module"></script>
   </body>
 </html>

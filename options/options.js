@@ -1,31 +1,65 @@
+import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
+
 const DEFAULT_COLOR = "#0078D4";
 
 const ACTION_TYPES = [
-  { value: "mark_read", label: "Mark as Read", needsFolder: false },
-  { value: "mark_unread", label: "Mark as Unread", needsFolder: false },
-  { value: "flag", label: "Flag / Star", needsFolder: false },
-  { value: "unflag", label: "Remove Flag", needsFolder: false },
-  { value: "archive", label: "Archive", needsFolder: false },
-  { value: "delete", label: "Delete (Trash)", needsFolder: false },
   {
-    value: "delete_permanent",
-    label: "Delete (Permanent)",
+    value: "mark_read",
+    i18nKey: "optionsActionTypeMarkReadLabel",
     needsFolder: false,
   },
-  { value: "move", label: "Move to Folder…", needsFolder: true },
-  { value: "copy", label: "Copy to Folder…", needsFolder: true },
+  {
+    value: "mark_unread",
+    i18nKey: "optionsActionTypeMarkUnreadLabel",
+    needsFolder: false,
+  },
+  {
+    value: "flag",
+    i18nKey: "optionsActionTypeFlagLabel",
+    needsFolder: false,
+  },
+  {
+    value: "unflag",
+    i18nKey: "optionsActionTypeUnflagLabel",
+    needsFolder: false,
+  },
+  {
+    value: "archive",
+    i18nKey: "optionsActionTypeArchiveLabel",
+    needsFolder: false,
+  },
+  {
+    value: "delete",
+    i18nKey: "optionsActionTypeDeleteLabel",
+    needsFolder: false,
+  },
+  {
+    value: "delete_permanent",
+    i18nKey: "optionsActionTypeDeletePermanentLabel",
+    needsFolder: false,
+  },
+  {
+    value: "move",
+    i18nKey: "optionsActionTypeMoveLabel",
+    needsFolder: true,
+  },
+  {
+    value: "copy",
+    i18nKey: "optionsActionTypeCopyLabel",
+    needsFolder: true,
+  },
 ];
 
 const ACTION_LABELS = {
-  mark_read: () => "Mark Read",
-  mark_unread: () => "Mark Unread",
-  flag: () => "Flag",
-  unflag: () => "Unflag",
-  archive: () => "Archive",
-  delete: () => "Delete (Trash)",
-  delete_permanent: () => "Delete (permanent)",
-  move: (a) => `Move → ${a.folder?.name || "?"}`,
-  copy: (a) => `Copy → ${a.folder?.name || "?"}`,
+  mark_read: () => getTranslation("actionMarkRead"),
+  mark_unread: () => getTranslation("actionMarkUnread"),
+  flag: () => getTranslation("actionFlag"),
+  unflag: () => getTranslation("actionUnflag"),
+  archive: () => getTranslation("actionArchive"),
+  delete: () => getTranslation("actionDeleteTrash"),
+  delete_permanent: () => getTranslation("actionDeletePermanent"),
+  move: (a) => getTranslation("actionMoveLabel", a.folder?.name || "?"),
+  copy: (a) => getTranslation("actionCopyLabel", a.folder?.name || "?"),
 };
 
 function getActionLabel(action) {
@@ -122,7 +156,7 @@ function buildFolderSelect(action) {
 
   const blank = document.createElement("option");
   blank.value = "";
-  blank.textContent = "— Select destination folder —";
+  blank.textContent = getTranslation("optionsSelectFolderPlaceholder");
   select.appendChild(blank);
 
   const byAccount = {};
@@ -214,13 +248,13 @@ function renderSidebar() {
     const name = document.createElement("div");
     name.className = "step-item-name";
     name.style.color = step.color || DEFAULT_COLOR;
-    name.textContent = step.name || "Untitled";
+    name.textContent = step.name || getTranslation("optionsPlaceholderTitle");
 
     const meta = document.createElement("div");
     meta.className = "step-item-meta";
     meta.textContent = step.actions.length
       ? step.actions.map(getActionLabel).join(" → ")
-      : "No actions";
+      : getTranslation("optionsNoActionsAssigned");
 
     info.append(name, meta);
     item.append(info);
@@ -258,7 +292,7 @@ function updatePreviewActions() {
   if (!state.editing) return;
   els.previewActions().textContent = state.editing.actions.length
     ? state.editing.actions.map(getActionLabel).join(" → ")
-    : "No actions yet";
+    : getTranslation("optionsNoActionsYet");
 }
 
 async function renderActionsList() {
@@ -288,7 +322,7 @@ function buildActionRow(index, action) {
   for (const at of ACTION_TYPES) {
     const opt = document.createElement("option");
     opt.value = at.value;
-    opt.textContent = at.label;
+    opt.textContent = getTranslation(at.i18nKey);
     if (at.value === action.type) opt.selected = true;
     typeSelect.appendChild(opt);
   }
@@ -307,7 +341,7 @@ function buildActionRow(index, action) {
     if (!state.foldersLoaded) {
       const loading = document.createElement("span");
       loading.className = "action-folder-loading";
-      loading.textContent = "Loading folders…";
+      loading.textContent = getTranslation("optionsFoldersLoading");
       folderContainer.appendChild(loading);
       ensureFoldersLoaded().then(() => {
         folderContainer.innerHTML = "";
@@ -353,21 +387,21 @@ function buildActionRow(index, action) {
 
   const upBtn = document.createElement("button");
   upBtn.className = "action-btn";
-  upBtn.title = "Move up";
+  upBtn.title = getTranslation("optionsMoveUpTitle");
   upBtn.textContent = "↑";
   upBtn.disabled = index === 0;
   upBtn.addEventListener("click", () => moveAction(index, -1));
 
   const downBtn = document.createElement("button");
   downBtn.className = "action-btn";
-  downBtn.title = "Move down";
+  downBtn.title = getTranslation("optionsMoveDownTitle");
   downBtn.textContent = "↓";
   downBtn.disabled = index === state.editing.actions.length - 1;
   downBtn.addEventListener("click", () => moveAction(index, 1));
 
   const removeBtn = document.createElement("button");
   removeBtn.className = "action-btn remove";
-  removeBtn.title = "Remove";
+  removeBtn.title = getTranslation("optionsRemoveTitle");
   removeBtn.textContent = "X";
   removeBtn.addEventListener("click", () => removeAction(index));
 
@@ -409,12 +443,14 @@ function syncSidebarItem() {
   const nameEl = item.querySelector(".step-item-name");
   const metaEl = item.querySelector(".step-item-meta");
   if (nameEl) {
-    nameEl.textContent = state.editing.name || "Untitled";
+    nameEl.textContent =
+      state.editing.name || getTranslation("optionsPlaceholderTitle");
     nameEl.style.color = state.editing.color || DEFAULT_COLOR;
   }
   if (metaEl)
     metaEl.textContent =
-      state.editing.actions.map(getActionLabel).join(" → ") || "No actions";
+      state.editing.actions.map(getActionLabel).join(" → ") ||
+      getTranslation("optionsNoActionsAssigned");
 }
 
 async function navigateTo(stepId) {
@@ -458,16 +494,13 @@ async function saveCurrentStep() {
     els.stepName().focus();
     els.stepName().style.borderBottomColor = "#d32f2f";
     setTimeout(() => (els.stepName().style.borderBottomColor = ""), 2000);
-    showToast("Please enter a name for this Quick Step.", "error");
+    showToast(getTranslation("optionsToastNameRequired"), "error");
     return;
   }
 
   for (const action of state.editing.actions) {
     if ((action.type === "move" || action.type === "copy") && !action.folder) {
-      showToast(
-        "Please select a destination folder for all Move / Copy actions.",
-        "error",
-      );
+      showToast(getTranslation("optionsToastFolderRequired"), "error");
       return;
     }
   }
@@ -482,16 +515,16 @@ async function saveCurrentStep() {
   try {
     await persistSteps();
     renderSidebar();
-    showToast("Changes saved", "success");
+    showToast(getTranslation("optionsToastSaved"), "success");
   } catch (e) {
-    showToast("Error saving: " + e.message, "error");
+    showToast(getTranslation("optionsToastSaveError", [e.message]), "error");
   }
 }
 
 async function deleteCurrentStep() {
-  const name = state.editing?.name || "this Quick Step";
+  const name = state.editing?.name || "Quick Step";
   const confirmed = await showConfirm(
-    `Delete "${name}"?\n\nThis action cannot be undone.`,
+    getTranslation("optionsConfirmDeleteMessage", [name]),
   );
   if (!confirmed) return;
 
@@ -504,9 +537,9 @@ async function deleteCurrentStep() {
     await persistSteps();
     renderSidebar();
     renderEditor();
-    showToast("Quick Step deleted.", "info");
+    showToast(getTranslation("optionsToastDeleted"), "info");
   } catch (e) {
-    showToast("Error deleting: " + e.message, "error");
+    showToast(getTranslation("optionsToastDeleteError", [e.message]), "error");
   }
 }
 
@@ -516,7 +549,7 @@ async function init() {
       type: "GET_QUICK_STEPS",
     });
   } catch (e) {
-    showToast("Could not load Quick Steps: " + e.message, "error");
+    showToast(getTranslation("optionsToastLoadError", [e.message]), "error");
     state.steps = [];
   }
 
@@ -555,6 +588,8 @@ async function init() {
     state.editing.color = selectedColor;
     syncSidebarItem();
   });
+
+  localizeDocument();
 }
 
 document.addEventListener("DOMContentLoaded", init);

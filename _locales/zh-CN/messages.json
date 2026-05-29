@@ -1,0 +1,91 @@
+{
+  "extensionName": { "message": "QuickSteps" },
+  "extensionDescription": { "message": "创建可配置 Quick Step 按钮，只需点击一下即可对电子邮件执行多项操作。" },
+
+  "popupTitle": { "message": "QuickSteps" },
+  "popupSettingsTitle": { "message": "管理 Quick Steps" },
+  "popupLoading": { "message": "正在加载…" },
+  "popupNoStepsTitle": { "message": "尚无 Quick Steps。" },
+  "popupNoStepsSub": { "message": "创建可自动执行电子邮件操作的按钮。" },
+  "popupCreateFirst": { "message": "创建第一个 Quick Step" },
+
+  "statusAppliedSingle": { "message": "已对 1 封邮件应用 “$NAME$”", "placeholders": { "name": { "content": "$1" } } },
+  "statusAppliedMultiple": { "message": "已对 $COUNT$ 封邮件应用 “$NAME$”", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" } } },
+  "statusAppliedWithErrors": { "message": "已对 $COUNT$ 封邮件应用 “$NAME$”，但某些操作失败 $ERROR$", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" }, "error": { "content": "$3" } } },
+  "statusActionFailed": { "message": "操作失败" },
+  "statusNoMailTab": { "message": "找不到活动邮件标签页。" },
+  "statusLoadError": { "message": "无法加载 Quick Steps：$ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "statusError": { "message": "错误：$ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "actionMoveLabel": { "message": "移动 → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionCopyLabel": { "message": "复制 → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionDeleteTrash": { "message": "删除（移至废纸篓）" },
+  "actionDeletePermanent": { "message": "删除（永久删除）" },
+  "actionArchive": { "message": "归档" },
+  "actionMarkRead": { "message": "标记为已读" },
+  "actionMarkUnread": { "message": "标记为未读" },
+  "actionFlag": { "message": "添加旗标" },
+  "actionUnflag": { "message": "清除旗标" },
+
+  "optionsTitle": { "message": "QuickSteps — 设置" },
+  "optionsSidebarTitle": { "message": "QuickSteps" },
+  "optionsNewStep": { "message": "新建" },
+  "optionsNoStepsYet": { "message": "尚无 Quick Steps。" },
+  "optionsClickNewHint": { "message": "点击 $STRONG$ 创建一个。", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsClickNewHintStrong": { "message": "+ 新建" },
+
+  "optionsPlaceholderTitle": { "message": "QuickSteps" },
+  "optionsPlaceholderSelectOrCreate": { "message": "选择左侧的 Quick Step 进行编辑，或点击 $STRONG$ 创建一个。", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsPlaceholderHint": { "message": "Quick Steps 可通过一键点击对选定电子邮件运行一系列操作。" },
+
+  "optionsStepNamePlaceholder": { "message": "Quick Step 名称…" },
+  "optionsSectionAppearance": { "message": "外观" },
+  "optionsColorLabel": { "message": "颜色" },
+  "optionsSectionActions": { "message": "操作" },
+  "optionsSectionActionsHint": { "message": "按从上到下的顺序执行" },
+  "optionsNoActionsYet": { "message": "尚无操作" },
+  "optionsAddAction": { "message": "+ 添加操作" },
+  "optionsDeleteStep": { "message": "删除此步" },
+  "optionsSave": { "message": "保存" },
+
+  "optionsMoveUpTitle": { "message": "上移" },
+  "optionsMoveDownTitle": { "message": "下移" },
+  "optionsRemoveTitle": { "message": "移除" },
+
+  "optionsSelectFolderPlaceholder": { "message": "— 选择目标文件夹 —" },
+  "optionsFoldersLoading": { "message": "正在加载文件夹…" },
+
+  "optionsActionTypeMoveLabel": { "message": "移动到文件夹…", "placeholders": {} },
+  "optionsActionTypeCopyLabel": { "message": "复制到文件夹…", "placeholders": {} },
+  "optionsActionTypeMarkReadLabel": { "message": "标记为已读" },
+  "optionsActionTypeMarkUnreadLabel": { "message": "标记为未读" },
+  "optionsActionTypeFlagLabel": { "message": "旗标 / 星标" },
+  "optionsActionTypeUnflagLabel": { "message": "清除旗标" },
+  "optionsActionTypeArchiveLabel": { "message": "归档" },
+  "optionsActionTypeDeleteLabel": { "message": "删除（移至废纸篓）" },
+  "optionsActionTypeDeletePermanentLabel": { "message": "永久删除" },
+
+  "optionsConfirmDeleteMessage": { "message": "删除 “$NAME$”？\n\n此操作无法撤销。", "placeholders": { "name": { "content": "$1" } } },
+  "optionsConfirmCancel": { "message": "取消" },
+  "optionsConfirmDelete": { "message": "删除" },
+
+  "optionsToastSaved": { "message": "修改已保存" },
+  "optionsToastDeleted": { "message": "Quick Step 已删除。" },
+  "optionsToastNameRequired": { "message": "请输入此 Quick Step 的名称。" },
+  "optionsToastFolderRequired": { "message": "请为所有的移动/复制操作选择目标文件夹。" },
+  "optionsToastSaveError": { "message": "保存错误：$ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastDeleteError": { "message": "删除错误：$ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastLoadError": { "message": "无法加载 Quick Steps：$ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "optionsNoActionsAssigned": { "message": "无操作" },
+
+  "defaultStep1Name": { "message": "归档并标记为已读" },
+  "defaultStep2Name": { "message": "删除" },
+  "defaultStep3Name": { "message": "加旗标并保持未读" },
+
+  "errorNoFolderSpecified": { "message": "未指定目标文件夹" },
+  "errorUnknownActionType": { "message": "未知操作类型" },
+  "errorQuickStepNotFound": { "message": "找不到 Quick Step" },
+  "errorNoActionsAssigned": { "message": "未分配 Quick Step" },
+  "errorNoMessageSelected": { "message": "未选中或未显示邮件。请先打开或选择一封邮件。" }
+}

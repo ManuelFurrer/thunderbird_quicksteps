@@ -1,0 +1,91 @@
+{
+  "extensionName": { "message": "QuickSteps" },
+  "extensionDescription": { "message": "1クリックでメールに対して複数のアクションを実行できる、設定可能なクイックステップボタンを作成します。" },
+
+  "popupTitle": { "message": "QuickSteps" },
+  "popupSettingsTitle": { "message": "クイックステップの管理" },
+  "popupLoading": { "message": "読み込み中…" },
+  "popupNoStepsTitle": { "message": "クイックステップはまだありません。" },
+  "popupNoStepsSub": { "message": "メールのアクションを自動化するボタンを作成します。" },
+  "popupCreateFirst": { "message": "最初のクイックステップを作成" },
+
+  "statusAppliedSingle": { "message": "1通のメッセージに「$NAME$」を適用しました", "placeholders": { "name": { "content": "$1" } } },
+  "statusAppliedMultiple": { "message": "$COUNT$通のメッセージに「$NAME$」を適用しました", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" } } },
+  "statusAppliedWithErrors": { "message": "$COUNT$通のメッセージに「$NAME$」を適用しましたが、一部のアクションが失敗しました $ERROR$", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" }, "error": { "content": "$3" } } },
+  "statusActionFailed": { "message": "アクションが失敗しました" },
+  "statusNoMailTab": { "message": "アクティブなメールタブが見つかりませんでした。" },
+  "statusLoadError": { "message": "クイックステップを読み込めませんでした: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "statusError": { "message": "エラー: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "actionMoveLabel": { "message": "移動 → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionCopyLabel": { "message": "コピー → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionDeleteTrash": { "message": "削除（ゴミ箱）" },
+  "actionDeletePermanent": { "message": "削除（完全に削除）" },
+  "actionArchive": { "message": "アーカイブ" },
+  "actionMarkRead": { "message": "既読にする" },
+  "actionMarkUnread": { "message": "未読にする" },
+  "actionFlag": { "message": "フラグを付ける" },
+  "actionUnflag": { "message": "フラグを外す" },
+
+  "optionsTitle": { "message": "QuickSteps — 設定" },
+  "optionsSidebarTitle": { "message": "QuickSteps" },
+  "optionsNewStep": { "message": "新規作成" },
+  "optionsNoStepsYet": { "message": "クイックステップはまだありません。" },
+  "optionsClickNewHint": { "message": "$STRONG$ をクリックして作成してください。", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsClickNewHintStrong": { "message": "+ 新規作成" },
+
+  "optionsPlaceholderTitle": { "message": "QuickSteps" },
+  "optionsPlaceholderSelectOrCreate": { "message": "左側のクイックステップを選択して編集するか、$STRONG$ をクリックして新しく作成してください。", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsPlaceholderHint": { "message": "クイックステップは、選択したメールに対して一連のアクションを1クリックで実行します。" },
+
+  "optionsStepNamePlaceholder": { "message": "クイックステップ名…" },
+  "optionsSectionAppearance": { "message": "外観" },
+  "optionsColorLabel": { "message": "色" },
+  "optionsSectionActions": { "message": "アクション" },
+  "optionsSectionActionsHint": { "message": "上から下へ順番に実行されます" },
+  "optionsNoActionsYet": { "message": "アクションがまだありません" },
+  "optionsAddAction": { "message": "+ アクションを追加" },
+  "optionsDeleteStep": { "message": "ステップを削除" },
+  "optionsSave": { "message": "保存" },
+
+  "optionsMoveUpTitle": { "message": "上へ移動" },
+  "optionsMoveDownTitle": { "message": "下へ移動" },
+  "optionsRemoveTitle": { "message": "削除" },
+
+  "optionsSelectFolderPlaceholder": { "message": "— 移動先フォルダを選択 —" },
+  "optionsFoldersLoading": { "message": "フォルダを読み込み中…" },
+
+  "optionsActionTypeMoveLabel": { "message": "フォルダに移動…" },
+  "optionsActionTypeCopyLabel": { "message": "フォルダにコピー…" },
+  "optionsActionTypeMarkReadLabel": { "message": "既読にする" },
+  "optionsActionTypeMarkUnreadLabel": { "message": "未読にする" },
+  "optionsActionTypeFlagLabel": { "message": "フラグ / スターを付ける" },
+  "optionsActionTypeUnflagLabel": { "message": "フラグを外す" },
+  "optionsActionTypeArchiveLabel": { "message": "アーカイブ" },
+  "optionsActionTypeDeleteLabel": { "message": "削除（ゴミ箱）" },
+  "optionsActionTypeDeletePermanentLabel": { "message": "削除（完全に削除）" },
+
+  "optionsConfirmDeleteMessage": { "message": "「$NAME$」を削除しますか？\n\nこの操作は取り消せません。", "placeholders": { "name": { "content": "$1" } } },
+  "optionsConfirmCancel": { "message": "キャンセル" },
+  "optionsConfirmDelete": { "message": "削除" },
+
+  "optionsToastSaved": { "message": "変更が保存されました" },
+  "optionsToastDeleted": { "message": "クイックステップが削除されました。" },
+  "optionsToastNameRequired": { "message": "クイックステップの名前を入力してください。" },
+  "optionsToastFolderRequired": { "message": "すべての移動/コピーアクションの移動先フォルダを選択してください。" },
+  "optionsToastSaveError": { "message": "保存エラー: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastDeleteError": { "message": "削除エラー: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastLoadError": { "message": "クイックステップを読み込めませんでした: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "optionsNoActionsAssigned": { "message": "アクションなし" },
+
+  "defaultStep1Name": { "message": "アーカイブして既読にする" },
+  "defaultStep2Name": { "message": "削除" },
+  "defaultStep3Name": { "message": "フラグを付けて未読のままにする" },
+
+  "errorNoFolderSpecified": { "message": "移動先フォルダが指定されていません" },
+  "errorUnknownActionType": { "message": "不明なアクションタイプです" },
+  "errorQuickStepNotFound": { "message": "クイックステップが見つかりません" },
+  "errorNoActionsAssigned": { "message": "クイックステップが割り当てられていません" },
+  "errorNoMessageSelected": { "message": "メッセージが選択または表示されていません。先にメッセージを開くか選択してください。" }
+}

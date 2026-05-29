@@ -6,19 +6,19 @@ function getDefaultQuickSteps() {
   return [
     {
       id: generateId(),
-      name: "Archive & Mark Read",
+      name: messenger.i18n.getMessage("defaultStep1Name"),
       color: "#4CAF50",
       actions: [{ type: "mark_read" }, { type: "archive" }],
     },
     {
       id: generateId(),
-      name: "Delete",
+      name: messenger.i18n.getMessage("defaultStep2Name"),
       color: "#f44336",
       actions: [{ type: "delete" }],
     },
     {
       id: generateId(),
-      name: "Flag & Keep Unread",
+      name: messenger.i18n.getMessage("defaultStep3Name"),
       color: "#FF9800",
       actions: [{ type: "flag" }, { type: "mark_unread" }],
     },
@@ -94,15 +94,20 @@ async function executeActions(messages, actions) {
     try {
       switch (action.type) {
         case "move":
-          if (!action.folder)
-            throw new Error("No destination folder specified");
-
+          if (!action.folder) {
+            throw new Error(
+              messenger.i18n.getMessage("errorNoFolderSpecified"),
+            );
+          }
           await messenger.messages.move(messageIds, action.folder.id);
           break;
 
         case "copy":
-          if (!action.folder)
-            throw new Error("No destination folder specified");
+          if (!action.folder) {
+            throw new Error(
+              messenger.i18n.getMessage("errorNoFolderSpecified"),
+            );
+          }
           await messenger.messages.copy(messageIds, action.folder.id);
           break;
 
@@ -153,7 +158,7 @@ async function executeActions(messages, actions) {
           break;
 
         default:
-          throw new Error("Unkown action type");
+          throw new Error(messenger.i18n.getMessage("errorUnknownActionType"));
       }
 
       results.push({ action: action.type, success: true });
@@ -170,10 +175,17 @@ async function executeQuickStep(quickStepId, tabId) {
   const steps = await getQuickSteps();
   const step = steps.find((s) => s.id === quickStepId);
 
-  if (!step) return { success: false, errors: ["Quick step not found"] };
+  if (!step)
+    return {
+      success: false,
+      errors: [messenger.i18n.getMessage("errorQuickStepNotFound")],
+    };
 
   if (!step.actions?.length)
-    return { success: false, errors: ["No quick steps assigned"] };
+    return {
+      success: false,
+      errors: [messenger.i18n.getMessage("errorNoActionsAssigned")],
+    };
 
   const messages =
     (await messenger.messageDisplay.getDisplayedMessages(tabId)).messages || [];
@@ -181,9 +193,7 @@ async function executeQuickStep(quickStepId, tabId) {
   if (messages.length === 0) {
     return {
       success: false,
-      errors: [
-        "No message selected or displayed. Open or select a message first.",
-      ],
+      errors: [messenger.i18n.getMessage("errorNoMessageSelected")],
     };
   }
 

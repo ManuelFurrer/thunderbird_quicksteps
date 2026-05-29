@@ -17,33 +17,28 @@
                 fill="#0078D4"
               />
             </svg>
-            QuickSteps
+            <span data-i18n-content="optionsSidebarTitle"></span>
           </div>
-          <button id="btn-new-step" title="Create a new Quick Step">
-            <span class="plus">+</span> New
+          <button id="btn-new-step" data-i18n-title="optionsNewStep">
+            <span class="plus">+</span>
+            <span data-i18n-content="optionsNewStep"></span>
           </button>
         </div>
 
         <div id="steps-list"></div>
 
         <div id="sidebar-empty" class="hidden">
-          <p>No quick steps yet.</p>
-          <p>Click <strong>+ New</strong> to create one.</p>
+          <p data-i18n-content="optionsNoStepsYet"></p>
+          <p id="sidebar-empty-hint"></p>
         </div>
       </aside>
 
       <main id="editor-panel">
         <div id="editor-placeholder">
           <div class="placeholder-icon">⚡</div>
-          <h2>QuickSteps</h2>
-          <p>
-            Select a Quick Step on the left to edit it,<br />or click
-            <strong>+ New</strong> to create one.
-          </p>
-          <p class="hint">
-            Quick Steps run a series of actions on selected emails with one
-            click.
-          </p>
+          <h2 data-i18n-content="optionsPlaceholderTitle"></h2>
+          <p id="placeholder-select-hint"></p>
+          <p class="hint" data-i18n-content="optionsPlaceholderHint"></p>
         </div>
 
         <div id="editor" class="hidden">
@@ -52,7 +47,7 @@
               <input
                 type="text"
                 id="step-name"
-                placeholder="Quick Step name…"
+                data-i18n-placeholder="optionsStepNamePlaceholder"
                 maxlength="60"
               />
               <div id="editor-preview-actions" class="preview-actions"></div>
@@ -61,10 +56,13 @@
 
           <div class="editor-body">
             <section class="section">
-              <h3 class="section-title">Appearance</h3>
+              <h3
+                class="section-title"
+                data-i18n-content="optionsSectionAppearance"
+              ></h3>
               <div class="appearance-row">
                 <div class="field-group">
-                  <label>Color</label>
+                  <label data-i18n-content="optionsColorLabel"></label>
                   <div id="color-picker" class="color-picker"></div>
                   <div class="color-picker-container">
                     <label for="step-color" class="custom-color-picker">
@@ -82,24 +80,35 @@
 
             <section class="section">
               <h3 class="section-title">
-                Actions
-                <span class="section-hint"
-                  >Executed in order, top to bottom</span
-                >
+                <span data-i18n-content="optionsSectionActions"></span>
+                <span
+                  class="section-hint"
+                  data-i18n-content="optionsSectionActionsHint"
+                ></span>
               </h3>
               <div id="actions-list"></div>
-              <button id="btn-add-action" class="btn-add-action">
-                + Add Action
-              </button>
+              <button
+                id="btn-add-action"
+                class="btn-add-action"
+                data-i18n-content="optionsAddAction"
+              ></button>
             </section>
           </div>
         </div>
 
         <div class="editor-footer">
-          <button id="btn-delete-step" class="btn-danger">Delete Step</button>
+          <button
+            id="btn-delete-step"
+            class="btn-danger"
+            data-i18n-content="optionsDeleteStep"
+          ></button>
           <div class="footer-right">
             <div id="toast" class="hidden"></div>
-            <button id="btn-save" class="btn-primary">Save</button>
+            <button
+              id="btn-save"
+              class="btn-primary"
+              data-i18n-content="optionsSave"
+            ></button>
           </div>
         </div>
       </main>
@@ -109,12 +118,20 @@
       <div id="confirm-box">
         <p id="confirm-message"></p>
         <div class="confirm-btns">
-          <button id="confirm-cancel" class="btn-secondary">Cancel</button>
-          <button id="confirm-ok" class="btn-danger">Delete</button>
+          <button
+            id="confirm-cancel"
+            class="btn-secondary"
+            data-i18n-content="optionsConfirmCancel"
+          ></button>
+          <button
+            id="confirm-ok"
+            class="btn-danger"
+            data-i18n-content="optionsConfirmDelete"
+          ></button>
         </div>
       </div>
     </div>
 
-    <script src="options.js"></script>
+    <script src="options.js" type="module"></script>
   </body>
 </html>

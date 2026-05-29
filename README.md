@@ -14,6 +14,21 @@ Thunderbird Quick Steps is a Thunderbird add-on that lets you create custom quic
 - Simple options UI to manage quick steps.
 - Buttons available from the popup/options UI (see project files).
 
+## Supported Languages
+
+Currently, the following languages are supported:
+
+- English (`en`)
+- German (`de`)
+- Italian (`it`)
+- French (`fr`)
+- Spanish (`es`)
+- Japanese (`ja`)
+- Russian (`ru`)
+- Chinese (Simplified) (`zh-CN`)
+
+Some of these translations were generated using AI and may contain inaccuracies. If you spot a mistake, feel free to open an [issue](https://github.com/ManuelFurrer/thunderbird_quicksteps/issues).
+
 ## Usage
 
 1. After loading the add-on, open the Quick Steps popup or Options page to create and configure quick steps.

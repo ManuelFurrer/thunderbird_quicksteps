@@ -1,0 +1,91 @@
+{
+  "extensionName": { "message": "QuickSteps" },
+  "extensionDescription": { "message": "Erstelle konfigurierbare Quick-Step-Buttons, um mit einem Klick mehrere Aktionen auf E-Mails auszuführen." },
+
+  "popupTitle": { "message": "QuickSteps" },
+  "popupSettingsTitle": { "message": "Quick Steps verwalten" },
+  "popupLoading": { "message": "Laden…" },
+  "popupNoStepsTitle": { "message": "Noch keine Quick Steps." },
+  "popupNoStepsSub": { "message": "Erstelle Schaltflächen, die deine E-Mail-Aktionen automatisieren." },
+  "popupCreateFirst": { "message": "Ersten Quick Step erstellen" },
+
+  "statusAppliedSingle": { "message": "\"$NAME$\" auf einer Nachricht angewendet", "placeholders": { "name": { "content": "$1" } } },
+  "statusAppliedMultiple": { "message": "\"$NAME$\" auf $COUNT$ Nachrichten angewendet", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" } } },
+  "statusAppliedWithErrors": { "message": "\"$NAME$\" auf $COUNT$ Nachricht(en) angewendet, aber einige Aktionen sind fehlgeschlagen: $ERROR$", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" }, "error": { "content": "$3" } } },
+  "statusActionFailed": { "message": "Aktion fehlgeschlagen" },
+  "statusNoMailTab": { "message": "Aktiver Mail-Tab nicht gefunden." },
+  "statusLoadError": { "message": "Quick Steps konnten nicht geladen werden: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "statusError": { "message": "Fehler: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "actionMoveLabel": { "message": "Verschieben → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionCopyLabel": { "message": "Kopieren → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionDeleteTrash": { "message": "Löschen (Papierkorb)" },
+  "actionDeletePermanent": { "message": "Löschen (Endgültig)" },
+  "actionArchive": { "message": "Archivieren" },
+  "actionMarkRead": { "message": "Als gelesen markieren" },
+  "actionMarkUnread": { "message": "Als ungelesen markieren" },
+  "actionFlag": { "message": "Markieren" },
+  "actionUnflag": { "message": "Markierung entfernen" },
+
+  "optionsTitle": { "message": "QuickSteps — Einstellungen" },
+  "optionsSidebarTitle": { "message": "QuickSteps" },
+  "optionsNewStep": { "message": "Neu" },
+  "optionsNoStepsYet": { "message": "Noch keine Quick Steps." },
+  "optionsClickNewHint": { "message": "Klicke auf $STRONG$, um einen Quick Step zu erstellen.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsClickNewHintStrong": { "message": "+ Neu" },
+
+  "optionsPlaceholderTitle": { "message": "QuickSteps" },
+  "optionsPlaceholderSelectOrCreate": { "message": "Wähle links einen Quick Step zum Bearbeiten aus oder klicke auf $STRONG$, um einen zu erstellen.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsPlaceholderHint": { "message": "Quick Steps führen mit einem Klick eine Reihe von Aktionen auf ausgewählten E-Mails aus." },
+
+  "optionsStepNamePlaceholder": { "message": "Name des Quick Steps…" },
+  "optionsSectionAppearance": { "message": "Darstellung" },
+  "optionsColorLabel": { "message": "Farbe" },
+  "optionsSectionActions": { "message": "Aktionen" },
+  "optionsSectionActionsHint": { "message": "In der Reihenfolge ausgeführt, von oben nach unten" },
+  "optionsNoActionsYet": { "message": "Noch keine Aktionen" },
+  "optionsAddAction": { "message": "+ Aktion hinzufügen" },
+  "optionsDeleteStep": { "message": "Quick Step löschen" },
+  "optionsSave": { "message": "Speichern" },
+
+  "optionsMoveUpTitle": { "message": "Nach oben" },
+  "optionsMoveDownTitle": { "message": "Nach unten" },
+  "optionsRemoveTitle": { "message": "Entfernen" },
+
+  "optionsSelectFolderPlaceholder": { "message": "— Zielordner auswählen —" },
+  "optionsFoldersLoading": { "message": "Ordner werden geladen…" },
+
+  "optionsActionTypeMoveLabel": { "message": "In Ordner verschieben…" },
+  "optionsActionTypeCopyLabel": { "message": "In Ordner kopieren…" },
+  "optionsActionTypeMarkReadLabel": { "message": "Als gelesen markieren" },
+  "optionsActionTypeMarkUnreadLabel": { "message": "Als ungelesen markieren" },
+  "optionsActionTypeFlagLabel": { "message": "Markieren / Stern" },
+  "optionsActionTypeUnflagLabel": { "message": "Markierung entfernen" },
+  "optionsActionTypeArchiveLabel": { "message": "Archivieren" },
+  "optionsActionTypeDeleteLabel": { "message": "Löschen (Papierkorb)" },
+  "optionsActionTypeDeletePermanentLabel": { "message": "Löschen (Endgültig)" },
+
+  "optionsConfirmDeleteMessage": { "message": "\"$NAME$\" löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.", "placeholders": { "name": { "content": "$1" } } },
+  "optionsConfirmCancel": { "message": "Abbrechen" },
+  "optionsConfirmDelete": { "message": "Löschen" },
+
+  "optionsToastSaved": { "message": "Änderungen gespeichert" },
+  "optionsToastDeleted": { "message": "Quick Step gelöscht." },
+  "optionsToastNameRequired": { "message": "Bitte gib einen Namen für diesen Quick Step ein." },
+  "optionsToastFolderRequired": { "message": "Bitte wähle für alle Verschieben-/Kopieren-Aktionen einen Zielordner aus." },
+  "optionsToastSaveError": { "message": "Fehler beim Speichern: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastDeleteError": { "message": "Fehler beim Löschen: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastLoadError": { "message": "Quick Steps konnten nicht geladen werden: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "optionsNoActionsAssigned": { "message": "Keine Aktionen" },
+
+  "defaultStep1Name": { "message": "Archivieren & Als gelesen markieren" },
+  "defaultStep2Name": { "message": "Löschen" },
+  "defaultStep3Name": { "message": "Markieren & Ungelesen lassen" },
+
+  "errorNoFolderSpecified": { "message": "Kein Zielordner angegeben" },
+  "errorUnknownActionType": { "message": "Unbekannter Aktionstyp" },
+  "errorQuickStepNotFound": { "message": "Quick Step nicht gefunden" },
+  "errorNoActionsAssigned": { "message": "Keine Quick Steps zugewiesen" },
+  "errorNoMessageSelected": { "message": "Keine Nachricht ausgewählt oder angezeigt. Öffne oder wähle zuerst eine Nachricht aus." }
+}

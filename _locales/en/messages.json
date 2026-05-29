@@ -1,0 +1,91 @@
+{
+  "extensionName": { "message": "QuickSteps" },
+  "extensionDescription": { "message": "Create configurable quick step buttons to perform multiple actions on emails with a single click." },
+
+  "popupTitle": { "message": "QuickSteps" },
+  "popupSettingsTitle": { "message": "Manage Quick Steps" },
+  "popupLoading": { "message": "Loading…" },
+  "popupNoStepsTitle": { "message": "No Quick Steps yet." },
+  "popupNoStepsSub": { "message": "Create buttons that automate your email actions." },
+  "popupCreateFirst": { "message": "Create first Quick Step" },
+
+  "statusAppliedSingle": { "message": "\"$NAME$\" applied to 1 message", "placeholders": { "name": { "content": "$1" } } },
+  "statusAppliedMultiple": { "message": "\"$NAME$\" applied to $COUNT$ messages", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" } } },
+  "statusAppliedWithErrors": { "message": "\"$NAME$\" applied to $COUNT$ message(s), but some actions failed $ERROR$", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" }, "error": { "content": "$3" } } },
+  "statusActionFailed": { "message": "Action failed" },
+  "statusNoMailTab": { "message": "Could not find active mail tab." },
+  "statusLoadError": { "message": "Could not load quick steps: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "statusError": { "message": "Error: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "actionMoveLabel": { "message": "Move → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionCopyLabel": { "message": "Copy → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionDeleteTrash": { "message": "Delete (Trash)" },
+  "actionDeletePermanent": { "message": "Delete (Permanent)" },
+  "actionArchive": { "message": "Archive" },
+  "actionMarkRead": { "message": "Mark Read" },
+  "actionMarkUnread": { "message": "Mark Unread" },
+  "actionFlag": { "message": "Flag" },
+  "actionUnflag": { "message": "Unflag" },
+
+  "optionsTitle": { "message": "QuickSteps — Settings" },
+  "optionsSidebarTitle": { "message": "QuickSteps" },
+  "optionsNewStep": { "message": "New" },
+  "optionsNoStepsYet": { "message": "No quick steps yet." },
+  "optionsClickNewHint": { "message": "Click $STRONG$ to create one.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsClickNewHintStrong": { "message": "+ New" },
+
+  "optionsPlaceholderTitle": { "message": "QuickSteps" },
+  "optionsPlaceholderSelectOrCreate": { "message": "Select a Quick Step on the left to edit it, or click $STRONG$ to create one.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsPlaceholderHint": { "message": "Quick Steps run a series of actions on selected emails with one click." },
+
+  "optionsStepNamePlaceholder": { "message": "Quick Step name…" },
+  "optionsSectionAppearance": { "message": "Appearance" },
+  "optionsColorLabel": { "message": "Color" },
+  "optionsSectionActions": { "message": "Actions" },
+  "optionsSectionActionsHint": { "message": "Executed in order, top to bottom" },
+  "optionsNoActionsYet": { "message": "No actions yet" },
+  "optionsAddAction": { "message": "+ Add Action" },
+  "optionsDeleteStep": { "message": "Delete Step" },
+  "optionsSave": { "message": "Save" },
+
+  "optionsMoveUpTitle": { "message": "Move up" },
+  "optionsMoveDownTitle": { "message": "Move down" },
+  "optionsRemoveTitle": { "message": "Remove" },
+
+  "optionsSelectFolderPlaceholder": { "message": "— Select destination folder —" },
+  "optionsFoldersLoading": { "message": "Loading folders…" },
+
+  "optionsActionTypeMoveLabel": { "message": "Move to Folder…" },
+  "optionsActionTypeCopyLabel": { "message": "Copy to Folder…" },
+  "optionsActionTypeMarkReadLabel": { "message": "Mark as Read" },
+  "optionsActionTypeMarkUnreadLabel": { "message": "Mark as Unread" },
+  "optionsActionTypeFlagLabel": { "message": "Flag / Star" },
+  "optionsActionTypeUnflagLabel": { "message": "Remove Flag" },
+  "optionsActionTypeArchiveLabel": { "message": "Archive" },
+  "optionsActionTypeDeleteLabel": { "message": "Delete (Trash)" },
+  "optionsActionTypeDeletePermanentLabel": { "message": "Delete (Permanent)" },
+
+  "optionsConfirmDeleteMessage": { "message": "Delete \"$NAME$\"?\n\nThis action cannot be undone.", "placeholders": { "name": { "content": "$1" } } },
+  "optionsConfirmCancel": { "message": "Cancel" },
+  "optionsConfirmDelete": { "message": "Delete" },
+
+  "optionsToastSaved": { "message": "Changes saved" },
+  "optionsToastDeleted": { "message": "Quick Step deleted." },
+  "optionsToastNameRequired": { "message": "Please enter a name for this Quick Step." },
+  "optionsToastFolderRequired": { "message": "Please select a destination folder for all Move / Copy actions." },
+  "optionsToastSaveError": { "message": "Error saving: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastDeleteError": { "message": "Error deleting: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastLoadError": { "message": "Could not load Quick Steps: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "optionsNoActionsAssigned": { "message": "No actions" },
+
+  "defaultStep1Name": { "message": "Archive & Mark Read" },
+  "defaultStep2Name": { "message": "Delete" },
+  "defaultStep3Name": { "message": "Flag & Keep Unread" },
+
+  "errorNoFolderSpecified": { "message": "No destination folder specified" },
+  "errorUnknownActionType": { "message": "Unknown action type" },
+  "errorQuickStepNotFound": { "message": "Quick step not found" },
+  "errorNoActionsAssigned": { "message": "No quick steps assigned" },
+  "errorNoMessageSelected": { "message": "No message selected or displayed. Open or select a message first." }
+}

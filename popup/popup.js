@@ -1,13 +1,15 @@
+import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
+
 const ACTION_LABELS = {
-  move: (a) => `Move → ${a.folder?.name || "?"}`,
-  copy: (a) => `Copy → ${a.folder?.name || "?"}`,
-  delete: () => "Delete (Trash)",
-  delete_permanent: () => "Delete (Permanent)",
-  archive: () => "Archive",
-  mark_read: () => "Mark Read",
-  mark_unread: () => "Mark Unread",
-  flag: () => "Flag",
-  unflag: () => "Unflag",
+  move: (a) => getTranslation("actionMoveLabel", a.folder?.name || "?"),
+  copy: (a) => getTranslation("actionCopyLabel", a.folder?.name || "?"),
+  delete: () => getTranslation("actionDeleteTrash"),
+  delete_permanent: () => getTranslation("actionDeletePermanent"),
+  archive: () => getTranslation("actionArchive"),
+  mark_read: () => getTranslation("actionMarkRead"),
+  mark_unread: () => getTranslation("actionMarkUnread"),
+  flag: () => getTranslation("actionFlag"),
+  unflag: () => getTranslation("actionUnflag"),
 };
 
 function getActionLabel(action) {
@@ -55,7 +57,7 @@ async function loadAndRender() {
     steps = await messenger.runtime.sendMessage({ type: "GET_QUICK_STEPS" });
   } catch (e) {
     loading.classList.add("hidden");
-    showStatus("Could not load quick steps: " + e.message, "error");
+    showStatus(getTranslation("statusLoadError", [e.message]), "error");
     return;
   }
 
@@ -96,7 +98,7 @@ async function loadAndRender() {
       try {
         const tabId = await getCurrentMailTabId();
         if (tabId === null) {
-          showStatus("Could not find active mail tab.", "error");
+          showStatus(getTranslation("statusNoMailTab"), "error");
           return;
         }
 
@@ -108,8 +110,10 @@ async function loadAndRender() {
 
         if (result.success) {
           const count = result.messageCount;
+          const key =
+            count === 1 ? "statusAppliedSingle" : "statusAppliedMultiple";
           showStatus(
-            `"${step.name}" applied to ${count} message${count !== 1 ? "s" : ""}`,
+            getTranslation(key, [step.name, count.toString()]),
             "success",
           );
         } else if (result.anySucceeded) {
@@ -119,16 +123,23 @@ async function loadAndRender() {
             : ".";
 
           showStatus(
-            `"${step.name}" applied to ${count} message${count !== 1 ? "s" : ""}, but some failed${errorDetail}`,
+            getTranslation("statusAppliedWithErrors", [
+              step.name,
+              count.toString(),
+              errorDetail,
+            ]),
             "warning",
           );
         } else if (result.errors?.length) {
-          showStatus(result.errors[0], "error");
+          showStatus(
+            getTranslation("statusError", [result.errors[0]]),
+            "error",
+          );
         } else {
-          showStatus(`Action failed`, "error");
+          showStatus(getTranslation("statusActionFailed"), "error");
         }
       } catch (e) {
-        showStatus(`Error: ${e.message}`, "error");
+        showStatus(getTranslation("statusError", [e.message]), "error");
       } finally {
         btn.disabled = false;
         btn.classList.remove("executing");
@@ -148,5 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("createFirstBtn")
     .addEventListener("click", openOptions);
+
   loadAndRender();
+  localizeDocument();
 });

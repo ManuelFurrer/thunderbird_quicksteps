@@ -1,0 +1,91 @@
+{
+  "extensionName": { "message": "QuickSteps" },
+  "extensionDescription": { "message": "Créez des boutons d'actions rapides configurables pour effectuer plusieurs actions sur les e-mails en un seul clic." },
+
+  "popupTitle": { "message": "QuickSteps" },
+  "popupSettingsTitle": { "message": "Gérer les actions rapides" },
+  "popupLoading": { "message": "Chargement…" },
+  "popupNoStepsTitle": { "message": "Aucune action rapide pour l'instant." },
+  "popupNoStepsSub": { "message": "Créez des boutons qui automatisent les actions sur vos e-mails." },
+  "popupCreateFirst": { "message": "Créer la première action rapide" },
+
+  "statusAppliedSingle": { "message": "\"$NAME$\" appliqué à 1 message", "placeholders": { "name": { "content": "$1" } } },
+  "statusAppliedMultiple": { "message": "\"$NAME$\" appliqué à $COUNT$ messages", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" } } },
+  "statusAppliedWithErrors": { "message": "\"$NAME$\" appliqué à $COUNT$ message(s), mais certaines actions ont échoué $ERROR$", "placeholders": { "name": { "content": "$1" }, "count": { "content": "$2" }, "error": { "content": "$3" } } },
+  "statusActionFailed": { "message": "L'action a échoué" },
+  "statusNoMailTab": { "message": "Impossible de trouver l'onglet de messagerie actif." },
+  "statusLoadError": { "message": "Impossible de charger les actions rapides : $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "statusError": { "message": "Erreur : $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "actionMoveLabel": { "message": "Déplacer → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionCopyLabel": { "message": "Copier → $FOLDER$", "placeholders": { "folder": { "content": "$1" } } },
+  "actionDeleteTrash": { "message": "Supprimer (Corbeille)" },
+  "actionDeletePermanent": { "message": "Supprimer (Définitivement)" },
+  "actionArchive": { "message": "Archiver" },
+  "actionMarkRead": { "message": "Marquer comme lu" },
+  "actionMarkUnread": { "message": "Marquer comme non lu" },
+  "actionFlag": { "message": "Marquer d'un drapeau" },
+  "actionUnflag": { "message": "Retirer le drapeau" },
+
+  "optionsTitle": { "message": "QuickSteps — Paramètres" },
+  "optionsSidebarTitle": { "message": "QuickSteps" },
+  "optionsNewStep": { "message": "Nouveau" },
+  "optionsNoStepsYet": { "message": "Aucune action rapide pour l'instant." },
+  "optionsClickNewHint": { "message": "Cliquez sur $STRONG$ pour en créer une.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsClickNewHintStrong": { "message": "+ Nouveau" },
+
+  "optionsPlaceholderTitle": { "message": "QuickSteps" },
+  "optionsPlaceholderSelectOrCreate": { "message": "Sélectionnez une action rapide à gauche pour la modifier, ou cliquez sur $STRONG$ pour en créer une.", "placeholders": { "strong": { "content": "$1" } } },
+  "optionsPlaceholderHint": { "message": "Les actions rapides exécutent une série d'actions sur les e-mails sélectionnés en un seul clic." },
+
+  "optionsStepNamePlaceholder": { "message": "Nom de l'action rapide…" },
+  "optionsSectionAppearance": { "message": "Apparence" },
+  "optionsColorLabel": { "message": "Couleur" },
+  "optionsSectionActions": { "message": "Actions" },
+  "optionsSectionActionsHint": { "message": "Exécutées dans l'ordre, de haut en bas" },
+  "optionsNoActionsYet": { "message": "Aucune action pour l'instant" },
+  "optionsAddAction": { "message": "+ Ajouter une action" },
+  "optionsDeleteStep": { "message": "Supprimer l'étape" },
+  "optionsSave": { "message": "Enregistrer" },
+
+  "optionsMoveUpTitle": { "message": "Déplacer vers le haut" },
+  "optionsMoveDownTitle": { "message": "Déplacer vers le bas" },
+  "optionsRemoveTitle": { "message": "Retirer" },
+
+  "optionsSelectFolderPlaceholder": { "message": "— Sélectionner le dossier de destination —" },
+  "optionsFoldersLoading": { "message": "Chargement des dossiers…" },
+
+  "optionsActionTypeMoveLabel": { "message": "Déplacer vers le dossier…" },
+  "optionsActionTypeCopyLabel": { "message": "Copier vers le dossier…" },
+  "optionsActionTypeMarkReadLabel": { "message": "Marquer comme lu" },
+  "optionsActionTypeMarkUnreadLabel": { "message": "Marquer comme non lu" },
+  "optionsActionTypeFlagLabel": { "message": "Marquer d'un drapeau / Suivre" },
+  "optionsActionTypeUnflagLabel": { "message": "Retirer le drapeau" },
+  "optionsActionTypeArchiveLabel": { "message": "Archiver" },
+  "optionsActionTypeDeleteLabel": { "message": "Supprimer (Corbeille)" },
+  "optionsActionTypeDeletePermanentLabel": { "message": "Supprimer (Définitivement)" },
+
+  "optionsConfirmDeleteMessage": { "message": "Supprimer \"$NAME$\" ?\n\nCette action est irréversible.", "placeholders": { "name": { "content": "$1" } } },
+  "optionsConfirmCancel": { "message": "Annuler" },
+  "optionsConfirmDelete": { "message": "Supprimer" },
+
+  "optionsToastSaved": { "message": "Modifications enregistrées" },
+  "optionsToastDeleted": { "message": "Action rapide supprimée." },
+  "optionsToastNameRequired": { "message": "Veuillez saisir un nom pour cette action rapide." },
+  "optionsToastFolderRequired": { "message": "Veuillez sélectionner un dossier de destination pour toutes les actions Déplacer / Copier." },
+  "optionsToastSaveError": { "message": "Erreur lors de l'enregistrement : $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastDeleteError": { "message": "Erreur lors de la suppression : $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+  "optionsToastLoadError": { "message": "Impossible de charger les actions rapides : $ERROR$", "placeholders": { "error": { "content": "$1" } } },
+
+  "optionsNoActionsAssigned": { "message": "Aucune action" },
+
+  "defaultStep1Name": { "message": "Archiver et marquer comme lu" },
+  "defaultStep2Name": { "message": "Supprimer" },
+  "defaultStep3Name": { "message": "Marquer et laisser non lu" },
+
+  "errorNoFolderSpecified": { "message": "Aucun dossier de destination spécifié" },
+  "errorUnknownActionType": { "message": "Type d'action inconnu" },
+  "errorQuickStepNotFound": { "message": "Action rapide introuvable" },
+  "errorNoActionsAssigned": { "message": "Aucune action rapide attribuée" },
+  "errorNoMessageSelected": { "message": "Aucun message sélectionné ou affiché. Veuillez d'abord ouvrir ou sélectionner un message." }
+}
