@@ -226,6 +226,71 @@ async function autoSave() {
   }
 }
 
+function createDragAndDropListeners(item, stepId) {
+  item.draggable = true;
+
+  item.addEventListener("dragstart", (e) => {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", stepId);
+    item.classList.add("dragging");
+  });
+
+  item.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const bounding = item.getBoundingClientRect();
+    const offset = e.clientY - bounding.top;
+    if (offset > bounding.height / 2) {
+      item.classList.add("drag-over-bottom");
+      item.classList.remove("drag-over-top");
+    } else {
+      item.classList.add("drag-over-top");
+      item.classList.remove("drag-over-bottom");
+    }
+  });
+
+  item.addEventListener("dragleave", () => {
+    item.classList.remove("drag-over-top", "drag-over-bottom");
+  });
+
+  item.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    item.classList.remove("drag-over-top", "drag-over-bottom");
+
+    const draggedStepId = e.dataTransfer.getData("text/plain");
+    if (!draggedStepId) return;
+
+    const sourceIndex = state.steps.findIndex((s) => s.id === draggedStepId);
+    const targetIndex = state.steps.findIndex((s) => s.id === stepId);
+    if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex)
+      return;
+
+    const bounding = item.getBoundingClientRect();
+    const offset = e.clientY - bounding.top;
+
+    const movingStep = state.steps[sourceIndex];
+    state.steps.splice(sourceIndex, 1);
+
+    let insertIndex = targetIndex;
+    if (offset > bounding.height / 2) {
+      insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1;
+    } else {
+      insertIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
+    }
+
+    state.steps.splice(insertIndex, 0, movingStep);
+
+    renderSidebar();
+    await persistSteps();
+  });
+
+  item.addEventListener("dragend", () => {
+    item.classList.remove("dragging");
+    document.querySelectorAll(".step-item").forEach((el) => {
+      el.classList.remove("drag-over-top", "drag-over-bottom");
+    });
+  });
+}
+
 function renderSidebar() {
   const list = els.stepsList();
   list.innerHTML = "";
@@ -259,6 +324,9 @@ function renderSidebar() {
     info.append(name, meta);
     item.append(info);
     item.addEventListener("click", () => navigateTo(step.id));
+
+    createDragAndDropListeners(item, step.id);
+
     list.appendChild(item);
   }
 }

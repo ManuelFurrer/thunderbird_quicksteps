@@ -147,15 +147,32 @@ body {
     background 0.12s,
     border-color 0.12s;
   position: relative;
+  user-select: none;
 }
 
 .step-item:hover {
   background: var(--step-item-hover);
 }
 
+.step-item:active {
+  cursor: grabbing;
+}
+
 .step-item.active {
   background: var(--step-item-active);
   border-left-color: var(--accent);
+}
+
+.step-item.dragging {
+  opacity: 0.8;
+}
+
+.step-item.drag-over-top {
+  box-shadow: 0 -2px 0 0 var(--accent);
+}
+
+.step-item.drag-over-bottom {
+  box-shadow: 0 2px 0 0 var(--accent);
 }
 
 .step-item-info {
