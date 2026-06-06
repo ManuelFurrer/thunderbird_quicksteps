@@ -226,68 +226,131 @@ async function autoSave() {
   }
 }
 
-function createDragAndDropListeners(item, stepId) {
-  item.draggable = true;
+function spliceReorder(arr, sourceIndex, targetIndex, dropBelow) {
+  const [item] = arr.splice(sourceIndex, 1);
 
-  item.addEventListener("dragstart", (e) => {
+  let insertAt = targetIndex;
+  if (sourceIndex < targetIndex && !dropBelow) {
+    insertAt -= 1;
+  } else if (sourceIndex > targetIndex && dropBelow) {
+    insertAt += 1;
+  }
+
+  arr.splice(insertAt, 0, item);
+}
+
+function setupDraggable({
+  element,
+  dragHandle = null,
+  dragType = "text/plain",
+  dragValue,
+  allSelector,
+  onDrop,
+}) {
+  if (dragHandle) {
+    element.draggable = false;
+
+    dragHandle.addEventListener("mousedown", () => {
+      element.draggable = true;
+
+      window.addEventListener(
+        "mouseup",
+        () => {
+          if (!element.classList.contains("dragging")) {
+            element.draggable = false;
+          }
+        },
+        { once: true },
+      );
+    });
+  } else {
+    element.draggable = true;
+  }
+
+  element.addEventListener("dragstart", (e) => {
     e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", stepId);
-    item.classList.add("dragging");
+    e.dataTransfer.setData(dragType, String(dragValue));
+    element.classList.add("dragging");
   });
 
-  item.addEventListener("dragover", (e) => {
+  element.addEventListener("dragover", (e) => {
     e.preventDefault();
-    const bounding = item.getBoundingClientRect();
-    const offset = e.clientY - bounding.top;
-    if (offset > bounding.height / 2) {
-      item.classList.add("drag-over-bottom");
-      item.classList.remove("drag-over-top");
-    } else {
-      item.classList.add("drag-over-top");
-      item.classList.remove("drag-over-bottom");
+    if (element.classList.contains("dragging")) return;
+
+    const bounding = element.getBoundingClientRect();
+    const dropBelow = e.clientY - bounding.top > bounding.height / 2;
+
+    element.classList.toggle("drag-over-bottom", dropBelow);
+    element.classList.toggle("drag-over-top", !dropBelow);
+  });
+
+  element.addEventListener("dragleave", (e) => {
+    if (!e.relatedTarget || !element.contains(e.relatedTarget)) {
+      element.classList.remove("drag-over-top", "drag-over-bottom");
     }
   });
 
-  item.addEventListener("dragleave", () => {
-    item.classList.remove("drag-over-top", "drag-over-bottom");
-  });
-
-  item.addEventListener("drop", async (e) => {
+  element.addEventListener("drop", async (e) => {
     e.preventDefault();
-    item.classList.remove("drag-over-top", "drag-over-bottom");
+    element.classList.remove("drag-over-top", "drag-over-bottom");
 
-    const draggedStepId = e.dataTransfer.getData("text/plain");
-    if (!draggedStepId) return;
+    const incomingData = e.dataTransfer.getData(dragType);
+    if (!incomingData) return;
 
-    const sourceIndex = state.steps.findIndex((s) => s.id === draggedStepId);
-    const targetIndex = state.steps.findIndex((s) => s.id === stepId);
-    if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex)
-      return;
+    const bounding = element.getBoundingClientRect();
+    const dropBelow = e.clientY - bounding.top > bounding.height / 2;
 
-    const bounding = item.getBoundingClientRect();
-    const offset = e.clientY - bounding.top;
-
-    const movingStep = state.steps[sourceIndex];
-    state.steps.splice(sourceIndex, 1);
-
-    let insertIndex = targetIndex;
-    if (offset > bounding.height / 2) {
-      insertIndex = sourceIndex < targetIndex ? targetIndex : targetIndex + 1;
-    } else {
-      insertIndex = sourceIndex < targetIndex ? targetIndex - 1 : targetIndex;
-    }
-
-    state.steps.splice(insertIndex, 0, movingStep);
-
-    renderSidebar();
-    await persistSteps();
+    await onDrop(incomingData, dropBelow);
   });
 
-  item.addEventListener("dragend", () => {
-    item.classList.remove("dragging");
-    document.querySelectorAll(".step-item").forEach((el) => {
+  element.addEventListener("dragend", () => {
+    if (dragHandle) element.draggable = false;
+    element.classList.remove("dragging");
+    document.querySelectorAll(allSelector).forEach((el) => {
       el.classList.remove("drag-over-top", "drag-over-bottom");
     });
+  });
+}
+
+function createQuickStepsDragAndDropListeners(item, stepId) {
+  setupDraggable({
+    element: item,
+    dragType: "application/x-quicksteps-step",
+    dragValue: stepId,
+    allSelector: ".step-item",
+    onDrop: async (draggedStepId, dropBelow) => {
+      const sourceIndex = state.steps.findIndex((s) => s.id === draggedStepId);
+      const targetIndex = state.steps.findIndex((s) => s.id === stepId);
+
+      if (
+        sourceIndex === -1 ||
+        targetIndex === -1 ||
+        sourceIndex === targetIndex
+      )
+        return;
+
+      spliceReorder(state.steps, sourceIndex, targetIndex, dropBelow);
+      renderSidebar();
+      await persistSteps();
+    },
+  });
+}
+
+function createActionDragAndDropListeners(row, index, dragHandle) {
+  setupDraggable({
+    element: row,
+    dragHandle: dragHandle,
+    dragType: "application/x-quicksteps-action",
+    dragValue: index,
+    allSelector: ".action-row",
+    onDrop: (draggedIndexRaw, dropBelow) => {
+      const sourceIndex = parseInt(draggedIndexRaw, 10);
+      if (isNaN(sourceIndex) || sourceIndex === index) return;
+
+      spliceReorder(state.editing.actions, sourceIndex, index, dropBelow);
+      renderActionsList();
+      updatePreviewActions();
+    },
   });
 }
 
@@ -325,8 +388,7 @@ function renderSidebar() {
     item.append(info);
     item.addEventListener("click", () => navigateTo(step.id));
 
-    createDragAndDropListeners(item, step.id);
-
+    createQuickStepsDragAndDropListeners(item, step.id);
     list.appendChild(item);
   }
 }
@@ -380,6 +442,19 @@ async function renderActionsList() {
 function buildActionRow(index, action) {
   const row = document.createElement("div");
   row.className = "action-row";
+
+  const dragHandle = document.createElement("span");
+  dragHandle.className = "drag-handle";
+  dragHandle.setAttribute("aria-hidden", "true");
+  dragHandle.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="9" cy="5" r="1.5"/>
+      <circle cx="9" cy="12" r="1.5"/>
+      <circle cx="9" cy="19" r="1.5"/>
+      <circle cx="15" cy="5" r="1.5"/>
+      <circle cx="15" cy="12" r="1.5"/>
+      <circle cx="15" cy="19" r="1.5"/>
+    </svg>`;
 
   const num = document.createElement("span");
   num.className = "action-num";
@@ -474,7 +549,8 @@ function buildActionRow(index, action) {
   removeBtn.addEventListener("click", () => removeAction(index));
 
   btns.append(upBtn, downBtn, removeBtn);
-  row.append(num, typeSelect, folderContainer, btns);
+  row.append(dragHandle, num, typeSelect, folderContainer, btns);
+  createActionDragAndDropListeners(row, index, dragHandle);
   return row;
 }
 

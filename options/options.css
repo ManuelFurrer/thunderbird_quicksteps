@@ -404,12 +404,45 @@ body {
   }
 }
 
+.drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0 3px 0 1px;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+
+.drag-handle:hover {
+  opacity: 0.9;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.action-row.dragging {
+  opacity: 0.8;
+}
+
+.action-row.drag-over-top {
+  box-shadow: 0 -2px 0 0 var(--accent);
+}
+
+.action-row.drag-over-bottom {
+  box-shadow: 0 2px 0 0 var(--accent);
+}
+
 .action-num {
   font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
   min-width: 18px;
   text-align: center;
+  user-select: none;
 }
 
 .action-type-select {
