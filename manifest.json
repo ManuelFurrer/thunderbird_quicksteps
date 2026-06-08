@@ -26,7 +26,8 @@
     "open_in_tab": true
   },
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "type": "module"
   },
   "permissions": [
     "accountsRead",
