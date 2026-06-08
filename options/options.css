@@ -672,15 +672,15 @@ body {
   }
 }
 
-#toast.toast-success {
+#toast.notify-success {
   color: var(--toast-success);
 }
 
-#toast.toast-error {
+#toast.notify-error {
   color: var(--toast-error);
 }
 
-#toast.toast-info {
+#toast.notify-info {
   color: var(--toast-info);
 }
 

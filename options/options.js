@@ -1,75 +1,10 @@
 import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
+import { generateId } from "../utils/general-utils.js";
+import { getActionLabel, ACTION_TYPES } from "../utils/quickstep-actions.js";
+import { notify } from "../utils/notifications.js";
+import { getCachedElementById } from "../utils/dom-utils.js";
 
 const DEFAULT_COLOR = "#0078D4";
-
-const ACTION_TYPES = [
-  {
-    value: "mark_read",
-    i18nKey: "optionsActionTypeMarkReadLabel",
-    needsFolder: false,
-  },
-  {
-    value: "mark_unread",
-    i18nKey: "optionsActionTypeMarkUnreadLabel",
-    needsFolder: false,
-  },
-  {
-    value: "flag",
-    i18nKey: "optionsActionTypeFlagLabel",
-    needsFolder: false,
-  },
-  {
-    value: "unflag",
-    i18nKey: "optionsActionTypeUnflagLabel",
-    needsFolder: false,
-  },
-  {
-    value: "archive",
-    i18nKey: "optionsActionTypeArchiveLabel",
-    needsFolder: false,
-  },
-  {
-    value: "delete",
-    i18nKey: "optionsActionTypeDeleteLabel",
-    needsFolder: false,
-  },
-  {
-    value: "delete_permanent",
-    i18nKey: "optionsActionTypeDeletePermanentLabel",
-    needsFolder: false,
-  },
-  {
-    value: "move",
-    i18nKey: "optionsActionTypeMoveLabel",
-    needsFolder: true,
-  },
-  {
-    value: "copy",
-    i18nKey: "optionsActionTypeCopyLabel",
-    needsFolder: true,
-  },
-];
-
-const ACTION_LABELS = {
-  mark_read: () => getTranslation("actionMarkRead"),
-  mark_unread: () => getTranslation("actionMarkUnread"),
-  flag: () => getTranslation("actionFlag"),
-  unflag: () => getTranslation("actionUnflag"),
-  archive: () => getTranslation("actionArchive"),
-  delete: () => getTranslation("actionDeleteTrash"),
-  delete_permanent: () => getTranslation("actionDeletePermanent"),
-  move: (a) => getTranslation("actionMoveLabel", a.folder?.name || "?"),
-  copy: (a) => getTranslation("actionCopyLabel", a.folder?.name || "?"),
-};
-
-function getActionLabel(action) {
-  const fn = ACTION_LABELS[action.type];
-  return fn ? fn(action) : action.type;
-}
-
-function generateId() {
-  return "qs_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
-}
 
 function isStepBlank(step) {
   return (
@@ -82,6 +17,8 @@ function isStepBlank(step) {
 let state = {
   steps: [],
   folders: [],
+  foldersById: {},
+  foldersByAccount: {},
   foldersLoaded: false,
   editing: null,
   editingId: null,
@@ -89,33 +26,32 @@ let state = {
 };
 
 const els = {
-  stepsList: () => document.getElementById("steps-list"),
-  sidebarEmpty: () => document.getElementById("sidebar-empty"),
-  placeholder: () => document.getElementById("editor-placeholder"),
-  editor: () => document.getElementById("editor"),
-  stepName: () => document.getElementById("step-name"),
-  previewActions: () => document.getElementById("editor-preview-actions"),
-  actionsList: () => document.getElementById("actions-list"),
-  addActionBtn: () => document.getElementById("btn-add-action"),
-  saveBtn: () => document.getElementById("btn-save"),
-  deleteStepBtn: () => document.getElementById("btn-delete-step"),
-  newStepBtn: () => document.getElementById("btn-new-step"),
-  confirmOverlay: () => document.getElementById("confirm-overlay"),
-  confirmMessage: () => document.getElementById("confirm-message"),
-  confirmOk: () => document.getElementById("confirm-ok"),
-  confirmCancel: () => document.getElementById("confirm-cancel"),
-  toast: () => document.getElementById("toast"),
-  colorSwatch: () => document.getElementById("color-swatch"),
+  stepsList: () => getCachedElementById("steps-list"),
+  sidebarEmpty: () => getCachedElementById("sidebar-empty"),
+  placeholder: () => getCachedElementById("editor-placeholder"),
+  editor: () => getCachedElementById("editor"),
+  stepName: () => getCachedElementById("step-name"),
+  previewActions: () => getCachedElementById("editor-preview-actions"),
+  actionsList: () => getCachedElementById("actions-list"),
+  addActionBtn: () => getCachedElementById("btn-add-action"),
+  saveBtn: () => getCachedElementById("btn-save"),
+  deleteStepBtn: () => getCachedElementById("btn-delete-step"),
+  newStepBtn: () => getCachedElementById("btn-new-step"),
+  confirmOverlay: () => getCachedElementById("confirm-overlay"),
+  confirmMessage: () => getCachedElementById("confirm-message"),
+  confirmOk: () => getCachedElementById("confirm-ok"),
+  confirmCancel: () => getCachedElementById("confirm-cancel"),
+  toast: () => getCachedElementById("toast"),
+  colorSwatch: () => getCachedElementById("color-swatch"),
 };
 
-let toastTimer = null;
-function showToast(msg, type = "info") {
-  const toast = els.toast();
-  toast.textContent = msg;
-  toast.className = `toast-${type}`;
-  toast.classList.remove("hidden");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.add("hidden"), 3200);
+function showToast(message, type = "info") {
+  notify({
+    elm: els.toast(),
+    message,
+    type,
+    duration: 3200,
+  });
 }
 
 function showConfirm(message) {
@@ -139,15 +75,29 @@ function showConfirm(message) {
 
 async function ensureFoldersLoaded() {
   if (state.foldersLoaded) return;
+
   try {
     state.folders = await messenger.runtime.sendMessage({
       type: "GET_ALL_FOLDERS",
     });
+
+    state.foldersById = {};
+    state.foldersByAccount = {};
+    for (const folder of state.folders) {
+      state.foldersById[folder.id] = folder;
+
+      if (!state.foldersByAccount[folder.accountName])
+        state.foldersByAccount[folder.accountName] = [];
+      state.foldersByAccount[folder.accountName].push(folder);
+    }
+
+    state.foldersLoaded = true;
   } catch (e) {
     console.error("[QuickSteps] Could not load folders:", e);
     state.folders = [];
+    state.foldersById = {};
+    state.foldersByAccount = {};
   }
-  state.foldersLoaded = true;
 }
 
 function buildFolderSelect(action) {
@@ -159,36 +109,21 @@ function buildFolderSelect(action) {
   blank.textContent = getTranslation("optionsSelectFolderPlaceholder");
   select.appendChild(blank);
 
-  const byAccount = {};
-  for (const folder of state.folders) {
-    if (!byAccount[folder.accountName]) {
-      byAccount[folder.accountName] = [];
-    }
-    byAccount[folder.accountName].push(folder);
-  }
-
-  for (const [accountName, folders] of Object.entries(byAccount)) {
+  for (const [accountName, folders] of Object.entries(state.foldersByAccount)) {
     const group = document.createElement("optgroup");
     group.label = accountName;
     for (const folder of folders) {
       const opt = document.createElement("option");
-      opt.value = JSON.stringify({
-        accountId: folder.accountId,
-        accountName: folder.accountName,
-        path: folder.path,
-        name: folder.name,
-        id: folder.id,
-      });
+      opt.value = folder.id;
+
       const depth = (folder.path.match(/\//g) || []).length;
       opt.textContent =
         "\u00a0".repeat(Math.max(0, depth - 1) * 2) + folder.name;
-      if (
-        action.folder &&
-        action.folder.accountId === folder.accountId &&
-        action.folder.path === folder.path
-      ) {
+
+      if (action.folder && action.folder.id === folder.id) {
         opt.selected = true;
       }
+
       group.appendChild(opt);
     }
     select.appendChild(group);
@@ -502,9 +437,8 @@ function buildActionRow(index, action) {
   function attachFolderListener(select, idx) {
     select.addEventListener("change", () => {
       if (select.value) {
-        try {
-          state.editing.actions[idx].folder = JSON.parse(select.value);
-        } catch (_) {}
+        const folder = state.foldersById[select.value];
+        if (folder) state.editing.actions[idx].folder = folder;
       } else {
         delete state.editing.actions[idx].folder;
       }
@@ -720,7 +654,7 @@ async function init() {
     syncSidebarItem();
   });
 
-  const colorInput = document.getElementById("step-color");
+  const colorInput = getCachedElementById("step-color");
   const colorSwatch = els.colorSwatch();
 
   colorSwatch.style.backgroundColor = DEFAULT_COLOR;

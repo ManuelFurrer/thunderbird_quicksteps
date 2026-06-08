@@ -1,21 +1,7 @@
 import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
-
-const ACTION_LABELS = {
-  move: (a) => getTranslation("actionMoveLabel", a.folder?.name || "?"),
-  copy: (a) => getTranslation("actionCopyLabel", a.folder?.name || "?"),
-  delete: () => getTranslation("actionDeleteTrash"),
-  delete_permanent: () => getTranslation("actionDeletePermanent"),
-  archive: () => getTranslation("actionArchive"),
-  mark_read: () => getTranslation("actionMarkRead"),
-  mark_unread: () => getTranslation("actionMarkUnread"),
-  flag: () => getTranslation("actionFlag"),
-  unflag: () => getTranslation("actionUnflag"),
-};
-
-function getActionLabel(action) {
-  const fn = ACTION_LABELS[action.type];
-  return fn ? fn(action) : action.type;
-}
+import { getActionLabel } from "../utils/quickstep-actions.js";
+import { notify } from "../utils/notifications.js";
+import { getCachedElementById } from "../utils/dom-utils.js";
 
 async function getCurrentMailTabId() {
   try {
@@ -30,12 +16,11 @@ async function getCurrentMailTabId() {
 }
 
 function showStatus(message, type = "info") {
-  const bar = document.getElementById("status-bar");
-  bar.textContent = message;
-  bar.className = `status-${type}`;
-  bar.classList.remove("hidden");
-  clearTimeout(bar._timeout);
-  bar._timeout = setTimeout(() => bar.classList.add("hidden"), 8000);
+  notify({
+    elm: getCachedElementById("status-bar"),
+    message,
+    type,
+  });
 }
 
 function openOptions() {
@@ -43,10 +28,80 @@ function openOptions() {
   window.close();
 }
 
+async function executeStep(step, btn) {
+  btn.disabled = true;
+  btn.classList.add("executing");
+
+  try {
+    const tabId = await getCurrentMailTabId();
+    if (tabId === null) {
+      showStatus(getTranslation("statusNoMailTab"), "error");
+      return;
+    }
+
+    const result = await messenger.runtime.sendMessage({
+      type: "EXECUTE_QUICK_STEP",
+      quickStepId: step.id,
+      tabId,
+    });
+
+    if (result.success) {
+      const count = result.messageCount;
+      const key = count === 1 ? "statusAppliedSingle" : "statusAppliedMultiple";
+      showStatus(getTranslation(key, [step.name, count.toString()]), "success");
+    } else if (result.anySucceeded) {
+      const count = result.messageCount;
+      const errorDetail = result.errors?.length ? `: ${result.errors[0]}` : ".";
+
+      showStatus(
+        getTranslation("statusAppliedWithErrors", [
+          step.name,
+          count.toString(),
+          errorDetail,
+        ]),
+        "warning",
+      );
+    } else if (result.errors?.length) {
+      showStatus(getTranslation("statusError", [result.errors[0]]), "error");
+    } else {
+      showStatus(getTranslation("statusActionFailed"), "error");
+    }
+  } catch (e) {
+    showStatus(getTranslation("statusError", [e.message]), "error");
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("executing");
+  }
+}
+
+function createStepButton(step) {
+  const btn = document.createElement("button");
+  btn.className = "step-btn";
+  btn.style.setProperty("--step-color", step.color || "#0078D4");
+
+  const info = document.createElement("div");
+  info.className = "step-info";
+
+  const name = document.createElement("span");
+  name.className = "step-name";
+  name.textContent = step.name;
+
+  const desc = document.createElement("span");
+  desc.className = "step-desc";
+  desc.textContent = step.actions.map(getActionLabel).join(" → ");
+
+  info.append(name, desc);
+  btn.append(info);
+  btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(" → ")}`;
+
+  btn.addEventListener("click", () => executeStep(step, btn));
+  return btn;
+}
+
 async function loadAndRender() {
-  const loading = document.getElementById("loading");
-  const container = document.getElementById("steps-container");
-  const emptyState = document.getElementById("empty-state");
+  const loading = getCachedElementById("loading");
+  const container = getCachedElementById("steps-container");
+  const emptyState = getCachedElementById("empty-state");
 
   loading.classList.remove("hidden");
   container.classList.add("hidden");
@@ -71,94 +126,15 @@ async function loadAndRender() {
   container.innerHTML = "";
 
   for (const step of steps) {
-    const btn = document.createElement("button");
-    btn.className = "step-btn";
-    btn.style.setProperty("--step-color", step.color || "#0078D4");
-
-    const info = document.createElement("div");
-    info.className = "step-info";
-
-    const name = document.createElement("span");
-    name.className = "step-name";
-    name.textContent = step.name;
-
-    const desc = document.createElement("span");
-    desc.className = "step-desc";
-    desc.textContent = step.actions.map(getActionLabel).join(" → ");
-
-    info.append(name, desc);
-    btn.append(info);
-
-    btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(" → ")}`;
-
-    btn.addEventListener("click", async () => {
-      btn.disabled = true;
-      btn.classList.add("executing");
-
-      try {
-        const tabId = await getCurrentMailTabId();
-        if (tabId === null) {
-          showStatus(getTranslation("statusNoMailTab"), "error");
-          return;
-        }
-
-        const result = await messenger.runtime.sendMessage({
-          type: "EXECUTE_QUICK_STEP",
-          quickStepId: step.id,
-          tabId,
-        });
-
-        if (result.success) {
-          const count = result.messageCount;
-          const key =
-            count === 1 ? "statusAppliedSingle" : "statusAppliedMultiple";
-          showStatus(
-            getTranslation(key, [step.name, count.toString()]),
-            "success",
-          );
-        } else if (result.anySucceeded) {
-          const count = result.messageCount;
-          const errorDetail = result.errors?.length
-            ? `: ${result.errors[0]}`
-            : ".";
-
-          showStatus(
-            getTranslation("statusAppliedWithErrors", [
-              step.name,
-              count.toString(),
-              errorDetail,
-            ]),
-            "warning",
-          );
-        } else if (result.errors?.length) {
-          showStatus(
-            getTranslation("statusError", [result.errors[0]]),
-            "error",
-          );
-        } else {
-          showStatus(getTranslation("statusActionFailed"), "error");
-        }
-      } catch (e) {
-        showStatus(getTranslation("statusError", [e.message]), "error");
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove("executing");
-      }
-    });
-
-    container.appendChild(btn);
+    container.appendChild(createStepButton(step));
   }
 
   container.classList.remove("hidden");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  document
-    .getElementById("btn-settings")
-    .addEventListener("click", openOptions);
-  document
-    .getElementById("createFirstBtn")
-    .addEventListener("click", openOptions);
+  getCachedElementById("btn-settings").addEventListener("click", openOptions);
+  getCachedElementById("createFirstBtn").addEventListener("click", openOptions);
 
   loadAndRender();
   localizeDocument();

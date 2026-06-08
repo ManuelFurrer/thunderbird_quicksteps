@@ -282,22 +282,22 @@ header {
   }
 }
 
-#status-bar.status-success {
+#status-bar.notify-success {
   background: var(--status-success-bg);
   color: var(--status-success-color);
 }
 
-#status-bar.status-error {
+#status-bar.notify-error {
   background: var(--status-error-bg);
   color: var(--status-error-color);
 }
 
-#status-bar.status-info {
+#status-bar.notify-info {
   background: var(--status-info-bg);
   color: var(--status-info-color);
 }
 
-#status-bar.status-warning {
+#status-bar.notify-warning {
   background: var(--status-warning-bg);
   color: var(--status-warning-color);
 }
