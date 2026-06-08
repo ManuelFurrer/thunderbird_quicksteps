@@ -1,6 +1,4 @@
-function generateId() {
-  return "qs_" + crypto.randomUUID();
-}
+import { generateId } from "./utils/general-utils.js";
 
 function getDefaultQuickSteps() {
   return [
@@ -44,6 +42,7 @@ function flattenFolders(folders, accountId, accountName, result = []) {
   if (!folders) return result;
 
   for (const folder of folders) {
+    // Exclude special folders like [Gmail] which are not actual mail folders
     if (folder.name !== "[Gmail]") {
       result.push({
         accountId,
