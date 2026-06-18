@@ -212,22 +212,15 @@ async function executeQuickStep(quickStepId, tabId) {
   };
 }
 
-messenger.runtime.onMessage.addListener(async (message) => {
-  try {
-    switch (message.type) {
-      case "GET_QUICK_STEPS":
-        return await getQuickSteps();
-      case "SAVE_QUICK_STEPS":
-        return await saveQuickSteps(message.steps);
-      case "EXECUTE_QUICK_STEP":
-        return await executeQuickStep(message.quickStepId, message.tabId);
-      case "GET_ALL_FOLDERS":
-        return await getAllFolders();
-      default:
-        return { error: "Unknown message type: " + message.type };
-    }
-  } catch (e) {
-    console.error("[QuickSteps] Background error:", e);
-    return { error: e.message };
+messenger.runtime.onMessage.addListener((message) => {
+  switch (message.type) {
+    case "GET_QUICK_STEPS":
+      return getQuickSteps();
+    case "SAVE_QUICK_STEPS":
+      return saveQuickSteps(message.steps);
+    case "EXECUTE_QUICK_STEP":
+      return executeQuickStep(message.quickStepId, message.tabId);
+    case "GET_ALL_FOLDERS":
+      return getAllFolders();
   }
 });
