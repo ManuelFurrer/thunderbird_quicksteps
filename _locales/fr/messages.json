@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "Type d'action inconnu" },
   "errorQuickStepNotFound": { "message": "Action rapide introuvable" },
   "errorNoActionsAssigned": { "message": "Aucune action rapide attribuée" },
-  "errorNoMessageSelected": { "message": "Aucun message sélectionné ou affiché. Veuillez d'abord ouvrir ou sélectionner un message." }
+  "errorNoMessageSelected": { "message": "Aucun message sélectionné ou affiché. Ouvrez ou sélectionnez d'abord un message." },
+
+  "optionsSettingsNavLabel": { "message": "Paramètres" },
+  "optionsSettingsTitle": { "message": "Paramètres" },
+  "optionsSectionPopupBehavior": { "message": "Comportement de la fenêtre contextuelle" },
+  "optionsAutoClosePopupLabel": { "message": "Fermer automatiquement la fenêtre contextuelle après l’exécution d’un Quick Step" },
+  "optionsAutoClosePopupHint": { "message": "Si désactivé, la fenêtre contextuelle reste ouverte après l’exécution d’un Quick Step." },
+  "optionsSectionImportExport": { "message": "Importation et exportation" },
+  "optionsExportSteps": { "message": "Exporter les Quick Steps" },
+  "optionsImportSteps": { "message": "Importer les Quick Steps" },
+  "optionsImportExportHint": { "message": "L’exportation enregistre tous vos Quick Steps dans un fichier JSON que vous pouvez utiliser comme sauvegarde ou transférer vers un autre ordinateur. L’importation charge les Quick Steps depuis un fichier JSON que vous sélectionnez." },
+  "optionsImportChoiceMessage": { "message": " $1 Quick Step(s) trouvé(s) dans ce fichier. Comment souhaitez-vous les importer ?" },
+  "optionsImportMerge": { "message": "Fusionner avec l’existant" },
+  "optionsImportReplace": { "message": "Tout remplacer" },
+  "optionsToastImportInvalid": { "message": "Ce fichier ne semble pas être une exportation valide de Quick Steps." },
+  "optionsToastImportEmpty": { "message": "Aucun Quick Step valide n’a été trouvé dans ce fichier." },
+  "optionsToastImported": { "message": " $1 Quick Step(s) importé(s)." },
+  "optionsToastExported": { "message": "Quick Steps exportés." },
+  "optionsToastSettingsSaved": { "message": "Paramètres enregistrés." }
 }

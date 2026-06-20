@@ -204,6 +204,43 @@ body {
   line-height: 1.8;
 }
 
+#sidebar-footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  padding: 6px;
+}
+
+.sidebar-nav-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  border: none;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    border-color 0.12s;
+}
+
+.sidebar-nav-btn:hover {
+  background: var(--step-item-hover);
+  color: var(--text);
+}
+
+.sidebar-nav-btn.active {
+  background: var(--step-item-active);
+  border-left-color: var(--accent);
+  color: var(--accent);
+}
+
 #editor-panel {
   flex: 1;
   display: flex;
@@ -253,6 +290,13 @@ body {
   overflow: hidden;
 }
 
+#settings-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .editor-header {
   display: flex;
   align-items: center;
@@ -266,6 +310,12 @@ body {
 .editor-title-block {
   flex: 1;
   min-width: 0;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 #step-name {
@@ -546,7 +596,31 @@ body {
   background: var(--step-item-hover);
 }
 
-.editor-footer {
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.import-export-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#editor-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -610,7 +684,7 @@ body {
   border-color: var(--danger);
 }
 
-#confirm-overlay {
+.modal-overlay {
   position: fixed;
   inset: 0;
   background: var(--overlay-bg);
@@ -630,17 +704,17 @@ body {
   }
 }
 
-#confirm-box {
+.modal-box {
   background: var(--surface);
   border-radius: 10px;
   padding: 24px;
-  max-width: 340px;
+  max-width: 420px;
   width: 90%;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border);
 }
 
-#confirm-message {
+.modal-message {
   margin-bottom: 20px;
   font-size: 14px;
   line-height: 1.6;
@@ -650,6 +724,7 @@ body {
 .confirm-btns {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

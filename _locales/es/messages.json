@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "Tipo de acción desconocido" },
   "errorQuickStepNotFound": { "message": "Acción rápida no encontrada" },
   "errorNoActionsAssigned": { "message": "No hay acciones rápidas asignadas" },
-  "errorNoMessageSelected": { "message": "No hay ningún mensaje seleccionado o mostrado. Abra o seleccione un mensaje primero." }
+  "errorNoMessageSelected": { "message": "No hay ningún mensaje seleccionado o mostrado. Abra o seleccione un mensaje primero." },
+
+  "optionsSettingsNavLabel": { "message": "Configuración" },
+  "optionsSettingsTitle": { "message": "Configuración" },
+  "optionsSectionPopupBehavior": { "message": "Comportamiento de la ventana emergente" },
+  "optionsAutoClosePopupLabel": { "message": "Cerrar automáticamente la ventana emergente después de ejecutar un Quick Step" },
+  "optionsAutoClosePopupHint": { "message": "Si está desactivado, la ventana emergente permanecerá abierta después de ejecutar un Quick Step." },
+  "optionsSectionImportExport": { "message": "Importar y exportar" },
+  "optionsExportSteps": { "message": "Exportar Quick Steps" },
+  "optionsImportSteps": { "message": "Importar Quick Steps" },
+  "optionsImportExportHint": { "message": "La exportación guarda todos tus Quick Steps en un archivo JSON que puedes usar como copia de seguridad o transferir a otro ordenador. La importación carga Quick Steps desde un archivo JSON que selecciones." },
+  "optionsImportChoiceMessage": { "message": "Se encontraron $1 Quick Step(s) en este archivo. ¿Cómo te gustaría importarlos?" },
+  "optionsImportMerge": { "message": "Combinar con los existentes" },
+  "optionsImportReplace": { "message": "Reemplazar todo" },
+  "optionsToastImportInvalid": { "message": "Ese archivo no parece ser una exportación válida de Quick Steps." },
+  "optionsToastImportEmpty": { "message": "No se encontraron Quick Steps válidos en ese archivo." },
+  "optionsToastImported": { "message": "Se importaron $1 Quick Step(s)." },
+  "optionsToastExported": { "message": "Quick Steps exportados." },
+  "optionsToastSettingsSaved": { "message": "Configuración guardada." }
 }

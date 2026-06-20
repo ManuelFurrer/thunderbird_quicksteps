@@ -2,6 +2,9 @@ import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
 import { getActionLabel } from "../utils/quickstep-actions.js";
 import { notify } from "../utils/notifications.js";
 import { getCachedElementById } from "../utils/dom-utils.js";
+import { DEFAULT_SETTINGS } from "../utils/quickstep-settings.js";
+
+let settings = { ...DEFAULT_SETTINGS };
 
 async function getCurrentMailTabId() {
   try {
@@ -49,6 +52,10 @@ async function executeStep(step, btn) {
       const count = result.messageCount;
       const key = count === 1 ? "statusAppliedSingle" : "statusAppliedMultiple";
       showStatus(getTranslation(key, [step.name, count.toString()]), "success");
+
+      if (settings.autoClosePopup) {
+        window.close();
+      }
     } else if (result.anySucceeded) {
       const count = result.messageCount;
       const errorDetail = result.errors?.length ? `: ${result.errors[0]}` : ".";
@@ -132,10 +139,19 @@ async function loadAndRender() {
   container.classList.remove("hidden");
 }
 
+async function loadSettings() {
+  try {
+    settings = await messenger.runtime.sendMessage({ type: "GET_SETTINGS" });
+  } catch (e) {
+    console.error("[QuickSteps] Could not load settings:", e);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   getCachedElementById("btn-settings").addEventListener("click", openOptions);
   getCachedElementById("createFirstBtn").addEventListener("click", openOptions);
 
+  loadSettings();
   loadAndRender();
   localizeDocument();
 });

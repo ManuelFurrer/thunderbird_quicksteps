@@ -3,6 +3,7 @@ import { generateId } from "../utils/general-utils.js";
 import { getActionLabel, ACTION_TYPES } from "../utils/quickstep-actions.js";
 import { notify } from "../utils/notifications.js";
 import { getCachedElementById } from "../utils/dom-utils.js";
+import { DEFAULT_SETTINGS } from "../utils/quickstep-settings.js";
 
 const DEFAULT_COLOR = "#0078D4";
 
@@ -23,6 +24,8 @@ let state = {
   editing: null,
   editingId: null,
   isNew: false,
+  viewingSettings: false,
+  settings: { ...DEFAULT_SETTINGS },
 };
 
 const els = {
@@ -30,6 +33,9 @@ const els = {
   sidebarEmpty: () => getCachedElementById("sidebar-empty"),
   placeholder: () => getCachedElementById("editor-placeholder"),
   editor: () => getCachedElementById("editor"),
+  settingsView: () => getCachedElementById("settings-view"),
+  editorFooter: () => getCachedElementById("editor-footer"),
+  navSettingsBtn: () => getCachedElementById("btn-nav-settings"),
   stepName: () => getCachedElementById("step-name"),
   previewActions: () => getCachedElementById("editor-preview-actions"),
   actionsList: () => getCachedElementById("actions-list"),
@@ -43,6 +49,15 @@ const els = {
   confirmCancel: () => getCachedElementById("confirm-cancel"),
   toast: () => getCachedElementById("toast"),
   colorSwatch: () => getCachedElementById("color-swatch"),
+  autoCloseCheckbox: () => getCachedElementById("setting-auto-close-popup"),
+  exportStepsBtn: () => getCachedElementById("btn-export-steps"),
+  importStepsBtn: () => getCachedElementById("btn-import-steps"),
+  importFileInput: () => getCachedElementById("import-file-input"),
+  importOverlay: () => getCachedElementById("import-overlay"),
+  importMessage: () => getCachedElementById("import-message"),
+  importCancel: () => getCachedElementById("import-cancel"),
+  importMerge: () => getCachedElementById("import-merge"),
+  importReplace: () => getCachedElementById("import-replace"),
 };
 
 function showToast(message, type = "info") {
@@ -70,6 +85,30 @@ function showConfirm(message) {
 
     els.confirmOk().addEventListener("click", onOk);
     els.confirmCancel().addEventListener("click", onCancel);
+  });
+}
+
+function showImportChoice(message) {
+  if (!state.steps.length) return "merge";
+
+  return new Promise((resolve) => {
+    els.importMessage().textContent = message;
+    els.importOverlay().classList.remove("hidden");
+
+    function done(result) {
+      els.importOverlay().classList.add("hidden");
+      els.importCancel().removeEventListener("click", onCancel);
+      els.importMerge().removeEventListener("click", onMerge);
+      els.importReplace().removeEventListener("click", onReplace);
+      resolve(result);
+    }
+    const onCancel = () => done("cancel");
+    const onMerge = () => done("merge");
+    const onReplace = () => done("replace");
+
+    els.importCancel().addEventListener("click", onCancel);
+    els.importMerge().addEventListener("click", onMerge);
+    els.importReplace().addEventListener("click", onReplace);
   });
 }
 
@@ -136,6 +175,13 @@ async function persistSteps() {
   await messenger.runtime.sendMessage({
     type: "SAVE_QUICK_STEPS",
     steps: state.steps,
+  });
+}
+
+async function persistSettings() {
+  await messenger.runtime.sendMessage({
+    type: "SAVE_SETTINGS",
+    settings: state.settings,
   });
 }
 
@@ -296,61 +342,72 @@ function renderSidebar() {
   if (!state.steps.length) {
     els.sidebarEmpty().classList.remove("hidden");
     return;
+  } else {
+    els.sidebarEmpty().classList.add("hidden");
+
+    for (const step of state.steps) {
+      const item = document.createElement("div");
+      item.className =
+        "step-item" +
+        (!state.viewingSettings && state.editingId === step.id
+          ? " active"
+          : "");
+      item.dataset.id = step.id;
+
+      const info = document.createElement("div");
+      info.className = "step-item-info";
+
+      const name = document.createElement("div");
+      name.className = "step-item-name";
+      name.style.color = step.color || DEFAULT_COLOR;
+      name.textContent = step.name || getTranslation("optionsPlaceholderTitle");
+
+      const meta = document.createElement("div");
+      meta.className = "step-item-meta";
+      meta.textContent = step.actions.length
+        ? step.actions.map(getActionLabel).join(" → ")
+        : getTranslation("optionsNoActionsAssigned");
+
+      info.append(name, meta);
+      item.append(info);
+      item.addEventListener("click", () => navigateTo(step.id));
+
+      createQuickStepsDragAndDropListeners(item, step.id);
+      list.appendChild(item);
+    }
   }
-  els.sidebarEmpty().classList.add("hidden");
 
-  for (const step of state.steps) {
-    const item = document.createElement("div");
-    item.className =
-      "step-item" + (state.editingId === step.id ? " active" : "");
-    item.dataset.id = step.id;
-
-    const info = document.createElement("div");
-    info.className = "step-item-info";
-
-    const name = document.createElement("div");
-    name.className = "step-item-name";
-    name.style.color = step.color || DEFAULT_COLOR;
-    name.textContent = step.name || getTranslation("optionsPlaceholderTitle");
-
-    const meta = document.createElement("div");
-    meta.className = "step-item-meta";
-    meta.textContent = step.actions.length
-      ? step.actions.map(getActionLabel).join(" → ")
-      : getTranslation("optionsNoActionsAssigned");
-
-    info.append(name, meta);
-    item.append(info);
-    item.addEventListener("click", () => navigateTo(step.id));
-
-    createQuickStepsDragAndDropListeners(item, step.id);
-    list.appendChild(item);
-  }
+  els.navSettingsBtn().classList.toggle("active", state.viewingSettings);
 }
 
 function renderEditor() {
-  if (!state.editing) {
-    els.editor().classList.add("hidden");
-    els.placeholder().classList.remove("hidden");
+  const showEditor = !state.viewingSettings && !!state.editing;
+  const showPlaceholder = !state.viewingSettings && !state.editing;
+  const showSettings = state.viewingSettings;
 
-    els.saveBtn().disabled = true;
-    els.deleteStepBtn().disabled = true;
+  els.placeholder().classList.toggle("hidden", !showPlaceholder);
+  els.editor().classList.toggle("hidden", !showEditor);
+  els.settingsView().classList.toggle("hidden", !showSettings);
+  els.editorFooter().classList.toggle("hidden", showSettings);
 
-    return;
+  els.saveBtn().disabled = !showEditor;
+  els.deleteStepBtn().disabled = !showEditor;
+
+  if (showEditor) {
+    els.stepName().value = state.editing.name || "";
+    updatePreviewActions();
+    renderActionsList();
+    els.colorSwatch().style.backgroundColor =
+      state.editing.color || DEFAULT_COLOR;
   }
 
-  els.saveBtn().disabled = false;
-  els.deleteStepBtn().disabled = false;
+  if (showSettings) {
+    renderSettingsView();
+  }
+}
 
-  els.placeholder().classList.add("hidden");
-  els.editor().classList.remove("hidden");
-
-  els.stepName().value = state.editing.name || "";
-  updatePreviewActions();
-  renderActionsList();
-
-  els.colorSwatch().style.backgroundColor =
-    state.editing.color || DEFAULT_COLOR;
+function renderSettingsView() {
+  els.autoCloseCheckbox().checked = !!state.settings.autoClosePopup;
 }
 
 function updatePreviewActions() {
@@ -532,8 +589,9 @@ function syncSidebarItem() {
 }
 
 async function navigateTo(stepId) {
-  if (state.editingId === stepId) return;
+  if (!state.viewingSettings && state.editingId === stepId) return;
   await autoSave();
+  state.viewingSettings = false;
   loadStep(stepId);
   renderSidebar();
 }
@@ -559,10 +617,22 @@ function startNewStep() {
     state.editingId = newStep.id;
     state.editing = JSON.parse(JSON.stringify(newStep));
     state.isNew = true;
+    state.viewingSettings = false;
     renderSidebar();
     renderEditor();
     setTimeout(() => els.stepName().focus(), 50);
   });
+}
+
+async function goToSettings() {
+  if (state.viewingSettings) return;
+  await autoSave();
+  state.editing = null;
+  state.editingId = null;
+  state.isNew = false;
+  state.viewingSettings = true;
+  renderSidebar();
+  renderEditor();
 }
 
 async function saveCurrentStep() {
@@ -621,6 +691,121 @@ async function deleteCurrentStep() {
   }
 }
 
+function exportSteps() {
+  const dataStr = JSON.stringify(state.steps, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const date = new Date().toISOString().slice(0, 10);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `quicksteps-export-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+
+  showToast(getTranslation("optionsToastExported"), "success");
+}
+
+// Accepts either a raw array of steps (the export format) or an object of
+// the shape { steps: [...] }, and returns a cleaned array of valid step
+// objects (without ids/colors assumptions), or null if the shape is invalid.
+function normalizeImportedSteps(parsed) {
+  const list = Array.isArray(parsed)
+    ? parsed
+    : Array.isArray(parsed?.steps)
+      ? parsed.steps
+      : null;
+  if (!list) return null;
+
+  const validActionTypes = new Set(ACTION_TYPES.map((a) => a.value));
+  const cleaned = [];
+
+  for (const raw of list) {
+    if (!raw || typeof raw !== "object" || !Array.isArray(raw.actions))
+      continue;
+
+    const actions = raw.actions
+      .filter((a) => a && validActionTypes.has(a.type))
+      .map((a) => {
+        const action = { type: a.type };
+        if (
+          (a.type === "move" || a.type === "copy") &&
+          a.folder &&
+          typeof a.folder === "object" &&
+          a.folder.id
+        ) {
+          action.folder = {
+            id: a.folder.id,
+            name: a.folder.name || "",
+            path: a.folder.path || "",
+            accountId: a.folder.accountId,
+            accountName: a.folder.accountName || "",
+          };
+        }
+        return action;
+      });
+
+    if (!actions.length) continue;
+
+    cleaned.push({
+      name: typeof raw.name === "string" ? raw.name : "",
+      color: typeof raw.color === "string" ? raw.color : DEFAULT_COLOR,
+      actions,
+    });
+  }
+
+  return cleaned;
+}
+
+async function handleImportFile(e) {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+
+  let parsed;
+  try {
+    const text = await file.text();
+    parsed = JSON.parse(text);
+  } catch {
+    showToast(getTranslation("optionsToastImportInvalid"), "error");
+    return;
+  }
+
+  const importedSteps = normalizeImportedSteps(parsed);
+  if (!importedSteps) {
+    showToast(getTranslation("optionsToastImportInvalid"), "error");
+    return;
+  }
+  if (!importedSteps.length) {
+    showToast(getTranslation("optionsToastImportEmpty"), "info");
+    return;
+  }
+
+  const choice = await showImportChoice(
+    getTranslation("optionsImportChoiceMessage", [importedSteps.length]),
+  );
+
+  if (choice === "cancel") return;
+
+  const freshSteps = importedSteps.map((s) => ({ ...s, id: generateId() }));
+
+  state.steps =
+    choice === "replace" ? freshSteps : [...state.steps, ...freshSteps];
+
+  try {
+    await persistSteps();
+    renderSidebar();
+    showToast(
+      getTranslation("optionsToastImported", [importedSteps.length]),
+      "success",
+    );
+  } catch (err) {
+    showToast(getTranslation("optionsToastSaveError", [err.message]), "error");
+  }
+}
+
 async function init() {
   try {
     state.steps = await messenger.runtime.sendMessage({
@@ -629,6 +814,15 @@ async function init() {
   } catch (e) {
     showToast(getTranslation("optionsToastLoadError", [e.message]), "error");
     state.steps = [];
+  }
+
+  try {
+    state.settings = await messenger.runtime.sendMessage({
+      type: "GET_SETTINGS",
+    });
+  } catch (e) {
+    console.error("[QuickSteps] Could not load settings:", e);
+    state.settings = { ...DEFAULT_SETTINGS };
   }
 
   ensureFoldersLoaded();
@@ -646,6 +840,26 @@ async function init() {
   els.saveBtn().addEventListener("click", saveCurrentStep);
   els.deleteStepBtn().addEventListener("click", deleteCurrentStep);
   els.addActionBtn().addEventListener("click", addAction);
+  els.navSettingsBtn().addEventListener("click", goToSettings);
+
+  els.exportStepsBtn().addEventListener("click", exportSteps);
+  els
+    .importStepsBtn()
+    .addEventListener("click", () => els.importFileInput().click());
+  els.importFileInput().addEventListener("change", handleImportFile);
+
+  els.autoCloseCheckbox().addEventListener("change", async (e) => {
+    state.settings.autoClosePopup = e.target.checked;
+    try {
+      await persistSettings();
+      showToast(getTranslation("optionsToastSettingsSaved"), "success");
+    } catch (err) {
+      showToast(
+        getTranslation("optionsToastSaveError", [err.message]),
+        "error",
+      );
+    }
+  });
 
   els.stepName().addEventListener("input", (e) => {
     if (!state.editing) return;

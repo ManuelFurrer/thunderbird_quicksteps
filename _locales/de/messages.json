@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "Unbekannter Aktionstyp" },
   "errorQuickStepNotFound": { "message": "Quick Step nicht gefunden" },
   "errorNoActionsAssigned": { "message": "Keine Quick Steps zugewiesen" },
-  "errorNoMessageSelected": { "message": "Keine Nachricht ausgewählt oder angezeigt. Öffne oder wähle zuerst eine Nachricht aus." }
+  "errorNoMessageSelected": { "message": "Keine Nachricht ausgewählt oder angezeigt. Öffne oder wähle zuerst eine Nachricht aus." },
+
+  "optionsSettingsNavLabel": { "message": "Einstellungen" },
+  "optionsSettingsTitle": { "message": "Einstellungen" },
+  "optionsSectionPopupBehavior": { "message": "Popup-Verhalten" },
+  "optionsAutoClosePopupLabel": { "message": "Das Popup nach Ausführen eines Quick Steps automatisch schließen" },
+  "optionsAutoClosePopupHint": { "message": "Wenn deaktiviert, bleibt das Popup nach Ausführen eines Quick Steps geöffnet." },
+  "optionsSectionImportExport": { "message": "Import & Export" },
+  "optionsExportSteps": { "message": "Quick Steps exportieren" },
+  "optionsImportSteps": { "message": "Quick Steps importieren" },
+  "optionsImportExportHint": { "message": "Der Export speichert alle Ihre Quick Steps in einer JSON-Datei, die Sie als Backup verwenden oder auf einen anderen Computer übertragen können. Der Import lädt Quick Steps aus einer von Ihnen ausgewählten JSON-Datei." },
+  "optionsImportChoiceMessage": { "message": "In dieser Datei wurden $1 Quick Step(s) gefunden. Wie möchten Sie sie importieren?" },
+  "optionsImportMerge": { "message": "Mit bestehenden zusammenführen" },
+  "optionsImportReplace": { "message": "Alle ersetzen" },
+  "optionsToastImportInvalid": { "message": "Diese Datei scheint kein gültiger Quick-Steps-Export zu sein." },
+  "optionsToastImportEmpty": { "message": "In dieser Datei wurden keine gültigen Quick Steps gefunden." },
+  "optionsToastImported": { "message": "Importiert: $1 Quick Step(s)." },
+  "optionsToastExported": { "message": "Quick Steps exportiert." },
+  "optionsToastSettingsSaved": { "message": "Einstellungen gespeichert." }
 }

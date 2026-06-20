@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "未知操作类型" },
   "errorQuickStepNotFound": { "message": "找不到 Quick Step" },
   "errorNoActionsAssigned": { "message": "未分配 Quick Step" },
-  "errorNoMessageSelected": { "message": "未选中或未显示邮件。请先打开或选择一封邮件。" }
+  "errorNoMessageSelected": { "message": "未选中或未显示邮件。请先打开或选择一封邮件。" },
+
+  "optionsSettingsNavLabel": { "message": "设置" },
+  "optionsSettingsTitle": { "message": "设置" },
+  "optionsSectionPopupBehavior": { "message": "弹出窗口行为" },
+  "optionsAutoClosePopupLabel": { "message": "在执行 Quick Step 后自动关闭弹出窗口" },
+  "optionsAutoClosePopupHint": { "message": "关闭后，执行 Quick Step 后弹出窗口将保持打开状态。" },
+  "optionsSectionImportExport": { "message": "导入与导出" },
+  "optionsExportSteps": { "message": "导出 Quick Steps" },
+  "optionsImportSteps": { "message": "导入 Quick Steps" },
+  "optionsImportExportHint": { "message": "导出会将所有 Quick Steps 保存为 JSON 文件，可用于备份或转移到另一台电脑。导入会从你选择的 JSON 文件中加载 Quick Steps。" },
+  "optionsImportChoiceMessage": { "message": "在此文件中找到 $1 个 Quick Step。你希望如何导入它们？" },
+  "optionsImportMerge": { "message": "与现有内容合并" },
+  "optionsImportReplace": { "message": "全部替换" },
+  "optionsToastImportInvalid": { "message": "该文件看起来不是有效的 Quick Steps 导出文件。" },
+  "optionsToastImportEmpty": { "message": "该文件中未找到有效的 Quick Steps。" },
+  "optionsToastImported": { "message": "已导入 $1 个 Quick Step。" },
+  "optionsToastExported": { "message": "Quick Steps 已导出。" },
+  "optionsToastSettingsSaved": { "message": "设置已保存。" }
 }

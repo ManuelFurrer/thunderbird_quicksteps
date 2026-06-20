@@ -31,6 +31,29 @@
           <p data-i18n-content="optionsNoStepsYet"></p>
           <p id="sidebar-empty-hint"></p>
         </div>
+
+        <div id="sidebar-footer">
+          <button
+            id="btn-nav-settings"
+            class="sidebar-nav-btn"
+            data-i18n-title="optionsSettingsNavLabel"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+              />
+            </svg>
+            <span data-i18n-content="optionsSettingsNavLabel"></span>
+          </button>
+        </div>
       </aside>
 
       <main id="editor-panel">
@@ -96,7 +119,58 @@
           </div>
         </div>
 
-        <div class="editor-footer">
+        <div id="settings-view" class="hidden">
+          <div class="editor-header">
+            <div class="editor-title-block">
+              <h2
+                class="panel-title"
+                data-i18n-content="optionsSettingsTitle"
+              ></h2>
+            </div>
+          </div>
+
+          <div class="editor-body">
+            <section class="section">
+              <h3
+                class="section-title"
+                data-i18n-content="optionsSectionPopupBehavior"
+              ></h3>
+              <label class="checkbox-row" for="setting-auto-close-popup">
+                <input type="checkbox" id="setting-auto-close-popup" />
+                <span data-i18n-content="optionsAutoClosePopupLabel"></span>
+              </label>
+              <p class="hint" data-i18n-content="optionsAutoClosePopupHint"></p>
+            </section>
+
+            <section class="section">
+              <h3
+                class="section-title"
+                data-i18n-content="optionsSectionImportExport"
+              ></h3>
+              <div class="import-export-row">
+                <button
+                  id="btn-export-steps"
+                  class="btn-secondary"
+                  data-i18n-content="optionsExportSteps"
+                ></button>
+                <button
+                  id="btn-import-steps"
+                  class="btn-secondary"
+                  data-i18n-content="optionsImportSteps"
+                ></button>
+                <input
+                  type="file"
+                  id="import-file-input"
+                  accept="application/json"
+                  class="hidden"
+                />
+              </div>
+              <p class="hint" data-i18n-content="optionsImportExportHint"></p>
+            </section>
+          </div>
+        </div>
+
+        <div id="editor-footer">
           <button
             id="btn-delete-step"
             class="btn-danger"
@@ -114,9 +188,9 @@
       </main>
     </div>
 
-    <div id="confirm-overlay" class="hidden">
-      <div id="confirm-box">
-        <p id="confirm-message"></p>
+    <div id="confirm-overlay" class="modal-overlay hidden">
+      <div id="confirm-box" class="modal-box">
+        <p id="confirm-message" class="modal-message"></p>
         <div class="confirm-btns">
           <button
             id="confirm-cancel"
@@ -127,6 +201,29 @@
             id="confirm-ok"
             class="btn-danger"
             data-i18n-content="optionsConfirmDelete"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="import-overlay" class="modal-overlay hidden">
+      <div id="import-box" class="modal-box">
+        <p id="import-message" class="modal-message"></p>
+        <div class="confirm-btns">
+          <button
+            id="import-cancel"
+            class="btn-secondary"
+            data-i18n-content="optionsConfirmCancel"
+          ></button>
+          <button
+            id="import-merge"
+            class="btn-secondary"
+            data-i18n-content="optionsImportMerge"
+          ></button>
+          <button
+            id="import-replace"
+            class="btn-danger"
+            data-i18n-content="optionsImportReplace"
           ></button>
         </div>
       </div>

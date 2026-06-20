@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "Неизвестный тип действия" },
   "errorQuickStepNotFound": { "message": "Быстрое действие не найдено" },
   "errorNoActionsAssigned": { "message": "Быстрые действия не назначены" },
-  "errorNoMessageSelected": { "message": "Сообщение не выбрано и не отображается. Сначала откройте или выберите сообщение." }
+  "errorNoMessageSelected": { "message": "Сообщение не выбрано или не отображается. Сначала откройте или выберите сообщение." },
+
+  "optionsSettingsNavLabel": { "message": "Настройки" },
+  "optionsSettingsTitle": { "message": "Настройки" },
+  "optionsSectionPopupBehavior": { "message": "Поведение всплывающего окна" },
+  "optionsAutoClosePopupLabel": { "message": "Автоматически закрывать всплывающее окно после выполнения Quick Step" },
+  "optionsAutoClosePopupHint": { "message": "Если отключено, всплывающее окно останется открытым после выполнения Quick Step." },
+  "optionsSectionImportExport": { "message": "Импорт и экспорт" },
+  "optionsExportSteps": { "message": "Экспортировать Quick Steps" },
+  "optionsImportSteps": { "message": "Импортировать Quick Steps" },
+  "optionsImportExportHint": { "message": "Экспорт сохраняет все ваши Quick Steps в JSON-файл, который можно использовать как резервную копию или перенести на другой компьютер. Импорт загружает Quick Steps из выбранного JSON-файла." },
+  "optionsImportChoiceMessage": { "message": "В этом файле найдено $1 Quick Step(s). Как вы хотите их импортировать?" },
+  "optionsImportMerge": { "message": "Объединить с существующими" },
+  "optionsImportReplace": { "message": "Заменить все" },
+  "optionsToastImportInvalid": { "message": "Этот файл не похож на корректный экспорт Quick Steps." },
+  "optionsToastImportEmpty": { "message": "В этом файле не найдено корректных Quick Steps." },
+  "optionsToastImported": { "message": "Импортировано $1 Quick Step(s)." },
+  "optionsToastExported": { "message": "Quick Steps экспортированы." },
+  "optionsToastSettingsSaved": { "message": "Настройки сохранены." }
 }

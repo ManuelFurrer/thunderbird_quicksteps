@@ -1,4 +1,5 @@
 import { generateId } from "./utils/general-utils.js";
+import { DEFAULT_SETTINGS } from "./utils/quickstep-settings.js";
 
 function getDefaultQuickSteps() {
   return [
@@ -35,6 +36,16 @@ async function getQuickSteps() {
 
 async function saveQuickSteps(steps) {
   await messenger.storage.local.set({ quicksteps: steps });
+  return { success: true };
+}
+
+async function getSettings() {
+  const result = await messenger.storage.local.get("settings");
+  return { ...DEFAULT_SETTINGS, ...(result.settings || {}) };
+}
+
+async function saveSettings(settings) {
+  await messenger.storage.local.set({ settings });
   return { success: true };
 }
 
@@ -222,5 +233,9 @@ messenger.runtime.onMessage.addListener((message) => {
       return executeQuickStep(message.quickStepId, message.tabId);
     case "GET_ALL_FOLDERS":
       return getAllFolders();
+    case "GET_SETTINGS":
+      return getSettings();
+    case "SAVE_SETTINGS":
+      return saveSettings(message.settings);
   }
 });

@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "Tipo di azione sconosciuto" },
   "errorQuickStepNotFound": { "message": "Azione rapida non trovata" },
   "errorNoActionsAssigned": { "message": "Nessuna azione rapida assegnata" },
-  "errorNoMessageSelected": { "message": "Nessun messaggio selezionato o visualizzato. Apri o seleziona prima un messaggio." }
+  "errorNoMessageSelected": { "message": "Nessun messaggio selezionato o visualizzato. Apri o seleziona prima un messaggio." },
+
+  "optionsSettingsNavLabel": { "message": "Impostazioni" },
+  "optionsSettingsTitle": { "message": "Impostazioni" },
+  "optionsSectionPopupBehavior": { "message": "Comportamento del popup" },
+  "optionsAutoClosePopupLabel": { "message": "Chiudi automaticamente il popup dopo aver eseguito un Quick Step" },
+  "optionsAutoClosePopupHint": { "message": "Se disattivato, il popup rimane aperto dopo aver eseguito un Quick Step." },
+  "optionsSectionImportExport": { "message": "Importa ed esporta" },
+  "optionsExportSteps": { "message": "Esporta Quick Steps" },
+  "optionsImportSteps": { "message": "Importa Quick Steps" },
+  "optionsImportExportHint": { "message": "L’esportazione salva tutti i tuoi Quick Steps in un file JSON che puoi usare come backup o trasferire su un altro computer. L’importazione carica i Quick Steps da un file JSON selezionato." },
+  "optionsImportChoiceMessage": { "message": "Trovati $1 Quick Step(s) in questo file. Come desideri importarli?" },
+  "optionsImportMerge": { "message": "Unisci con quelli esistenti" },
+  "optionsImportReplace": { "message": "Sostituisci tutto" },
+  "optionsToastImportInvalid": { "message": "Questo file non sembra essere una esportazione valida di Quick Steps." },
+  "optionsToastImportEmpty": { "message": "Non sono stati trovati Quick Steps validi in questo file." },
+  "optionsToastImported": { "message": "Importati $1 Quick Step(s)." },
+  "optionsToastExported": { "message": "Quick Steps esportati." },
+  "optionsToastSettingsSaved": { "message": "Impostazioni salvate." }
 }

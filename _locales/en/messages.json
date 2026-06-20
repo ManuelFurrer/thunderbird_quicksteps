@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "Unknown action type" },
   "errorQuickStepNotFound": { "message": "Quick step not found" },
   "errorNoActionsAssigned": { "message": "No quick steps assigned" },
-  "errorNoMessageSelected": { "message": "No message selected or displayed. Open or select a message first." }
+  "errorNoMessageSelected": { "message": "No message selected or displayed. Open or select a message first." },
+
+  "optionsSettingsNavLabel": { "message": "Settings" },
+  "optionsSettingsTitle": { "message": "Settings" },
+  "optionsSectionPopupBehavior": { "message": "Popup Behavior" },
+  "optionsAutoClosePopupLabel": { "message": "Automatically close the popup after running a quick step" },
+  "optionsAutoClosePopupHint": { "message": "When turned off, the popup stays open after running a quick step." },
+  "optionsSectionImportExport": { "message": "Import & Export" },
+  "optionsExportSteps": { "message": "Export Quick Steps" },
+  "optionsImportSteps": { "message": "Import Quick Steps" },
+  "optionsImportExportHint": { "message": "Export saves all your quick steps to a JSON file that you can use as a backup or transfer to another computer. Import loads quick steps from a JSON file you select." },
+  "optionsImportChoiceMessage": { "message": "Found $1 quick step(s) in this file. How would you like to import them?" },
+  "optionsImportMerge": { "message": "Merge with existing" },
+  "optionsImportReplace": { "message": "Replace all" },
+  "optionsToastImportInvalid": { "message": "That file doesn't look like a valid Quick Steps export." },
+  "optionsToastImportEmpty": { "message": "No valid quick steps were found in that file." },
+  "optionsToastImported": { "message": "Imported $1 quick step(s)." },
+  "optionsToastExported": { "message": "Quick steps exported." },
+  "optionsToastSettingsSaved": { "message": "Settings saved." }
 }

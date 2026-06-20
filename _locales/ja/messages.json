@@ -87,5 +87,23 @@
   "errorUnknownActionType": { "message": "不明なアクションタイプです" },
   "errorQuickStepNotFound": { "message": "クイックステップが見つかりません" },
   "errorNoActionsAssigned": { "message": "クイックステップが割り当てられていません" },
-  "errorNoMessageSelected": { "message": "メッセージが選択または表示されていません。先にメッセージを開くか選択してください。" }
+  "errorNoMessageSelected": { "message": "メッセージが選択または表示されていません。先にメッセージを開くか選択してください。" },
+
+  "optionsSettingsNavLabel": { "message": "設定" },
+  "optionsSettingsTitle": { "message": "設定" },
+  "optionsSectionPopupBehavior": { "message": "ポップアップの動作" },
+  "optionsAutoClosePopupLabel": { "message": "Quick Step 実行後にポップアップを自動で閉じる" },
+  "optionsAutoClosePopupHint": { "message": "無効にすると、Quick Step 実行後もポップアップは開いたままになります。" },
+  "optionsSectionImportExport": { "message": "インポートとエクスポート" },
+  "optionsExportSteps": { "message": "Quick Steps をエクスポート" },
+  "optionsImportSteps": { "message": "Quick Steps をインポート" },
+  "optionsImportExportHint": { "message": "エクスポートすると、すべての Quick Steps が JSON ファイルに保存され、バックアップや別のコンピュータへの移行に使用できます。インポートでは、選択した JSON ファイルから Quick Steps を読み込みます。" },
+  "optionsImportChoiceMessage": { "message": "このファイルには $1 件の Quick Step が見つかりました。どのようにインポートしますか？" },
+  "optionsImportMerge": { "message": "既存と統合する" },
+  "optionsImportReplace": { "message": "すべて置き換える" },
+  "optionsToastImportInvalid": { "message": "このファイルは有効な Quick Steps のエクスポートではないようです。" },
+  "optionsToastImportEmpty": { "message": "このファイルから有効な Quick Steps が見つかりませんでした。" },
+  "optionsToastImported": { "message": "$1 件の Quick Steps をインポートしました。" },
+  "optionsToastExported": { "message": "Quick Steps をエクスポートしました。" },
+  "optionsToastSettingsSaved": { "message": "設定を保存しました。" }
 }
