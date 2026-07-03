@@ -175,9 +175,6 @@
   "optionsColorLabel": {
     "message": "Farbe"
   },
-  "optionsSectionConfirmation": {
-    "message": "Bestätigung"
-  },
   "optionsRequireConfirmationLabel": {
     "message": "Vor dem Ausführen um Bestätigung bitten"
   },
@@ -318,10 +315,7 @@
   "errorNoMessageSelected": {
     "message": "Keine Nachricht ausgewählt oder angezeigt. Öffne oder wähle zuerst eine Nachricht aus."
   },
-  "optionsSettingsNavLabel": {
-    "message": "Einstellungen"
-  },
-  "optionsSettingsTitle": {
+  "optionsSettings": {
     "message": "Einstellungen"
   },
   "optionsSectionPopupBehavior": {
@@ -368,5 +362,11 @@
   },
   "optionsToastSettingsSaved": {
     "message": "Einstellungen gespeichert."
+  },
+  "optionsBehavior": {
+    "message": "Verhalten"
+  },
+  "optionsEnabledLabel": {
+    "message": "Aktiv"
   }
 }

@@ -175,9 +175,6 @@
   "optionsColorLabel": {
     "message": "色"
   },
-  "optionsSectionConfirmation": {
-    "message": "確認"
-  },
   "optionsRequireConfirmationLabel": {
     "message": "実行する前に確認を求める"
   },
@@ -318,10 +315,7 @@
   "errorNoMessageSelected": {
     "message": "メッセージが選択または表示されていません。先にメッセージを開くか選択してください。"
   },
-  "optionsSettingsNavLabel": {
-    "message": "設定"
-  },
-  "optionsSettingsTitle": {
+  "optionsSettings": {
     "message": "設定"
   },
   "optionsSectionPopupBehavior": {
@@ -368,5 +362,11 @@
   },
   "optionsToastSettingsSaved": {
     "message": "設定を保存しました。"
+  },
+  "optionsBehavior": {
+    "message": "動作"
+  },
+  "optionsEnabledLabel": {
+    "message": "有効"
   }
 }

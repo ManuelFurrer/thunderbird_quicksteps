@@ -60,6 +60,7 @@ const els = {
   importCancel: () => getCachedElementById("import-cancel"),
   importMerge: () => getCachedElementById("import-merge"),
   importReplace: () => getCachedElementById("import-replace"),
+  stepEnabledCheckbox: () => getCachedElementById("step-enabled"),
 };
 
 function showToast(message, type = "info") {
@@ -353,7 +354,8 @@ function renderSidebar() {
         "step-item" +
         (!state.viewingSettings && state.editingId === step.id
           ? " active"
-          : "");
+          : "") +
+        (step.enabled === false ? " step-item-disabled" : "");
       item.dataset.id = step.id;
 
       const info = document.createElement("div");
@@ -403,6 +405,7 @@ function renderEditor() {
       state.editing.color || DEFAULT_COLOR;
     els.requireConfirmationCheckbox().checked =
       !!state.editing.requireConfirmation;
+    els.stepEnabledCheckbox().checked = state.editing.enabled !== false;
   }
 
   if (showSettings) {
@@ -581,6 +584,7 @@ function syncSidebarItem() {
   if (!item) return;
   const nameEl = item.querySelector(".step-item-name");
   const metaEl = item.querySelector(".step-item-meta");
+
   if (nameEl) {
     nameEl.textContent =
       state.editing.name || getTranslation("optionsPlaceholderTitle");
@@ -590,6 +594,8 @@ function syncSidebarItem() {
     metaEl.textContent =
       state.editing.actions.map(getActionLabel).join(" → ") ||
       getTranslation("optionsNoActionsAssigned");
+
+  item.classList.toggle("step-item-disabled", state.editing.enabled === false);
 }
 
 async function navigateTo(stepId) {
@@ -616,6 +622,7 @@ function startNewStep() {
       name: "",
       color: DEFAULT_COLOR,
       requireConfirmation: false,
+      enabled: true,
       actions: [{ type: "mark_read" }],
     };
     state.steps.push(newStep);
@@ -758,6 +765,7 @@ function normalizeImportedSteps(parsed) {
       name: typeof raw.name === "string" ? raw.name : "",
       color: typeof raw.color === "string" ? raw.color : DEFAULT_COLOR,
       requireConfirmation: raw.requireConfirmation === true,
+      enabled: raw.enabled !== false,
       actions,
     });
   }
@@ -876,6 +884,12 @@ async function init() {
     if (!state.editing) return;
     state.editing.name = e.target.value;
     updatePreviewActions();
+    syncSidebarItem();
+  });
+
+  els.stepEnabledCheckbox().addEventListener("change", (e) => {
+    if (!state.editing) return;
+    state.editing.enabled = e.target.checked;
     syncSidebarItem();
   });
 

@@ -175,9 +175,6 @@
   "optionsColorLabel": {
     "message": "Color"
   },
-  "optionsSectionConfirmation": {
-    "message": "Confirmación"
-  },
   "optionsRequireConfirmationLabel": {
     "message": "Pedir confirmación antes de ejecutar"
   },
@@ -318,10 +315,7 @@
   "errorNoMessageSelected": {
     "message": "No hay ningún mensaje seleccionado o mostrado. Abra o seleccione un mensaje primero."
   },
-  "optionsSettingsNavLabel": {
-    "message": "Configuración"
-  },
-  "optionsSettingsTitle": {
+  "optionsSettings": {
     "message": "Configuración"
   },
   "optionsSectionPopupBehavior": {
@@ -368,5 +362,11 @@
   },
   "optionsToastSettingsSaved": {
     "message": "Configuración guardada."
+  },
+  "optionsBehavior": {
+    "message": "Comportamiento"
+  },
+  "optionsEnabledLabel": {
+    "message": "Habilitado"
   }
 }

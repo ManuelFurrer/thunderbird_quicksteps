@@ -8,6 +8,7 @@ function getDefaultQuickSteps() {
       name: messenger.i18n.getMessage("defaultStep1Name"),
       color: "#4CAF50",
       requireConfirmation: false,
+      enabled: true,
       actions: [{ type: "mark_read" }, { type: "archive" }],
     },
     {
@@ -15,6 +16,7 @@ function getDefaultQuickSteps() {
       name: messenger.i18n.getMessage("defaultStep2Name"),
       color: "#f44336",
       requireConfirmation: true,
+      enabled: true,
       actions: [{ type: "delete" }],
     },
     {
@@ -22,19 +24,25 @@ function getDefaultQuickSteps() {
       name: messenger.i18n.getMessage("defaultStep3Name"),
       color: "#FF9800",
       requireConfirmation: false,
+      enabled: true,
       actions: [{ type: "flag" }, { type: "mark_unread" }],
     },
   ];
 }
 
-async function getQuickSteps() {
-  const result = await messenger.storage.local.get("quicksteps");
-  if (result.quicksteps === undefined) {
-    const defaults = getDefaultQuickSteps();
-    await messenger.storage.local.set({ quicksteps: defaults });
-    return defaults;
+async function getQuickSteps(onlyEnabled = false) {
+  let { quicksteps } = await messenger.storage.local.get("quicksteps");
+
+  if (quicksteps === undefined) {
+    quicksteps = getDefaultQuickSteps();
+    await messenger.storage.local.set({ quicksteps });
   }
-  return result.quicksteps || [];
+
+  if (onlyEnabled) {
+    return quicksteps.filter((step) => step.enabled !== false); // Uses !== false to include legacy items that lack the 'enabled' property.
+  }
+
+  return quicksteps || [];
 }
 
 async function saveQuickSteps(steps) {
@@ -229,7 +237,7 @@ async function executeQuickStep(quickStepId, tabId) {
 messenger.runtime.onMessage.addListener((message) => {
   switch (message.type) {
     case "GET_QUICK_STEPS":
-      return getQuickSteps();
+      return getQuickSteps(message.onlyEnabled);
     case "SAVE_QUICK_STEPS":
       return saveQuickSteps(message.steps);
     case "EXECUTE_QUICK_STEP":

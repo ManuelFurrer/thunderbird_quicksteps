@@ -151,7 +151,10 @@ async function loadAndRender() {
 
   let steps;
   try {
-    steps = await messenger.runtime.sendMessage({ type: "GET_QUICK_STEPS" });
+    steps = await messenger.runtime.sendMessage({
+      type: "GET_QUICK_STEPS",
+      onlyEnabled: true,
+    });
   } catch (e) {
     loading.classList.add("hidden");
     showStatus(getTranslation("statusLoadError", [e.message]), "error");

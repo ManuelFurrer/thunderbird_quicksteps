@@ -175,9 +175,6 @@
   "optionsColorLabel": {
     "message": "颜色"
   },
-  "optionsSectionConfirmation": {
-    "message": "确认"
-  },
   "optionsRequireConfirmationLabel": {
     "message": "在运行之前要求确认"
   },
@@ -320,10 +317,7 @@
   "errorNoMessageSelected": {
     "message": "未选中或未显示邮件。请先打开或选择一封邮件。"
   },
-  "optionsSettingsNavLabel": {
-    "message": "设置"
-  },
-  "optionsSettingsTitle": {
+  "optionsSettings": {
     "message": "设置"
   },
   "optionsSectionPopupBehavior": {
@@ -370,5 +364,11 @@
   },
   "optionsToastSettingsSaved": {
     "message": "设置已保存。"
+  },
+  "optionsBehavior": {
+    "message": "行为"
+  },
+  "optionsEnabledLabel": {
+    "message": "已启用"
   }
 }
