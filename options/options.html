@@ -67,70 +67,79 @@
         <div id="editor" class="hidden">
           <div class="editor-header">
             <div class="editor-title-block">
-              <input
-                type="text"
-                id="step-name"
-                data-i18n-placeholder="optionsStepNamePlaceholder"
-                maxlength="60"
-              />
+              <div class="step-name-wrap">
+                <input
+                  type="text"
+                  id="step-name"
+                  data-i18n-placeholder="optionsStepNamePlaceholder"
+                  maxlength="60"
+                />
+              </div>
               <div id="editor-preview-actions" class="preview-actions"></div>
             </div>
           </div>
 
           <div class="editor-body">
-            <section class="section">
-              <h3
-                class="section-title"
-                data-i18n-content="optionsSectionAppearance"
-              ></h3>
-              <div class="appearance-row">
-                <div class="field-group">
-                  <label data-i18n-content="optionsColorLabel"></label>
-                  <div id="color-picker" class="color-picker"></div>
-                  <div class="color-picker-container">
-                    <label for="step-color" class="custom-color-picker">
-                      <input type="color" id="step-color" value="#0078D4" />
-                      <span
-                        class="color-swatch"
-                        id="color-swatch"
-                        style="background-color: #0078d4"
-                      ></span>
-                    </label>
+            <section class="section section-meta">
+              <div class="meta-group">
+                <span
+                  class="meta-group-label"
+                  data-i18n-content="optionsSectionAppearance"
+                ></span>
+                <div class="meta-group-body">
+                  <div class="field-group">
+                    <label data-i18n-content="optionsColorLabel"></label>
+                    <div id="color-picker" class="color-picker"></div>
+                    <div class="color-picker-container">
+                      <label for="step-color" class="custom-color-picker">
+                        <input type="color" id="step-color" value="#0078D4" />
+                        <span
+                          class="color-swatch"
+                          id="color-swatch"
+                          style="background-color: #0078d4"
+                        ></span>
+                      </label>
+                    </div>
                   </div>
+                </div>
+              </div>
+
+              <div class="meta-group">
+                <span
+                  class="meta-group-label"
+                  data-i18n-content="optionsBehavior"
+                ></span>
+                <div class="meta-group-body stack">
+                  <label class="checkbox-row" for="step-enabled">
+                    <input type="checkbox" id="step-enabled" checked />
+                    <span data-i18n-content="optionsEnabledLabel"></span>
+                  </label>
+
+                  <label class="checkbox-row" for="step-require-confirmation">
+                    <input type="checkbox" id="step-require-confirmation" />
+                    <span
+                      data-i18n-content="optionsRequireConfirmationLabel"
+                    ></span>
+                  </label>
                 </div>
               </div>
             </section>
 
-            <section class="section">
-              <h3
-                class="section-title"
-                data-i18n-content="optionsBehavior"
-              ></h3>
-              <label class="checkbox-row" for="step-enabled">
-                <input type="checkbox" id="step-enabled" checked />
-                <span data-i18n-content="optionsEnabledLabel"></span>
-              </label>
-
-              <label class="checkbox-row" for="step-require-confirmation">
-                <input type="checkbox" id="step-require-confirmation" />
-                <span
-                  data-i18n-content="optionsRequireConfirmationLabel"
-                ></span>
-              </label>
-            </section>
-
-            <section class="section">
-              <h3 class="section-title">
-                <span data-i18n-content="optionsSectionActions"></span>
-                <span
-                  class="section-hint"
-                  data-i18n-content="optionsSectionActionsHint"
-                ></span>
-              </h3>
+            <section class="section section-primary">
+              <div class="section-primary-header">
+                <div class="section-primary-heading">
+                  <h3 class="section-title-primary">
+                    <span data-i18n-content="optionsSectionActions"></span>
+                  </h3>
+                  <span
+                    class="section-hint"
+                    data-i18n-content="optionsSectionActionsHint"
+                  ></span>
+                </div>
+              </div>
               <div id="actions-list"></div>
               <button
                 id="btn-add-action"
-                class="btn-add-action"
                 data-i18n-content="optionsAddAction"
               ></button>
             </section>
