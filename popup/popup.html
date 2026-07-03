@@ -54,6 +54,25 @@
 
       <div id="status-bar" class="hidden"></div>
     </div>
+
+    <div id="confirm-overlay" class="modal-overlay hidden">
+      <div id="confirm-box" class="modal-box">
+        <p id="confirm-message" class="modal-message"></p>
+        <div class="confirm-btns">
+          <button
+            id="confirm-cancel"
+            class="btn-secondary"
+            data-i18n-content="popupConfirmNo"
+          ></button>
+          <button
+            id="confirm-run"
+            class="btn-primary"
+            data-i18n-content="popupConfirmYes"
+          ></button>
+        </div>
+      </div>
+    </div>
+
     <script src="popup.js" type="module"></script>
   </body>
 </html>

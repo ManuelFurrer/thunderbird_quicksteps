@@ -26,6 +26,30 @@ function showStatus(message, type = "info") {
   });
 }
 
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    const overlay = getCachedElementById("confirm-overlay");
+    const messageEl = getCachedElementById("confirm-message");
+    const runBtn = getCachedElementById("confirm-run");
+    const cancelBtn = getCachedElementById("confirm-cancel");
+
+    messageEl.textContent = message;
+    overlay.classList.remove("hidden");
+
+    function done(result) {
+      overlay.classList.add("hidden");
+      runBtn.removeEventListener("click", onRun);
+      cancelBtn.removeEventListener("click", onCancel);
+      resolve(result);
+    }
+    const onRun = () => done(true);
+    const onCancel = () => done(false);
+
+    runBtn.addEventListener("click", onRun);
+    cancelBtn.addEventListener("click", onCancel);
+  });
+}
+
 function openOptions() {
   messenger.runtime.openOptionsPage();
   window.close();
@@ -81,6 +105,17 @@ async function executeStep(step, btn) {
   }
 }
 
+async function handleStepClick(step, btn) {
+  if (step.requireConfirmation) {
+    const confirmed = await showConfirm(
+      getTranslation("popupConfirmMessage", [step.name]),
+    );
+    if (!confirmed) return;
+  }
+
+  await executeStep(step, btn);
+}
+
 function createStepButton(step) {
   const btn = document.createElement("button");
   btn.className = "step-btn";
@@ -101,7 +136,7 @@ function createStepButton(step) {
   btn.append(info);
   btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(" → ")}`;
 
-  btn.addEventListener("click", () => executeStep(step, btn));
+  btn.addEventListener("click", () => handleStepClick(step, btn));
   return btn;
 }
 

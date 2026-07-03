@@ -29,6 +29,7 @@
   --status-info-color: #1565c0;
   --status-warning-bg: #fff3e0;
   --status-warning-color: #ef6c00;
+  --overlay-bg: rgba(0, 0, 0, 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -53,6 +54,7 @@
     --status-info-color: #64b5f6;
     --status-warning-bg: #3b2710;
     --status-warning-color: #ffb74d;
+    --overlay-bg: rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -261,6 +263,22 @@ header {
   background: var(--accent-dk);
 }
 
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+}
+
 #status-bar {
   padding: 8px 12px;
   font-size: 12px;
@@ -300,6 +318,48 @@ header {
 #status-bar.notify-warning {
   background: var(--status-warning-bg);
   color: var(--status-warning-color);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-box {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 18px;
+  max-width: 260px;
+  width: 88%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+}
+
+.modal-message {
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.confirm-btns {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.confirm-btns .btn-primary,
+.confirm-btns .btn-secondary {
+  padding: 7px 14px;
 }
 
 .hidden {

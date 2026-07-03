@@ -49,6 +49,8 @@ const els = {
   confirmCancel: () => getCachedElementById("confirm-cancel"),
   toast: () => getCachedElementById("toast"),
   colorSwatch: () => getCachedElementById("color-swatch"),
+  requireConfirmationCheckbox: () =>
+    getCachedElementById("step-require-confirmation"),
   autoCloseCheckbox: () => getCachedElementById("setting-auto-close-popup"),
   exportStepsBtn: () => getCachedElementById("btn-export-steps"),
   importStepsBtn: () => getCachedElementById("btn-import-steps"),
@@ -399,6 +401,8 @@ function renderEditor() {
     renderActionsList();
     els.colorSwatch().style.backgroundColor =
       state.editing.color || DEFAULT_COLOR;
+    els.requireConfirmationCheckbox().checked =
+      !!state.editing.requireConfirmation;
   }
 
   if (showSettings) {
@@ -611,6 +615,7 @@ function startNewStep() {
       id: generateId(),
       name: "",
       color: DEFAULT_COLOR,
+      requireConfirmation: false,
       actions: [{ type: "mark_read" }],
     };
     state.steps.push(newStep);
@@ -752,6 +757,7 @@ function normalizeImportedSteps(parsed) {
     cleaned.push({
       name: typeof raw.name === "string" ? raw.name : "",
       color: typeof raw.color === "string" ? raw.color : DEFAULT_COLOR,
+      requireConfirmation: raw.requireConfirmation === true,
       actions,
     });
   }
@@ -859,6 +865,11 @@ async function init() {
         "error",
       );
     }
+  });
+
+  els.requireConfirmationCheckbox().addEventListener("change", (e) => {
+    if (!state.editing) return;
+    state.editing.requireConfirmation = e.target.checked;
   });
 
   els.stepName().addEventListener("input", (e) => {

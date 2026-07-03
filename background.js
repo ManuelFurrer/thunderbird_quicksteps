@@ -7,18 +7,21 @@ function getDefaultQuickSteps() {
       id: generateId(),
       name: messenger.i18n.getMessage("defaultStep1Name"),
       color: "#4CAF50",
+      requireConfirmation: false,
       actions: [{ type: "mark_read" }, { type: "archive" }],
     },
     {
       id: generateId(),
       name: messenger.i18n.getMessage("defaultStep2Name"),
       color: "#f44336",
+      requireConfirmation: true,
       actions: [{ type: "delete" }],
     },
     {
       id: generateId(),
       name: messenger.i18n.getMessage("defaultStep3Name"),
       color: "#FF9800",
+      requireConfirmation: false,
       actions: [{ type: "flag" }, { type: "mark_unread" }],
     },
   ];
