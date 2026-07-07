@@ -561,11 +561,11 @@ body {
 }
 
 .action-row.drag-over-top {
-  box-shadow: 0 -2px 0 0 var(--accent);
+  box-shadow: inset 0 2px 0 0 var(--accent);
 }
 
 .action-row.drag-over-bottom {
-  box-shadow: 0 2px 0 0 var(--accent);
+  box-shadow: inset 0 -2px 0 0 var(--accent);
 }
 
 .action-num {
