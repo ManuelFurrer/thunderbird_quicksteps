@@ -442,18 +442,9 @@ function buildActionRow(index, action) {
   const row = document.createElement("div");
   row.className = "action-row";
 
-  const dragHandle = document.createElement("span");
-  dragHandle.className = "drag-handle";
-  dragHandle.setAttribute("aria-hidden", "true");
-  dragHandle.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <circle cx="9" cy="5" r="1.5"/>
-      <circle cx="9" cy="12" r="1.5"/>
-      <circle cx="9" cy="19" r="1.5"/>
-      <circle cx="15" cy="5" r="1.5"/>
-      <circle cx="15" cy="12" r="1.5"/>
-      <circle cx="15" cy="19" r="1.5"/>
-    </svg>`;
+  const dragHandleTemplate = document.getElementById("drag-handle-icon");
+  const dragHandleFragment = dragHandleTemplate.content.cloneNode(true);
+  const dragHandle = dragHandleFragment.firstElementChild;
 
   const num = document.createElement("span");
   num.className = "action-num";
