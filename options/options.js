@@ -438,82 +438,7 @@ async function renderActionsList() {
   });
 }
 
-function buildActionRow(index, action) {
-  const row = document.createElement("div");
-  row.className = "action-row";
-
-  const dragHandleTemplate = document.getElementById("drag-handle-icon");
-  const dragHandleFragment = dragHandleTemplate.content.cloneNode(true);
-  const dragHandle = dragHandleFragment.firstElementChild;
-
-  const num = document.createElement("span");
-  num.className = "action-num";
-  num.textContent = index + 1;
-
-  const typeSelect = document.createElement("select");
-  typeSelect.className = "action-type-select";
-  for (const at of ACTION_TYPES) {
-    const opt = document.createElement("option");
-    opt.value = at.value;
-    opt.textContent = getTranslation(at.i18nKey);
-    if (at.value === action.type) opt.selected = true;
-    typeSelect.appendChild(opt);
-  }
-
-  const folderContainer = document.createElement("div");
-  folderContainer.style.flex = "1";
-  folderContainer.style.minWidth = "0";
-
-  function refreshFolderPicker(currentAction) {
-    folderContainer.innerHTML = "";
-    const needsFolder = ACTION_TYPES.find(
-      (at) => at.value === currentAction.type,
-    )?.needsFolder;
-    if (!needsFolder) return;
-
-    if (!state.foldersLoaded) {
-      const loading = document.createElement("span");
-      loading.className = "action-folder-loading";
-      loading.textContent = getTranslation("optionsFoldersLoading");
-      folderContainer.appendChild(loading);
-      ensureFoldersLoaded().then(() => {
-        folderContainer.innerHTML = "";
-        const select = buildFolderSelect(currentAction);
-        attachFolderListener(select, index);
-        folderContainer.appendChild(select);
-      });
-    } else {
-      const select = buildFolderSelect(currentAction);
-      attachFolderListener(select, index);
-      folderContainer.appendChild(select);
-    }
-  }
-
-  function attachFolderListener(select, idx) {
-    select.addEventListener("change", () => {
-      if (select.value) {
-        const folder = state.foldersById[select.value];
-        if (folder) state.editing.actions[idx].folder = folder;
-      } else {
-        delete state.editing.actions[idx].folder;
-      }
-      updatePreviewActions();
-    });
-  }
-
-  typeSelect.addEventListener("change", () => {
-    state.editing.actions[index].type = typeSelect.value;
-    if (
-      !ACTION_TYPES.find((at) => at.value === typeSelect.value)?.needsFolder
-    ) {
-      delete state.editing.actions[index].folder;
-    }
-    refreshFolderPicker(state.editing.actions[index]);
-    updatePreviewActions();
-  });
-
-  refreshFolderPicker(action);
-
+function createActionButtons(index) {
   const btns = document.createElement("div");
   btns.className = "action-btns";
 
@@ -538,6 +463,90 @@ function buildActionRow(index, action) {
   removeBtn.addEventListener("click", () => removeAction(index));
 
   btns.append(upBtn, downBtn, removeBtn);
+  return btns;
+}
+
+function attachFolderListener(select, actionIndex) {
+  select.addEventListener("change", () => {
+    if (select.value) {
+      const folder = state.foldersById[select.value];
+      if (folder) state.editing.actions[actionIndex].folder = folder;
+    } else {
+      delete state.editing.actions[actionIndex].folder;
+    }
+    updatePreviewActions();
+  });
+}
+
+function refreshFolderPicker(folderContainer, action, actionIndex) {
+  folderContainer.innerHTML = "";
+  const needsFolder = ACTION_TYPES.find(
+    (at) => at.value === action.type,
+  )?.needsFolder;
+  if (!needsFolder) return;
+
+  if (!state.foldersLoaded) {
+    const loading = document.createElement("span");
+    loading.className = "action-folder-loading";
+    loading.textContent = getTranslation("optionsFoldersLoading");
+    folderContainer.appendChild(loading);
+    ensureFoldersLoaded().then(() => {
+      folderContainer.innerHTML = "";
+      const select = buildFolderSelect(action);
+      attachFolderListener(select, actionIndex);
+      folderContainer.appendChild(select);
+    });
+  } else {
+    const select = buildFolderSelect(action);
+    attachFolderListener(select, actionIndex);
+    folderContainer.appendChild(select);
+  }
+}
+
+function createDragHandle() {
+  const dragHandleTemplate = document.getElementById("drag-handle-icon");
+  const dragHandleFragment = dragHandleTemplate.content.cloneNode(true);
+  return dragHandleFragment.firstElementChild;
+}
+
+function buildActionRow(index, action) {
+  const row = document.createElement("div");
+  row.className = "action-row";
+
+  const num = document.createElement("span");
+  num.className = "action-num";
+  num.textContent = index + 1;
+
+  const typeSelect = document.createElement("select");
+  typeSelect.className = "action-type-select";
+  for (const at of ACTION_TYPES) {
+    const opt = document.createElement("option");
+    opt.value = at.value;
+    opt.textContent = getTranslation(at.i18nKey);
+    if (at.value === action.type) opt.selected = true;
+    typeSelect.appendChild(opt);
+  }
+
+  const folderContainer = document.createElement("div");
+  folderContainer.style.flex = "1";
+  folderContainer.style.minWidth = "0";
+
+  refreshFolderPicker(folderContainer, action, index);
+
+  typeSelect.addEventListener("change", () => {
+    state.editing.actions[index].type = typeSelect.value;
+    if (
+      !ACTION_TYPES.find((at) => at.value === typeSelect.value)?.needsFolder
+    ) {
+      delete state.editing.actions[index].folder;
+    }
+    refreshFolderPicker(folderContainer, state.editing.actions[index], index);
+    updatePreviewActions();
+  });
+
+  const btns = createActionButtons(index);
+  const dragHandle = createDragHandle();
+
   row.append(dragHandle, num, typeSelect, folderContainer, btns);
   createActionDragAndDropListeners(row, index, dragHandle);
   return row;
