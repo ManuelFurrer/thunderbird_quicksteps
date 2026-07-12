@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["**/node_modules/"],
+  "options": {
+    "maxWarnings": 10
+  },
+  "plugins": ["import", "eslint", "promise", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "perf": "error"
+  },
+  "rules": {},
+  "env": {
+    "builtin": true
+  }
+}
