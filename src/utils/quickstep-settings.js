@@ -1,5 +1,5 @@
 const DEFAULT_SETTINGS = {
-  autoClosePopup: false,
+  autoClosePopup: false
 };
 
 export { DEFAULT_SETTINGS };

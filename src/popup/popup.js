@@ -10,7 +10,7 @@ async function getCurrentMailTabId() {
   try {
     const mailTabs = await messenger.mailTabs.query({
       active: true,
-      currentWindow: true,
+      currentWindow: true
     });
     if (mailTabs.length > 0) return mailTabs[0].tabId;
   } catch {}
@@ -22,7 +22,7 @@ function showStatus(message, type = "info") {
   notify({
     elm: getCachedElementById("status-bar"),
     message,
-    type,
+    type
   });
 }
 
@@ -69,7 +69,7 @@ async function executeStep(step, btn) {
     const result = await messenger.runtime.sendMessage({
       type: "EXECUTE_QUICK_STEP",
       quickStepId: step.id,
-      tabId,
+      tabId
     });
 
     if (result.success) {
@@ -85,12 +85,8 @@ async function executeStep(step, btn) {
       const errorDetail = result.errors?.length ? `: ${result.errors[0]}` : ".";
 
       showStatus(
-        getTranslation("statusAppliedWithErrors", [
-          step.name,
-          count.toString(),
-          errorDetail,
-        ]),
-        "warning",
+        getTranslation("statusAppliedWithErrors", [step.name, count.toString(), errorDetail]),
+        "warning"
       );
     } else if (result.errors?.length) {
       showStatus(getTranslation("statusError", [result.errors[0]]), "error");
@@ -107,9 +103,7 @@ async function executeStep(step, btn) {
 
 async function handleStepClick(step, btn) {
   if (step.requireConfirmation) {
-    const confirmed = await showConfirm(
-      getTranslation("popupConfirmMessage", [step.name]),
-    );
+    const confirmed = await showConfirm(getTranslation("popupConfirmMessage", [step.name]));
     if (!confirmed) return;
   }
 
@@ -153,7 +147,7 @@ async function loadAndRender() {
   try {
     steps = await messenger.runtime.sendMessage({
       type: "GET_QUICK_STEPS",
-      onlyEnabled: true,
+      onlyEnabled: true
     });
   } catch (e) {
     loading.classList.add("hidden");

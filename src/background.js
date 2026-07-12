@@ -9,7 +9,7 @@ function getDefaultQuickSteps() {
       color: "#4CAF50",
       requireConfirmation: false,
       enabled: true,
-      actions: [{ type: "mark_read" }, { type: "archive" }],
+      actions: [{ type: "mark_read" }, { type: "archive" }]
     },
     {
       id: generateId(),
@@ -17,7 +17,7 @@ function getDefaultQuickSteps() {
       color: "#f44336",
       requireConfirmation: true,
       enabled: true,
-      actions: [{ type: "delete" }],
+      actions: [{ type: "delete" }]
     },
     {
       id: generateId(),
@@ -25,8 +25,8 @@ function getDefaultQuickSteps() {
       color: "#FF9800",
       requireConfirmation: false,
       enabled: true,
-      actions: [{ type: "flag" }, { type: "mark_unread" }],
-    },
+      actions: [{ type: "flag" }, { type: "mark_unread" }]
+    }
   ];
 }
 
@@ -52,7 +52,7 @@ async function saveQuickSteps(steps) {
 
 async function getSettings() {
   const result = await messenger.storage.local.get("settings");
-  return { ...DEFAULT_SETTINGS, ...(result.settings || {}) };
+  return { ...DEFAULT_SETTINGS, ...result.settings };
 }
 
 async function saveSettings(settings) {
@@ -71,7 +71,7 @@ function flattenFolders(folders, accountId, accountName, result = []) {
         accountName,
         path: folder.path,
         name: folder.name,
-        id: folder.id,
+        id: folder.id
       });
     }
 
@@ -93,7 +93,7 @@ async function getAllFolders() {
       const accountFolders = flattenFolders(
         account.rootFolder?.subFolders || [],
         account.id,
-        account.name,
+        account.name
       );
 
       allFolders.push(...accountFolders);
@@ -109,6 +109,7 @@ async function getAllFolders() {
 async function executeActions(messages, actions) {
   const results = [];
 
+  /* eslint-disable no-await-in-loop */
   for (const action of actions) {
     const messageIds = messages.map((m) => m.id);
 
@@ -116,18 +117,14 @@ async function executeActions(messages, actions) {
       switch (action.type) {
         case "move":
           if (!action.folder) {
-            throw new Error(
-              messenger.i18n.getMessage("errorNoFolderSpecified"),
-            );
+            throw new Error(messenger.i18n.getMessage("errorNoFolderSpecified"));
           }
           await messenger.messages.move(messageIds, action.folder.id);
           break;
 
         case "copy":
           if (!action.folder) {
-            throw new Error(
-              messenger.i18n.getMessage("errorNoFolderSpecified"),
-            );
+            throw new Error(messenger.i18n.getMessage("errorNoFolderSpecified"));
           }
           await messenger.messages.copy(messageIds, action.folder.id);
           break;
@@ -138,7 +135,7 @@ async function executeActions(messages, actions) {
 
         case "delete_permanent":
           await messenger.messages.delete(messageIds, {
-            deletePermanently: true,
+            deletePermanently: true
           });
           break;
 
@@ -147,34 +144,22 @@ async function executeActions(messages, actions) {
           break;
 
         case "mark_read":
-          await Promise.all(
-            messageIds.map((id) =>
-              messenger.messages.update(id, { read: true }),
-            ),
-          );
+          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { read: true })));
           break;
 
         case "mark_unread":
-          await Promise.all(
-            messageIds.map((id) =>
-              messenger.messages.update(id, { read: false }),
-            ),
-          );
+          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { read: false })));
           break;
 
         case "flag":
           await Promise.all(
-            messageIds.map((id) =>
-              messenger.messages.update(id, { flagged: true }),
-            ),
+            messageIds.map((id) => messenger.messages.update(id, { flagged: true }))
           );
           break;
 
         case "unflag":
           await Promise.all(
-            messageIds.map((id) =>
-              messenger.messages.update(id, { flagged: false }),
-            ),
+            messageIds.map((id) => messenger.messages.update(id, { flagged: false }))
           );
           break;
 
@@ -199,38 +184,35 @@ async function executeQuickStep(quickStepId, tabId) {
   if (!step)
     return {
       success: false,
-      errors: [messenger.i18n.getMessage("errorQuickStepNotFound")],
+      errors: [messenger.i18n.getMessage("errorQuickStepNotFound")]
     };
 
   if (!step.actions?.length)
     return {
       success: false,
-      errors: [messenger.i18n.getMessage("errorNoActionsAssigned")],
+      errors: [messenger.i18n.getMessage("errorNoActionsAssigned")]
     };
 
-  const messages =
-    (await messenger.messageDisplay.getDisplayedMessages(tabId)).messages || [];
+  const messages = (await messenger.messageDisplay.getDisplayedMessages(tabId)).messages || [];
 
   if (messages.length === 0) {
     return {
       success: false,
-      errors: [messenger.i18n.getMessage("errorNoMessageSelected")],
+      errors: [messenger.i18n.getMessage("errorNoMessageSelected")]
     };
   }
 
   const results = await executeActions(messages, step.actions);
   const allSucceeded = results.every((r) => r.success);
   const anySucceeded = allSucceeded || results.some((r) => r.success);
-  const errors = !allSucceeded
-    ? results.filter((r) => !r.success).map((r) => r.error)
-    : [];
+  const errors = !allSucceeded ? results.filter((r) => !r.success).map((r) => r.error) : [];
 
   return {
     success: allSucceeded,
     anySucceeded,
     results,
     errors,
-    messageCount: messages.length,
+    messageCount: messages.length
   };
 }
 

@@ -4,48 +4,48 @@ const ACTION_TYPES = [
   {
     value: "mark_read",
     i18nKey: "optionsActionTypeMarkReadLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "mark_unread",
     i18nKey: "optionsActionTypeMarkUnreadLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "flag",
     i18nKey: "optionsActionTypeFlagLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "unflag",
     i18nKey: "optionsActionTypeUnflagLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "archive",
     i18nKey: "optionsActionTypeArchiveLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "delete",
     i18nKey: "optionsActionTypeDeleteLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "delete_permanent",
     i18nKey: "optionsActionTypeDeletePermanentLabel",
-    needsFolder: false,
+    needsFolder: false
   },
   {
     value: "move",
     i18nKey: "optionsActionTypeMoveLabel",
-    needsFolder: true,
+    needsFolder: true
   },
   {
     value: "copy",
     i18nKey: "optionsActionTypeCopyLabel",
-    needsFolder: true,
-  },
+    needsFolder: true
+  }
 ];
 
 const ACTION_LABELS = {
@@ -57,7 +57,7 @@ const ACTION_LABELS = {
   delete: () => getTranslation("actionDeleteTrash"),
   delete_permanent: () => getTranslation("actionDeletePermanent"),
   move: (a) => getTranslation("actionMoveLabel", a.folder?.name || "?"),
-  copy: (a) => getTranslation("actionCopyLabel", a.folder?.name || "?"),
+  copy: (a) => getTranslation("actionCopyLabel", a.folder?.name || "?")
 };
 
 function getActionLabel(action) {

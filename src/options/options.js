@@ -8,11 +8,7 @@ import { DEFAULT_SETTINGS } from "../utils/quickstep-settings.js";
 const DEFAULT_COLOR = "#0078D4";
 
 function isStepBlank(step) {
-  return (
-    !step.name.trim() &&
-    step.actions.length === 1 &&
-    step.actions[0].type === "mark_read"
-  );
+  return !step.name.trim() && step.actions.length === 1 && step.actions[0].type === "mark_read";
 }
 
 let state = {
@@ -25,7 +21,7 @@ let state = {
   editingId: null,
   isNew: false,
   viewingSettings: false,
-  settings: { ...DEFAULT_SETTINGS },
+  settings: { ...DEFAULT_SETTINGS }
 };
 
 const els = {
@@ -49,8 +45,7 @@ const els = {
   confirmCancel: () => getCachedElementById("confirm-cancel"),
   toast: () => getCachedElementById("toast"),
   colorSwatch: () => getCachedElementById("color-swatch"),
-  requireConfirmationCheckbox: () =>
-    getCachedElementById("step-require-confirmation"),
+  requireConfirmationCheckbox: () => getCachedElementById("step-require-confirmation"),
   autoCloseCheckbox: () => getCachedElementById("setting-auto-close-popup"),
   exportStepsBtn: () => getCachedElementById("btn-export-steps"),
   importStepsBtn: () => getCachedElementById("btn-import-steps"),
@@ -60,7 +55,7 @@ const els = {
   importCancel: () => getCachedElementById("import-cancel"),
   importMerge: () => getCachedElementById("import-merge"),
   importReplace: () => getCachedElementById("import-replace"),
-  stepEnabledCheckbox: () => getCachedElementById("step-enabled"),
+  stepEnabledCheckbox: () => getCachedElementById("step-enabled")
 };
 
 function showToast(message, type = "info") {
@@ -68,7 +63,7 @@ function showToast(message, type = "info") {
     elm: els.toast(),
     message,
     type,
-    duration: 3200,
+    duration: 3200
   });
 }
 
@@ -120,7 +115,7 @@ async function ensureFoldersLoaded() {
 
   try {
     state.folders = await messenger.runtime.sendMessage({
-      type: "GET_ALL_FOLDERS",
+      type: "GET_ALL_FOLDERS"
     });
 
     state.foldersById = {};
@@ -159,8 +154,7 @@ function buildFolderSelect(action) {
       opt.value = folder.id;
 
       const depth = (folder.path.match(/\//g) || []).length;
-      opt.textContent =
-        "\u00a0".repeat(Math.max(0, depth - 1) * 2) + folder.name;
+      opt.textContent = "\u00a0".repeat(Math.max(0, depth - 1) * 2) + folder.name;
 
       if (action.folder && action.folder.id === folder.id) {
         opt.selected = true;
@@ -177,14 +171,14 @@ function buildFolderSelect(action) {
 async function persistSteps() {
   await messenger.runtime.sendMessage({
     type: "SAVE_QUICK_STEPS",
-    steps: state.steps,
+    steps: state.steps
   });
 }
 
 async function persistSettings() {
   await messenger.runtime.sendMessage({
     type: "SAVE_SETTINGS",
-    settings: state.settings,
+    settings: state.settings
   });
 }
 
@@ -229,7 +223,7 @@ function setupDraggable({
   dragType = "text/plain",
   dragValue,
   allSelector,
-  onDrop,
+  onDrop
 }) {
   if (dragHandle) {
     element.draggable = false;
@@ -244,7 +238,7 @@ function setupDraggable({
             element.draggable = false;
           }
         },
-        { once: true },
+        { once: true }
       );
     });
   } else {
@@ -306,17 +300,12 @@ function createQuickStepsDragAndDropListeners(item, stepId) {
       const sourceIndex = state.steps.findIndex((s) => s.id === draggedStepId);
       const targetIndex = state.steps.findIndex((s) => s.id === stepId);
 
-      if (
-        sourceIndex === -1 ||
-        targetIndex === -1 ||
-        sourceIndex === targetIndex
-      )
-        return;
+      if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return;
 
       spliceReorder(state.steps, sourceIndex, targetIndex, dropBelow);
       renderSidebar();
       await persistSteps();
-    },
+    }
   });
 }
 
@@ -334,7 +323,7 @@ function createActionDragAndDropListeners(row, index, dragHandle) {
       spliceReorder(state.editing.actions, sourceIndex, index, dropBelow);
       renderActionsList();
       updatePreviewActions();
-    },
+    }
   });
 }
 
@@ -352,9 +341,7 @@ function renderSidebar() {
       const item = document.createElement("div");
       item.className =
         "step-item" +
-        (!state.viewingSettings && state.editingId === step.id
-          ? " active"
-          : "") +
+        (!state.viewingSettings && state.editingId === step.id ? " active" : "") +
         (step.enabled === false ? " step-item-disabled" : "");
       item.dataset.id = step.id;
 
@@ -401,10 +388,8 @@ function renderEditor() {
     els.stepName().value = state.editing.name || "";
     updatePreviewActions();
     renderActionsList();
-    els.colorSwatch().style.backgroundColor =
-      state.editing.color || DEFAULT_COLOR;
-    els.requireConfirmationCheckbox().checked =
-      !!state.editing.requireConfirmation;
+    els.colorSwatch().style.backgroundColor = state.editing.color || DEFAULT_COLOR;
+    els.requireConfirmationCheckbox().checked = !!state.editing.requireConfirmation;
     els.stepEnabledCheckbox().checked = state.editing.enabled !== false;
   }
 
@@ -428,9 +413,7 @@ async function renderActionsList() {
   const list = els.actionsList();
   list.innerHTML = "";
 
-  const needsFolders = state.editing.actions.some(
-    (a) => a.type === "move" || a.type === "copy",
-  );
+  const needsFolders = state.editing.actions.some((a) => a.type === "move" || a.type === "copy");
   if (needsFolders && !state.foldersLoaded) await ensureFoldersLoaded();
 
   state.editing.actions.forEach((action, i) => {
@@ -480,9 +463,7 @@ function attachFolderListener(select, actionIndex) {
 
 function refreshFolderPicker(folderContainer, action, actionIndex) {
   folderContainer.innerHTML = "";
-  const needsFolder = ACTION_TYPES.find(
-    (at) => at.value === action.type,
-  )?.needsFolder;
+  const needsFolder = ACTION_TYPES.find((at) => at.value === action.type)?.needsFolder;
   if (!needsFolder) return;
 
   if (!state.foldersLoaded) {
@@ -535,9 +516,7 @@ function buildActionRow(index, action) {
 
   typeSelect.addEventListener("change", () => {
     state.editing.actions[index].type = typeSelect.value;
-    if (
-      !ACTION_TYPES.find((at) => at.value === typeSelect.value)?.needsFolder
-    ) {
+    if (!ACTION_TYPES.find((at) => at.value === typeSelect.value)?.needsFolder) {
       delete state.editing.actions[index].folder;
     }
     refreshFolderPicker(folderContainer, state.editing.actions[index], index);
@@ -556,9 +535,7 @@ function addAction() {
   state.editing.actions.push({ type: "mark_read" });
   renderActionsList();
   updatePreviewActions();
-  els
-    .actionsList()
-    .lastElementChild?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  els.actionsList().lastElementChild?.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function removeAction(index) {
@@ -578,16 +555,13 @@ function moveAction(index, direction) {
 
 function syncSidebarItem() {
   if (!state.editing) return;
-  const item = document.querySelector(
-    `.step-item[data-id="${state.editing.id}"]`,
-  );
+  const item = document.querySelector(`.step-item[data-id="${state.editing.id}"]`);
   if (!item) return;
   const nameEl = item.querySelector(".step-item-name");
   const metaEl = item.querySelector(".step-item-meta");
 
   if (nameEl) {
-    nameEl.textContent =
-      state.editing.name || getTranslation("optionsPlaceholderTitle");
+    nameEl.textContent = state.editing.name || getTranslation("optionsPlaceholderTitle");
     nameEl.style.color = state.editing.color || DEFAULT_COLOR;
   }
   if (metaEl)
@@ -623,7 +597,7 @@ function startNewStep() {
       color: DEFAULT_COLOR,
       requireConfirmation: false,
       enabled: true,
-      actions: [{ type: "mark_read" }],
+      actions: [{ type: "mark_read" }]
     };
     state.steps.push(newStep);
     state.editingId = newStep.id;
@@ -683,9 +657,7 @@ async function saveCurrentStep() {
 
 async function deleteCurrentStep() {
   const name = state.editing?.name || "Quick Step";
-  const confirmed = await showConfirm(
-    getTranslation("optionsConfirmDeleteMessage", [name]),
-  );
+  const confirmed = await showConfirm(getTranslation("optionsConfirmDeleteMessage", [name]));
   if (!confirmed) return;
 
   state.steps = state.steps.filter((s) => s.id !== state.editingId);
@@ -724,19 +696,14 @@ function exportSteps() {
 // the shape { steps: [...] }, and returns a cleaned array of valid step
 // objects (without ids/colors assumptions), or null if the shape is invalid.
 function normalizeImportedSteps(parsed) {
-  const list = Array.isArray(parsed)
-    ? parsed
-    : Array.isArray(parsed?.steps)
-      ? parsed.steps
-      : null;
+  const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.steps) ? parsed.steps : null;
   if (!list) return null;
 
   const validActionTypes = new Set(ACTION_TYPES.map((a) => a.value));
   const cleaned = [];
 
   for (const raw of list) {
-    if (!raw || typeof raw !== "object" || !Array.isArray(raw.actions))
-      continue;
+    if (!raw || typeof raw !== "object" || !Array.isArray(raw.actions)) continue;
 
     const actions = raw.actions
       .filter((a) => a && validActionTypes.has(a.type))
@@ -753,7 +720,7 @@ function normalizeImportedSteps(parsed) {
             name: a.folder.name || "",
             path: a.folder.path || "",
             accountId: a.folder.accountId,
-            accountName: a.folder.accountName || "",
+            accountName: a.folder.accountName || ""
           };
         }
         return action;
@@ -766,7 +733,7 @@ function normalizeImportedSteps(parsed) {
       color: typeof raw.color === "string" ? raw.color : DEFAULT_COLOR,
       requireConfirmation: raw.requireConfirmation === true,
       enabled: raw.enabled !== false,
-      actions,
+      actions
     });
   }
 
@@ -798,23 +765,19 @@ async function handleImportFile(e) {
   }
 
   const choice = await showImportChoice(
-    getTranslation("optionsImportChoiceMessage", [importedSteps.length]),
+    getTranslation("optionsImportChoiceMessage", [importedSteps.length])
   );
 
   if (choice === "cancel") return;
 
   const freshSteps = importedSteps.map((s) => ({ ...s, id: generateId() }));
 
-  state.steps =
-    choice === "replace" ? freshSteps : [...state.steps, ...freshSteps];
+  state.steps = choice === "replace" ? freshSteps : [...state.steps, ...freshSteps];
 
   try {
     await persistSteps();
     renderSidebar();
-    showToast(
-      getTranslation("optionsToastImported", [importedSteps.length]),
-      "success",
-    );
+    showToast(getTranslation("optionsToastImported", [importedSteps.length]), "success");
   } catch (err) {
     showToast(getTranslation("optionsToastSaveError", [err.message]), "error");
   }
@@ -823,7 +786,7 @@ async function handleImportFile(e) {
 async function init() {
   try {
     state.steps = await messenger.runtime.sendMessage({
-      type: "GET_QUICK_STEPS",
+      type: "GET_QUICK_STEPS"
     });
   } catch (e) {
     showToast(getTranslation("optionsToastLoadError", [e.message]), "error");
@@ -832,7 +795,7 @@ async function init() {
 
   try {
     state.settings = await messenger.runtime.sendMessage({
-      type: "GET_SETTINGS",
+      type: "GET_SETTINGS"
     });
   } catch (e) {
     console.error("[QuickSteps] Could not load settings:", e);
@@ -857,9 +820,7 @@ async function init() {
   els.navSettingsBtn().addEventListener("click", goToSettings);
 
   els.exportStepsBtn().addEventListener("click", exportSteps);
-  els
-    .importStepsBtn()
-    .addEventListener("click", () => els.importFileInput().click());
+  els.importStepsBtn().addEventListener("click", () => els.importFileInput().click());
   els.importFileInput().addEventListener("change", handleImportFile);
 
   els.autoCloseCheckbox().addEventListener("change", async (e) => {
@@ -868,10 +829,7 @@ async function init() {
       await persistSettings();
       showToast(getTranslation("optionsToastSettingsSaved"), "success");
     } catch (err) {
-      showToast(
-        getTranslation("optionsToastSaveError", [err.message]),
-        "error",
-      );
+      showToast(getTranslation("optionsToastSaveError", [err.message]), "error");
     }
   });
 

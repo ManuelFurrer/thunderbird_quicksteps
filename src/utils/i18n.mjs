@@ -80,7 +80,7 @@ const updateSubtreeSet = (sourceDocument, node, selector, update) => {
     node,
     null,
     XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
-    null,
+    null
   );
 
   for (let i = 0, count = items.snapshotLength; i < count; i++) {
@@ -91,35 +91,30 @@ const updateSubtreeSet = (sourceDocument, node, selector, update) => {
 const updateSubtree = (sourceDocument, node) => {
   // Update element content (data-i18n-content) or attribute values based
   // on data-i18n-* attributes assigned to the element.
-  updateSubtreeSet(
-    sourceDocument,
-    node,
-    '*/@*[starts-with(name(), "data-i18n-")]',
-    (attr) => {
-      const key = attr.value;
+  updateSubtreeSet(sourceDocument, node, '*/@*[starts-with(name(), "data-i18n-")]', (attr) => {
+    const key = attr.value;
 
-      let value;
+    let value;
 
-      // If using traditional i18n key placeholders of the form __MSG_*__.
-      if (key.includes(_keyPrefix)) {
-        value = getTranslationFromEscapedKey(key);
-      }
-      // If using the direct i18n keys.
-      else {
-        value = getTranslationFromKey(key);
-      }
+    // If using traditional i18n key placeholders of the form __MSG_*__.
+    if (key.includes(_keyPrefix)) {
+      value = getTranslationFromEscapedKey(key);
+    }
+    // If using the direct i18n keys.
+    else {
+      value = getTranslationFromKey(key);
+    }
 
-      const { ownerElement } = attr;
-      let { target } = i18nAttrRegex.exec(attr.name).groups;
+    const { ownerElement } = attr;
+    let { target } = i18nAttrRegex.exec(attr.name).groups;
 
-      if (target == "content") {
-        ownerElement.textContent = value;
-      } else {
-        // Assume it is an attribute.
-        ownerElement.setAttribute(target, value);
-      }
-    },
-  );
+    if (target == "content") {
+      ownerElement.textContent = value;
+    } else {
+      // Assume it is an attribute.
+      ownerElement.setAttribute(target, value);
+    }
+  });
 
   // Update text nodes containing __MSG_*__ placeholders
   updateSubtreeSet(
@@ -129,7 +124,7 @@ const updateSubtree = (sourceDocument, node) => {
     (text) => {
       if (text.nodeValue.includes(_keyPrefix))
         text.nodeValue = getTranslationFromEscapedKey(text.nodeValue);
-    },
+    }
   );
 
   // Update element attributes (excluding data-i18n-*) containing __MSG_*__ placeholders
@@ -138,9 +133,8 @@ const updateSubtree = (sourceDocument, node) => {
     node,
     `*/@*[not(starts-with(name(), "data-i18n-"))][contains(., "${_keyPrefix}")]`,
     (attr) => {
-      if (attr.value.includes(_keyPrefix))
-        attr.value = getTranslationFromEscapedKey(attr.value);
-    },
+      if (attr.value.includes(_keyPrefix)) attr.value = getTranslationFromEscapedKey(attr.value);
+    }
   );
 };
 
