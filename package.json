@@ -1,10 +1,15 @@
 {
   "scripts": {
     "lint": "oxfmt && oxlint --fix",
-    "lint:check": "oxfmt --check && oxlint"
+    "lint:check": "oxfmt --check && oxlint",
+    "test": "vitest run",
+    "test:ui": "vitest run --watch --ui"
   },
   "devDependencies": {
-    "oxfmt": "^0.58.0",
-    "oxlint": "^1.73.0"
+    "@vitest/ui": "^4.1.10",
+    "jsdom": "^29.1.1",
+    "oxfmt": "^0.60.0",
+    "oxlint": "^1.75.0",
+    "vitest": "^4.1.10"
   }
 }
