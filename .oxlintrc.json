@@ -1,15 +1,24 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": ["**/node_modules/"],
+  "ignorePatterns": [
+    "**/node_modules/"
+  ],
   "options": {
     "maxWarnings": 10
   },
-  "plugins": ["import", "eslint", "promise", "unicorn"],
+  "plugins": [
+    "import",
+    "eslint",
+    "promise",
+    "unicorn"
+  ],
   "categories": {
     "correctness": "error",
-    "perf": "error"
+    "perf": "error",
   },
-  "rules": {},
+  "rules": {
+    "require-await": "error"
+  },
   "env": {
     "builtin": true
   }
