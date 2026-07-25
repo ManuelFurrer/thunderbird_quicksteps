@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": ["**/node_modules/"],
-  "trailingComma": "none"
+  "ignorePatterns": [
+    "**/node_modules/"
+  ],
+  "trailingComma": "none",
+  "singleQuote": true
 }
