@@ -22,7 +22,10 @@ export function createMessengerMock(overrides = {}) {
   const base = {
     i18n: {
       getMessage: vi.fn((key, substitutions) => {
-        if (substitutions === undefined) return key;
+        if (!substitutions || substitutions.length === 0) {
+          return key;
+        }
+
         const subs = Array.isArray(substitutions) ? substitutions : [substitutions];
         return `${key}:${subs.join(',')}`;
       })
