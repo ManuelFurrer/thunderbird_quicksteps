@@ -368,5 +368,22 @@
   },
   "optionsEnabledLabel": {
     "message": "有効"
+  },
+  "optionsAccountsLabel": {
+    "message": "アカウント"
+  },
+  "optionsAccountsAll": {
+    "message": "すべてのアカウント"
+  },
+  "optionsAccountsCount": {
+    "message": "$COUNT$ / $TOTAL$ アカウント",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
   }
 }

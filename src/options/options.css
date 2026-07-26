@@ -60,7 +60,8 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   font-size: 14px;
   color: var(--text);
   background: var(--bg);
@@ -908,4 +909,84 @@ button:disabled {
 
 .step-item-disabled:hover {
   opacity: 0.8;
+}
+
+.account-selector {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--input-bg);
+  min-width: 160px;
+  max-width: 260px;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.account-selector summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 10px;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+.account-selector summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-selector summary:hover {
+  background: var(--step-item-hover);
+}
+
+.account-selector[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.account-selector-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-selector-label.all {
+  color: var(--text-muted);
+}
+
+.account-caret {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.15s;
+}
+
+.account-selector[open] .account-caret {
+  transform: rotate(180deg);
+}
+
+.account-selector-body {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.account-selector .checkbox-row {
+  margin-bottom: 0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.account-selector .checkbox-row:hover {
+  background: var(--step-item-hover);
 }

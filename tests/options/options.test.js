@@ -17,7 +17,8 @@ async function mountOptions({
   steps = [],
   settings,
   folders = FOLDERS,
-  routerOverrides = {}
+  routerOverrides = {},
+  accounts = []
 } = {}) {
   document.documentElement.innerHTML = `<body>${optionsBody}</body>`;
 
@@ -28,6 +29,7 @@ async function mountOptions({
     GET_QUICK_STEPS: () => clone(currentSteps),
     GET_SETTINGS: () => clone(settings ?? { autoClosePopup: false }),
     GET_ALL_FOLDERS: () => clone(folders),
+    GET_ACCOUNTS: () => clone(accounts),
     SAVE_QUICK_STEPS: (message) => {
       currentSteps = clone(message.steps);
       return { success: true };
@@ -54,6 +56,11 @@ async function mountOptions({
 
 function setInputFiles(input, file) {
   Object.defineProperty(input, 'files', { value: [file], configurable: true });
+}
+
+async function openStep(id) {
+  document.querySelector(`.step-item[data-id="${id}"]`).click();
+  await flushPromises();
 }
 
 describe('options page', () => {
@@ -116,8 +123,7 @@ describe('options page', () => {
         ]
       });
 
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       expect(document.getElementById('editor').classList.contains('hidden')).toBe(false);
       expect(document.getElementById('step-name').value).toBe('Archive');
@@ -193,8 +199,7 @@ describe('options page', () => {
       await mountOptions({
         steps: [{ id: 's1', name: 'Step', enabled: true, actions: [{ type: 'mark_read' }] }]
       });
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       document.getElementById('btn-add-action').click();
 
@@ -213,8 +218,7 @@ describe('options page', () => {
       await mountOptions({
         steps: [{ id: 's1', name: 'Step', enabled: true, actions: [{ type: 'mark_read' }] }]
       });
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       const checkbox = document.getElementById('step-enabled');
       checkbox.checked = false;
@@ -237,8 +241,7 @@ describe('options page', () => {
           }
         ]
       });
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       const colorInput = document.getElementById('step-color');
       colorInput.value = '#ff0000';
@@ -252,8 +255,7 @@ describe('options page', () => {
       const { getSteps } = await mountOptions({
         steps: [{ id: 's1', name: 'DeleteMe', enabled: true, actions: [{ type: 'mark_read' }] }]
       });
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       document.getElementById('btn-delete-step').click();
       expect(document.getElementById('confirm-overlay').classList.contains('hidden')).toBe(false);
@@ -276,14 +278,12 @@ describe('options page', () => {
           { id: 's2', name: 'Second', enabled: true, actions: [{ type: 'mark_read' }] }
         ]
       });
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       document.getElementById('step-name').value = 'First (edited)';
       document.getElementById('step-name').dispatchEvent(new window.Event('input'));
 
-      document.querySelector('.step-item[data-id="s2"]').click();
-      await flushPromises();
+      await openStep('s2');
 
       expect(getSteps().find((s) => s.id === 's1').name).toBe('First (edited)');
     });
@@ -297,12 +297,255 @@ describe('options page', () => {
       await flushPromises();
       expect(document.querySelectorAll('.step-item')).toHaveLength(2);
 
-      document.querySelector('.step-item[data-id="s1"]').click();
-      await flushPromises();
+      await openStep('s1');
 
       expect(document.querySelectorAll('.step-item')).toHaveLength(1);
       expect(getSteps()).toHaveLength(1);
       expect(getSteps()[0].id).toBe('s1');
+    });
+  });
+
+  describe('account filter', () => {
+    const ACCOUNTS = [
+      { id: 'a1', name: 'Gmail' },
+      { id: 'a2', name: 'Outlook' },
+      { id: 'a3', name: 'Work IMAP' }
+    ];
+    const BASE_STEP = {
+      id: 's1',
+      name: 'Step',
+      enabled: true,
+      actions: [{ type: 'mark_read' }]
+    };
+
+    it('hides the account filter when fewer than 2 accounts are returned', async () => {
+      await mountOptions({
+        steps: [BASE_STEP],
+        accounts: [{ id: 'a1', name: 'Gmail' }]
+      });
+      await openStep('s1');
+
+      expect(document.getElementById('account-filter-group').classList.contains('hidden')).toBe(
+        true
+      );
+    });
+
+    it('hides the account filter when no accounts are returned', async () => {
+      await mountOptions({ steps: [BASE_STEP], accounts: [] });
+      await openStep('s1');
+
+      expect(document.getElementById('account-filter-group').classList.contains('hidden')).toBe(
+        true
+      );
+    });
+
+    it('shows the account filter when 2 or more accounts exist', async () => {
+      await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(document.getElementById('account-filter-group').classList.contains('hidden')).toBe(
+        false
+      );
+    });
+
+    it('renders one checkbox per account', async () => {
+      await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      const checkboxes = document.querySelectorAll('#account-filter-list input[type=checkbox]');
+      expect(checkboxes).toHaveLength(3);
+    });
+
+    it('checks all accounts by default when the step has no accountIds', async () => {
+      await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+      expect(checkboxes.every((cb) => cb.checked)).toBe(true);
+    });
+
+    it('shows the "all accounts" label when all accounts are checked', async () => {
+      await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(document.getElementById('account-selector-label').textContent).toBe(
+        'optionsAccountsAll'
+      );
+    });
+
+    it('pre-checks only the accounts listed in an existing step accountIds', async () => {
+      const restrictedStep = { ...BASE_STEP, accountIds: ['a1', 'a3'] };
+      await mountOptions({ steps: [restrictedStep], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+
+      expect(checkboxes[0].checked).toBe(true);
+      expect(checkboxes[1].checked).toBe(false);
+      expect(checkboxes[2].checked).toBe(true);
+    });
+
+    it('shows the account name when exactly one account is selected', async () => {
+      const restrictedStep = { ...BASE_STEP, accountIds: ['a2'] };
+      await mountOptions({ steps: [restrictedStep], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(document.getElementById('account-selector-label').textContent).toBe('Outlook');
+    });
+
+    it('shows both account names joined with a comma when exactly two are selected', async () => {
+      const restrictedStep = { ...BASE_STEP, accountIds: ['a1', 'a3'] };
+      await mountOptions({ steps: [restrictedStep], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(document.getElementById('account-selector-label').textContent).toBe(
+        'Gmail, Work IMAP'
+      );
+    });
+
+    it('shows the count label when more than two but not all accounts are selected', async () => {
+      const restrictedStep = { ...BASE_STEP, accountIds: ['a1', 'a2', 'a3'] };
+      await mountOptions({
+        steps: [restrictedStep],
+        accounts: [...ACCOUNTS, { id: 'a4', name: 'Side Project' }]
+      });
+      await openStep('s1');
+
+      expect(document.getElementById('account-selector-label').textContent).toBe(
+        'optionsAccountsCount:3,4'
+      );
+    });
+
+    it('updates accountIds and the selector label when an account is unchecked', async () => {
+      await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(document.getElementById('account-selector-label').textContent).toBe(
+        'optionsAccountsAll'
+      );
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+      checkboxes[1].checked = false; // uncheck Outlook (a2)
+      checkboxes[1].dispatchEvent(new window.Event('change'));
+
+      // 2 remaining: Gmail and Work IMAP
+      expect(document.getElementById('account-selector-label').textContent).toBe(
+        'Gmail, Work IMAP'
+      );
+    });
+
+    it('sets accountIds back to null when all accounts are re-checked', async () => {
+      const restrictedStep = { ...BASE_STEP, accountIds: ['a1'] };
+      await mountOptions({ steps: [restrictedStep], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(document.getElementById('account-selector-label').textContent).toBe('Gmail');
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+      checkboxes[1].checked = true;
+      checkboxes[1].dispatchEvent(new window.Event('change'));
+      checkboxes[2].checked = true;
+      checkboxes[2].dispatchEvent(new window.Event('change'));
+
+      expect(document.getElementById('account-selector-label').textContent).toBe(
+        'optionsAccountsAll'
+      );
+    });
+
+    it('prevents unchecking the last remaining account', async () => {
+      const restrictedStep = { ...BASE_STEP, accountIds: ['a2'] };
+      await mountOptions({ steps: [restrictedStep], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+
+      checkboxes[1].checked = false;
+      checkboxes[1].dispatchEvent(new window.Event('change'));
+
+      expect(checkboxes[1].checked).toBe(true);
+    });
+
+    it('persists accountIds when the step is saved', async () => {
+      const { getSteps } = await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      expect(getSteps()[0].accountIds).toBe(undefined);
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+      checkboxes[0].checked = false;
+      checkboxes[0].dispatchEvent(new window.Event('change'));
+
+      document.getElementById('btn-save').click();
+      await flushPromises();
+
+      expect(getSteps()[0].accountIds).toEqual(['a2', 'a3']);
+    });
+
+    it('saves accountIds as null when all accounts remain checked', async () => {
+      const { getSteps } = await mountOptions({ steps: [BASE_STEP], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      const checkboxes = [
+        ...document.querySelectorAll('#account-filter-list input[type=checkbox]')
+      ];
+      // Force an change first. Otherwise accountIds would be undefined
+      checkboxes[0].checked = false;
+      checkboxes[0].dispatchEvent(new window.Event('change'));
+
+      checkboxes[0].checked = true;
+      checkboxes[0].dispatchEvent(new window.Event('change'));
+
+      document.getElementById('btn-save').click();
+      await flushPromises();
+
+      expect(getSteps()[0].accountIds).toBeNull();
+    });
+
+    it('collapses the selector when navigating to a different step', async () => {
+      const step2 = { id: 's2', name: 'Other', enabled: true, actions: [{ type: 'archive' }] };
+      await mountOptions({ steps: [BASE_STEP, step2], accounts: ACCOUNTS });
+      await openStep('s1');
+
+      document.getElementById('account-selector').setAttribute('open', '');
+      expect(document.getElementById('account-selector').hasAttribute('open')).toBe(true);
+
+      await openStep('s2');
+
+      expect(document.getElementById('account-selector').hasAttribute('open')).toBe(false);
+    });
+
+    it('reloads the correct account selection when switching between steps', async () => {
+      const stepAll = { ...BASE_STEP, id: 's1', accountIds: null };
+      const stepRestricted = {
+        id: 's2',
+        name: 'Restricted',
+        enabled: true,
+        actions: [{ type: 'archive' }],
+        accountIds: ['a2']
+      };
+      await mountOptions({ steps: [stepAll, stepRestricted], accounts: ACCOUNTS });
+
+      await openStep('s1');
+      let checkboxes = [...document.querySelectorAll('#account-filter-list input[type=checkbox]')];
+      expect(checkboxes.every((cb) => cb.checked)).toBe(true);
+
+      await openStep('s2');
+      checkboxes = [...document.querySelectorAll('#account-filter-list input[type=checkbox]')];
+      expect(checkboxes[0].checked).toBe(false);
+      expect(checkboxes[1].checked).toBe(true);
+      expect(checkboxes[2].checked).toBe(false);
     });
   });
 
@@ -376,6 +619,44 @@ describe('options page', () => {
 
       expect(getSteps()).toHaveLength(3);
       expect(document.getElementById('toast').className).toContain('notify-success');
+    });
+
+    it('preserves accountIds from imported steps', async () => {
+      const { getSteps } = await mountOptions({ steps: [] });
+
+      document.getElementById('btn-nav-settings').click();
+      await flushPromises();
+
+      const importedRaw = [
+        { name: 'Restricted', actions: [{ type: 'archive' }], accountIds: ['a1', 'a2'] }
+      ];
+      const file = new window.File([JSON.stringify(importedRaw)], 'export.json', {
+        type: 'application/json'
+      });
+      const input = document.getElementById('import-file-input');
+      setInputFiles(input, file);
+      input.dispatchEvent(new window.Event('change'));
+      await flushPromises();
+
+      expect(getSteps()[0].accountIds).toEqual(['a1', 'a2']);
+    });
+
+    it('normalizes a missing accountIds on import to null', async () => {
+      const { getSteps } = await mountOptions({ steps: [] });
+
+      document.getElementById('btn-nav-settings').click();
+      await flushPromises();
+
+      const importedRaw = [{ name: 'Global', actions: [{ type: 'flag' }] }];
+      const file = new window.File([JSON.stringify(importedRaw)], 'export.json', {
+        type: 'application/json'
+      });
+      const input = document.getElementById('import-file-input');
+      setInputFiles(input, file);
+      input.dispatchEvent(new window.Event('change'));
+      await flushPromises();
+
+      expect(getSteps()[0].accountIds).toBeNull();
     });
 
     it("rejects a file that isn't a valid quick steps export", async () => {

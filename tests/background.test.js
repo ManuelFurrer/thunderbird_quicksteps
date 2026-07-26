@@ -17,6 +17,32 @@ describe('background', () => {
   });
 
   describe('GET_QUICK_STEPS', () => {
+    const makeSteps = () => [
+      { id: '1', name: 'Global', enabled: true, actions: [{ type: 'flag' }], accountIds: null },
+      {
+        id: '2',
+        name: 'Work only',
+        enabled: true,
+        actions: [{ type: 'flag' }],
+        accountIds: ['acct1']
+      },
+      {
+        id: '3',
+        name: 'Personal only',
+        enabled: true,
+        actions: [{ type: 'flag' }],
+        accountIds: ['acct2']
+      },
+      {
+        id: '4',
+        name: 'Personal only',
+        enabled: false,
+        actions: [{ type: 'flag' }],
+        accountIds: ['acct3']
+      },
+      { id: '5', name: 'Legacy', enabled: true, actions: [{ type: 'flag' }] }
+    ];
+
     it('seeds and persists three default steps on first access', async () => {
       const { messenger, listener } = await loadBackground();
 
@@ -67,6 +93,54 @@ describe('background', () => {
 
       expect(steps.map((s) => s.id)).toEqual(['1', '3']);
     });
+
+    it('returns all steps when no accountId is provided', async () => {
+      const { listener } = await loadBackground({
+        storage: { local: { get: vi.fn(() => ({ quicksteps: makeSteps() })) } }
+      });
+
+      const result = await listener({ type: 'GET_QUICK_STEPS' });
+
+      expect(result.map((s) => s.id)).toEqual(['1', '2', '3', '4', '5']);
+    });
+
+    it('returns the correct steps when an accountId is provided', async () => {
+      const { listener } = await loadBackground({
+        storage: { local: { get: vi.fn(() => ({ quicksteps: makeSteps() })) } }
+      });
+
+      const result = await listener({ type: 'GET_QUICK_STEPS', accountId: 'acct2' });
+
+      expect(result.map((s) => s.id)).toEqual(['1', '3', '5']);
+    });
+
+    it('applies both onlyEnabled and accountId filters together', async () => {
+      const { listener } = await loadBackground({
+        storage: { local: { get: vi.fn(() => ({ quicksteps: makeSteps() })) } }
+      });
+
+      const result = await listener({
+        type: 'GET_QUICK_STEPS',
+        onlyEnabled: true,
+        accountId: 'acct2'
+      });
+
+      expect(result.map((s) => s.id)).toEqual(['1', '3', '5']);
+    });
+
+    it("doesn't return the provided accountId, when the account isn't enabled and onlyEnabled is true", async () => {
+      const { listener } = await loadBackground({
+        storage: { local: { get: vi.fn(() => ({ quicksteps: makeSteps() })) } }
+      });
+
+      const result = await listener({
+        type: 'GET_QUICK_STEPS',
+        onlyEnabled: true,
+        accountId: 'acct3'
+      });
+
+      expect(result.map((s) => s.id)).toEqual(['1', '5']);
+    });
   });
 
   describe('SAVE_QUICK_STEPS', () => {
@@ -80,7 +154,7 @@ describe('background', () => {
       expect(messenger.storage.local.set).toHaveBeenCalledWith({ quicksteps: steps });
 
       const updatedSteps = await listener({ type: 'GET_QUICK_STEPS' });
-      expect(updatedSteps).toBe(steps);
+      expect(updatedSteps).toStrictEqual(steps);
     });
   });
 
@@ -159,6 +233,8 @@ describe('background', () => {
     });
 
     it('returns an empty array if messenger.accounts.list throws', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
       const { listener } = await loadBackground({
         accounts: {
           list: vi.fn(() => {
@@ -170,6 +246,8 @@ describe('background', () => {
       const folders = await listener({ type: 'GET_ALL_FOLDERS' });
 
       expect(folders).toEqual([]);
+
+      errorSpy.mockRestore();
     });
 
     it('handles accounts without any subfolders', async () => {
@@ -180,6 +258,43 @@ describe('background', () => {
       const folders = await listener({ type: 'GET_ALL_FOLDERS' });
 
       expect(folders).toEqual([]);
+    });
+  });
+
+  describe('GET_ACCOUNTS', () => {
+    it('returns accounts', async () => {
+      const accounts = [
+        { id: 'a1', name: 'Work Gmail', rootFolder: { subFolders: [] } },
+        { id: 'a2', name: 'Personal Outlook', rootFolder: { subFolders: [] } }
+      ];
+      const { listener } = await loadBackground({
+        accounts: { list: vi.fn(() => accounts) }
+      });
+
+      const result = await listener({ type: 'GET_ACCOUNTS' });
+
+      expect(result).toEqual([
+        { id: 'a1', name: 'Work Gmail' },
+        { id: 'a2', name: 'Personal Outlook' }
+      ]);
+    });
+
+    it('returns an empty array when accounts.list throws', async () => {
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { listener } = await loadBackground({
+        accounts: {
+          list: vi.fn(() => {
+            throw new Error('permission denied');
+          })
+        }
+      });
+
+      const result = await listener({ type: 'GET_ACCOUNTS' });
+
+      expect(result).toEqual([]);
+
+      errorSpy.mockRestore();
     });
   });
 

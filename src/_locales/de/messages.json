@@ -368,5 +368,22 @@
   },
   "optionsEnabledLabel": {
     "message": "Aktiv"
+  },
+  "optionsAccountsLabel": {
+    "message": "Konten"
+  },
+  "optionsAccountsAll": {
+    "message": "Alle Konten"
+  },
+  "optionsAccountsCount": {
+    "message": "$COUNT$ von $TOTAL$ Konten",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
   }
 }

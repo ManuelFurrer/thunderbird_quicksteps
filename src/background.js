@@ -1,48 +1,56 @@
-import { generateId } from "./utils/general-utils.js";
-import { DEFAULT_SETTINGS } from "./utils/quickstep-settings.js";
+import { generateId } from './utils/general-utils.js';
+import { DEFAULT_SETTINGS } from './utils/quickstep-settings.js';
 
 function getDefaultQuickSteps() {
   return [
     {
       id: generateId(),
-      name: messenger.i18n.getMessage("defaultStep1Name"),
-      color: "#4CAF50",
+      name: messenger.i18n.getMessage('defaultStep1Name'),
+      color: '#4CAF50',
       requireConfirmation: false,
       enabled: true,
-      actions: [{ type: "mark_read" }, { type: "archive" }]
+      actions: [{ type: 'mark_read' }, { type: 'archive' }]
     },
     {
       id: generateId(),
-      name: messenger.i18n.getMessage("defaultStep2Name"),
-      color: "#f44336",
+      name: messenger.i18n.getMessage('defaultStep2Name'),
+      color: '#f44336',
       requireConfirmation: true,
       enabled: true,
-      actions: [{ type: "delete" }]
+      actions: [{ type: 'delete' }]
     },
     {
       id: generateId(),
-      name: messenger.i18n.getMessage("defaultStep3Name"),
-      color: "#FF9800",
+      name: messenger.i18n.getMessage('defaultStep3Name'),
+      color: '#FF9800',
       requireConfirmation: false,
       enabled: true,
-      actions: [{ type: "flag" }, { type: "mark_unread" }]
+      actions: [{ type: 'flag' }, { type: 'mark_unread' }]
     }
   ];
 }
 
-async function getQuickSteps(onlyEnabled = false) {
-  let { quicksteps } = await messenger.storage.local.get("quicksteps");
+async function getQuickSteps(onlyEnabled = false, accountId = null) {
+  let { quicksteps } = await messenger.storage.local.get('quicksteps');
 
   if (quicksteps === undefined) {
     quicksteps = getDefaultQuickSteps();
     await messenger.storage.local.set({ quicksteps });
   }
 
-  if (onlyEnabled) {
-    return quicksteps.filter((step) => step.enabled !== false); // Uses !== false to include legacy items that lack the 'enabled' property.
+  if (!quicksteps || !quicksteps.length) {
+    return [];
   }
 
-  return quicksteps || [];
+  return quicksteps.filter((step) => {
+    return (
+      (!onlyEnabled || step.enabled !== false) && // Uses !== false to include legacy items that lack the 'enabled' property.
+      (!accountId ||
+        !step.accountIds ||
+        step.accountIds.length === 0 ||
+        step.accountIds.includes(accountId))
+    );
+  });
 }
 
 async function saveQuickSteps(steps) {
@@ -51,7 +59,7 @@ async function saveQuickSteps(steps) {
 }
 
 async function getSettings() {
-  const result = await messenger.storage.local.get("settings");
+  const result = await messenger.storage.local.get('settings');
   return { ...DEFAULT_SETTINGS, ...result.settings };
 }
 
@@ -65,7 +73,7 @@ function flattenFolders(folders, accountId, accountName, result = []) {
 
   for (const folder of folders) {
     // Exclude special folders like [Gmail] which are not actual mail folders
-    if (folder.name !== "[Gmail]") {
+    if (folder.name !== '[Gmail]') {
       result.push({
         accountId,
         accountName,
@@ -81,6 +89,16 @@ function flattenFolders(folders, accountId, accountName, result = []) {
   }
 
   return result;
+}
+
+async function getAccounts() {
+  try {
+    const accounts = await messenger.accounts.list();
+    return accounts.map((a) => ({ id: a.id, name: a.name }));
+  } catch (e) {
+    console.error('[QuickSteps] Error getting accounts:', e);
+    return [];
+  }
 }
 
 async function getAllFolders() {
@@ -101,7 +119,7 @@ async function getAllFolders() {
 
     return allFolders;
   } catch (e) {
-    console.error("[QuickSteps] Error getting folders:", e);
+    console.error('[QuickSteps] Error getting folders:', e);
     return [];
   }
 }
@@ -115,56 +133,56 @@ async function executeActions(messages, actions) {
 
     try {
       switch (action.type) {
-        case "move":
+        case 'move':
           if (!action.folder) {
-            throw new Error(messenger.i18n.getMessage("errorNoFolderSpecified"));
+            throw new Error(messenger.i18n.getMessage('errorNoFolderSpecified'));
           }
           await messenger.messages.move(messageIds, action.folder.id);
           break;
 
-        case "copy":
+        case 'copy':
           if (!action.folder) {
-            throw new Error(messenger.i18n.getMessage("errorNoFolderSpecified"));
+            throw new Error(messenger.i18n.getMessage('errorNoFolderSpecified'));
           }
           await messenger.messages.copy(messageIds, action.folder.id);
           break;
 
-        case "delete":
+        case 'delete':
           await messenger.messages.delete(messageIds);
           break;
 
-        case "delete_permanent":
+        case 'delete_permanent':
           await messenger.messages.delete(messageIds, {
             deletePermanently: true
           });
           break;
 
-        case "archive":
+        case 'archive':
           await messenger.messages.archive(messageIds);
           break;
 
-        case "mark_read":
+        case 'mark_read':
           await Promise.all(messageIds.map((id) => messenger.messages.update(id, { read: true })));
           break;
 
-        case "mark_unread":
+        case 'mark_unread':
           await Promise.all(messageIds.map((id) => messenger.messages.update(id, { read: false })));
           break;
 
-        case "flag":
+        case 'flag':
           await Promise.all(
             messageIds.map((id) => messenger.messages.update(id, { flagged: true }))
           );
           break;
 
-        case "unflag":
+        case 'unflag':
           await Promise.all(
             messageIds.map((id) => messenger.messages.update(id, { flagged: false }))
           );
           break;
 
         default:
-          throw new Error(messenger.i18n.getMessage("errorUnknownActionType"));
+          throw new Error(messenger.i18n.getMessage('errorUnknownActionType'));
       }
 
       results.push({ action: action.type, success: true });
@@ -184,13 +202,13 @@ async function executeQuickStep(quickStepId, tabId) {
   if (!step)
     return {
       success: false,
-      errors: [messenger.i18n.getMessage("errorQuickStepNotFound")]
+      errors: [messenger.i18n.getMessage('errorQuickStepNotFound')]
     };
 
   if (!step.actions?.length)
     return {
       success: false,
-      errors: [messenger.i18n.getMessage("errorNoActionsAssigned")]
+      errors: [messenger.i18n.getMessage('errorNoActionsAssigned')]
     };
 
   const messages = (await messenger.messageDisplay.getDisplayedMessages(tabId)).messages || [];
@@ -198,7 +216,7 @@ async function executeQuickStep(quickStepId, tabId) {
   if (messages.length === 0) {
     return {
       success: false,
-      errors: [messenger.i18n.getMessage("errorNoMessageSelected")]
+      errors: [messenger.i18n.getMessage('errorNoMessageSelected')]
     };
   }
 
@@ -218,17 +236,19 @@ async function executeQuickStep(quickStepId, tabId) {
 
 messenger.runtime.onMessage.addListener((message) => {
   switch (message.type) {
-    case "GET_QUICK_STEPS":
-      return getQuickSteps(message.onlyEnabled);
-    case "SAVE_QUICK_STEPS":
+    case 'GET_QUICK_STEPS':
+      return getQuickSteps(message.onlyEnabled, message.accountId);
+    case 'SAVE_QUICK_STEPS':
       return saveQuickSteps(message.steps);
-    case "EXECUTE_QUICK_STEP":
+    case 'EXECUTE_QUICK_STEP':
       return executeQuickStep(message.quickStepId, message.tabId);
-    case "GET_ALL_FOLDERS":
+    case 'GET_ALL_FOLDERS':
       return getAllFolders();
-    case "GET_SETTINGS":
+    case 'GET_ACCOUNTS':
+      return getAccounts();
+    case 'GET_SETTINGS':
       return getSettings();
-    case "SAVE_SETTINGS":
+    case 'SAVE_SETTINGS':
       return saveSettings(message.settings);
   }
 });

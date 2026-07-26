@@ -1,8 +1,8 @@
-import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
-import { getActionLabel } from "../utils/quickstep-actions.js";
-import { notify } from "../utils/notifications.js";
-import { getCachedElementById } from "../utils/dom-utils.js";
-import { DEFAULT_SETTINGS } from "../utils/quickstep-settings.js";
+import { localizeDocument, getTranslation } from '../utils/i18n.mjs';
+import { getActionLabel } from '../utils/quickstep-actions.js';
+import { notify } from '../utils/notifications.js';
+import { getCachedElementById } from '../utils/dom-utils.js';
+import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
 
 let settings = { ...DEFAULT_SETTINGS };
 
@@ -18,9 +18,9 @@ async function getCurrentMailTabId() {
   return null;
 }
 
-function showStatus(message, type = "info") {
+function showStatus(message, type = 'info') {
   notify({
-    elm: getCachedElementById("status-bar"),
+    elm: getCachedElementById('status-bar'),
     message,
     type
   });
@@ -28,25 +28,25 @@ function showStatus(message, type = "info") {
 
 function showConfirm(message) {
   return new Promise((resolve) => {
-    const overlay = getCachedElementById("confirm-overlay");
-    const messageEl = getCachedElementById("confirm-message");
-    const runBtn = getCachedElementById("confirm-run");
-    const cancelBtn = getCachedElementById("confirm-cancel");
+    const overlay = getCachedElementById('confirm-overlay');
+    const messageEl = getCachedElementById('confirm-message');
+    const runBtn = getCachedElementById('confirm-run');
+    const cancelBtn = getCachedElementById('confirm-cancel');
 
     messageEl.textContent = message;
-    overlay.classList.remove("hidden");
+    overlay.classList.remove('hidden');
 
     function done(result) {
-      overlay.classList.add("hidden");
-      runBtn.removeEventListener("click", onRun);
-      cancelBtn.removeEventListener("click", onCancel);
+      overlay.classList.add('hidden');
+      runBtn.removeEventListener('click', onRun);
+      cancelBtn.removeEventListener('click', onCancel);
       resolve(result);
     }
     const onRun = () => done(true);
     const onCancel = () => done(false);
 
-    runBtn.addEventListener("click", onRun);
-    cancelBtn.addEventListener("click", onCancel);
+    runBtn.addEventListener('click', onRun);
+    cancelBtn.addEventListener('click', onCancel);
   });
 }
 
@@ -57,53 +57,53 @@ function openOptions() {
 
 async function executeStep(step, btn) {
   btn.disabled = true;
-  btn.classList.add("executing");
+  btn.classList.add('executing');
 
   try {
     const tabId = await getCurrentMailTabId();
     if (tabId === null) {
-      showStatus(getTranslation("statusNoMailTab"), "error");
+      showStatus(getTranslation('statusNoMailTab'), 'error');
       return;
     }
 
     const result = await messenger.runtime.sendMessage({
-      type: "EXECUTE_QUICK_STEP",
+      type: 'EXECUTE_QUICK_STEP',
       quickStepId: step.id,
       tabId
     });
 
     if (result.success) {
       const count = result.messageCount;
-      const key = count === 1 ? "statusAppliedSingle" : "statusAppliedMultiple";
-      showStatus(getTranslation(key, [step.name, count.toString()]), "success");
+      const key = count === 1 ? 'statusAppliedSingle' : 'statusAppliedMultiple';
+      showStatus(getTranslation(key, [step.name, count.toString()]), 'success');
 
       if (settings.autoClosePopup) {
         window.close();
       }
     } else if (result.anySucceeded) {
       const count = result.messageCount;
-      const errorDetail = result.errors?.length ? `: ${result.errors[0]}` : ".";
+      const errorDetail = result.errors?.length ? `: ${result.errors[0]}` : '.';
 
       showStatus(
-        getTranslation("statusAppliedWithErrors", [step.name, count.toString(), errorDetail]),
-        "warning"
+        getTranslation('statusAppliedWithErrors', [step.name, count.toString(), errorDetail]),
+        'warning'
       );
     } else if (result.errors?.length) {
-      showStatus(getTranslation("statusError", [result.errors[0]]), "error");
+      showStatus(getTranslation('statusError', [result.errors[0]]), 'error');
     } else {
-      showStatus(getTranslation("statusActionFailed"), "error");
+      showStatus(getTranslation('statusActionFailed'), 'error');
     }
   } catch (e) {
-    showStatus(getTranslation("statusError", [e.message]), "error");
+    showStatus(getTranslation('statusError', [e.message]), 'error');
   } finally {
     btn.disabled = false;
-    btn.classList.remove("executing");
+    btn.classList.remove('executing');
   }
 }
 
 async function handleStepClick(step, btn) {
   if (step.requireConfirmation) {
-    const confirmed = await showConfirm(getTranslation("popupConfirmMessage", [step.name]));
+    const confirmed = await showConfirm(getTranslation('popupConfirmMessage', [step.name]));
     if (!confirmed) return;
   }
 
@@ -111,77 +111,88 @@ async function handleStepClick(step, btn) {
 }
 
 function createStepButton(step) {
-  const btn = document.createElement("button");
-  btn.className = "step-btn";
-  btn.style.setProperty("--step-color", step.color || "#0078D4");
+  const btn = document.createElement('button');
+  btn.className = 'step-btn';
+  btn.style.setProperty('--step-color', step.color || '#0078D4');
 
-  const info = document.createElement("div");
-  info.className = "step-info";
+  const info = document.createElement('div');
+  info.className = 'step-info';
 
-  const name = document.createElement("span");
-  name.className = "step-name";
+  const name = document.createElement('span');
+  name.className = 'step-name';
   name.textContent = step.name;
 
-  const desc = document.createElement("span");
-  desc.className = "step-desc";
-  desc.textContent = step.actions.map(getActionLabel).join(" → ");
+  const desc = document.createElement('span');
+  desc.className = 'step-desc';
+  desc.textContent = step.actions.map(getActionLabel).join(' → ');
 
   info.append(name, desc);
   btn.append(info);
-  btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(" → ")}`;
+  btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(' → ')}`;
 
-  btn.addEventListener("click", () => handleStepClick(step, btn));
+  btn.addEventListener('click', () => handleStepClick(step, btn));
   return btn;
 }
 
-async function loadAndRender() {
-  const loading = getCachedElementById("loading");
-  const container = getCachedElementById("steps-container");
-  const emptyState = getCachedElementById("empty-state");
+async function getCurrentAccountId() {
+  try {
+    const mailTabs = await messenger.mailTabs.query({ active: true, currentWindow: true });
+    return mailTabs[0]?.displayedFolder?.accountId ?? null;
+  } catch {}
+  return null;
+}
 
-  loading.classList.remove("hidden");
-  container.classList.add("hidden");
-  emptyState.classList.add("hidden");
+async function loadAndRender() {
+  const loading = getCachedElementById('loading');
+  const container = getCachedElementById('steps-container');
+  const emptyState = getCachedElementById('empty-state');
+
+  loading.classList.remove('hidden');
+  container.classList.add('hidden');
+  emptyState.classList.add('hidden');
+
+  const accountId = await getCurrentAccountId();
 
   let steps;
   try {
     steps = await messenger.runtime.sendMessage({
-      type: "GET_QUICK_STEPS",
-      onlyEnabled: true
+      type: 'GET_QUICK_STEPS',
+      onlyEnabled: true,
+      accountId
     });
   } catch (e) {
-    loading.classList.add("hidden");
-    showStatus(getTranslation("statusLoadError", [e.message]), "error");
+    loading.classList.add('hidden');
+    showStatus(getTranslation('statusLoadError', [e.message]), 'error');
     return;
   }
 
-  loading.classList.add("hidden");
+  loading.classList.add('hidden');
 
   if (!steps || steps.length === 0) {
-    emptyState.classList.remove("hidden");
+    emptyState.classList.remove('hidden');
     return;
   }
 
-  container.innerHTML = "";
+  container.innerHTML = '';
 
   for (const step of steps) {
     container.appendChild(createStepButton(step));
   }
 
-  container.classList.remove("hidden");
+  container.classList.remove('hidden');
 }
 
 async function loadSettings() {
   try {
-    settings = await messenger.runtime.sendMessage({ type: "GET_SETTINGS" });
+    settings = await messenger.runtime.sendMessage({ type: 'GET_SETTINGS' });
   } catch (e) {
-    console.error("[QuickSteps] Could not load settings:", e);
+    console.error('[QuickSteps] Could not load settings:', e);
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  getCachedElementById("btn-settings").addEventListener("click", openOptions);
-  getCachedElementById("createFirstBtn").addEventListener("click", openOptions);
+document.addEventListener('DOMContentLoaded', () => {
+  getCachedElementById('btn-settings').addEventListener('click', openOptions);
+  getCachedElementById('createFirstBtn').addEventListener('click', openOptions);
 
   loadSettings();
   loadAndRender();

@@ -368,5 +368,22 @@
   },
   "optionsEnabledLabel": {
     "message": "Включено"
+  },
+  "optionsAccountsLabel": {
+    "message": "Учетные записи"
+  },
+  "optionsAccountsAll": {
+    "message": "Все учетные записи"
+  },
+  "optionsAccountsCount": {
+    "message": "$COUNT$ из $TOTAL$ учетных записей",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
   }
 }

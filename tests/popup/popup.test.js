@@ -8,7 +8,14 @@ const popupHtmlPath = resolve(process.cwd(), 'src/popup/popup.html');
 const popupHtml = readFileSync(popupHtmlPath, 'utf-8');
 const popupBody = popupHtml.match(/<body>([\s\S]*)<\/body>/)[1];
 
-async function mountPopup({ steps = [], settings, executeResult, onExecute } = {}) {
+async function mountPopup({
+  steps = [],
+  settings,
+  executeResult,
+  onExecute,
+  mailTab,
+  mailTabsQuery
+} = {}) {
   document.documentElement.innerHTML = `<body>${popupBody}</body>`;
 
   const sendMessage = createSendMessageRouter({
@@ -20,9 +27,11 @@ async function mountPopup({ steps = [], settings, executeResult, onExecute } = {
     }
   });
 
+  const resolvedQueryFn = mailTabsQuery ?? vi.fn(() => [mailTab ?? { tabId: 13 }]);
+
   const messenger = createMessengerMock({
     runtime: { sendMessage, openOptionsPage: vi.fn() },
-    mailTabs: { query: vi.fn(() => [{ tabId: 42 }]) }
+    mailTabs: { query: resolvedQueryFn }
   });
   globalThis.messenger = messenger;
 
@@ -92,6 +101,67 @@ describe('popup', () => {
     });
   });
 
+  describe('account filtering', () => {
+    it('passes the accountId from the displayed folder to GET_QUICK_STEPS', async () => {
+      const { messenger } = await mountPopup({
+        steps: [],
+        mailTab: { tabId: 13, displayedFolder: { accountId: 'acct-gmail' } }
+      });
+
+      expect(messenger.runtime.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'GET_QUICK_STEPS',
+          onlyEnabled: true,
+          accountId: 'acct-gmail'
+        })
+      );
+    });
+
+    it('passes accountId: null when the active tab has no displayed folder', async () => {
+      const { messenger } = await mountPopup({
+        steps: [],
+        mailTab: { tabId: 13 }
+      });
+
+      expect(messenger.runtime.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'GET_QUICK_STEPS',
+          accountId: null
+        })
+      );
+    });
+
+    it('passes accountId: null when mailTabs.query throws', async () => {
+      const { messenger } = await mountPopup({
+        steps: [],
+        mailTabsQuery: vi.fn(() => {
+          throw new Error('no mail tab access');
+        })
+      });
+
+      expect(messenger.runtime.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'GET_QUICK_STEPS',
+          accountId: null
+        })
+      );
+    });
+
+    it('passes accountId: null when mailTabs.query returns an empty array', async () => {
+      const { messenger } = await mountPopup({
+        steps: [],
+        mailTabsQuery: vi.fn(() => [])
+      });
+
+      expect(messenger.runtime.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'GET_QUICK_STEPS',
+          accountId: null
+        })
+      );
+    });
+  });
+
   describe('executing', () => {
     it("executes a quick step immediately when it doesn't require confirmation", async () => {
       const onExecute = vi.fn();
@@ -105,7 +175,7 @@ describe('popup', () => {
       await flushPromises();
 
       expect(onExecute).toHaveBeenCalledWith(
-        expect.objectContaining({ type: 'EXECUTE_QUICK_STEP', quickStepId: 's1', tabId: 42 })
+        expect.objectContaining({ type: 'EXECUTE_QUICK_STEP', quickStepId: 's1', tabId: 13 })
       );
       const statusBar = document.getElementById('status-bar');
       expect(statusBar.classList.contains('hidden')).toBe(false);

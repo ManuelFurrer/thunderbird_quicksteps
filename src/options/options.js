@@ -1,14 +1,14 @@
-import { localizeDocument, getTranslation } from "../utils/i18n.mjs";
-import { generateId } from "../utils/general-utils.js";
-import { getActionLabel, ACTION_TYPES } from "../utils/quickstep-actions.js";
-import { notify } from "../utils/notifications.js";
-import { getCachedElementById } from "../utils/dom-utils.js";
-import { DEFAULT_SETTINGS } from "../utils/quickstep-settings.js";
+import { localizeDocument, getTranslation } from '../utils/i18n.mjs';
+import { generateId } from '../utils/general-utils.js';
+import { getActionLabel, ACTION_TYPES } from '../utils/quickstep-actions.js';
+import { notify } from '../utils/notifications.js';
+import { getCachedElementById } from '../utils/dom-utils.js';
+import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
 
-const DEFAULT_COLOR = "#0078D4";
+const DEFAULT_COLOR = '#0078D4';
 
 function isStepBlank(step) {
-  return !step.name.trim() && step.actions.length === 1 && step.actions[0].type === "mark_read";
+  return !step.name.trim() && step.actions.length === 1 && step.actions[0].type === 'mark_read';
 }
 
 let state = {
@@ -17,6 +17,8 @@ let state = {
   foldersById: {},
   foldersByAccount: {},
   foldersLoaded: false,
+  accounts: [],
+  accountsLoaded: false,
   editing: null,
   editingId: null,
   isNew: false,
@@ -25,40 +27,40 @@ let state = {
 };
 
 const els = {
-  stepsList: () => getCachedElementById("steps-list"),
-  sidebarEmpty: () => getCachedElementById("sidebar-empty"),
-  placeholder: () => getCachedElementById("editor-placeholder"),
-  editor: () => getCachedElementById("editor"),
-  settingsView: () => getCachedElementById("settings-view"),
-  editorFooter: () => getCachedElementById("editor-footer"),
-  navSettingsBtn: () => getCachedElementById("btn-nav-settings"),
-  stepName: () => getCachedElementById("step-name"),
-  previewActions: () => getCachedElementById("editor-preview-actions"),
-  actionsList: () => getCachedElementById("actions-list"),
-  addActionBtn: () => getCachedElementById("btn-add-action"),
-  saveBtn: () => getCachedElementById("btn-save"),
-  deleteStepBtn: () => getCachedElementById("btn-delete-step"),
-  newStepBtn: () => getCachedElementById("btn-new-step"),
-  confirmOverlay: () => getCachedElementById("confirm-overlay"),
-  confirmMessage: () => getCachedElementById("confirm-message"),
-  confirmOk: () => getCachedElementById("confirm-ok"),
-  confirmCancel: () => getCachedElementById("confirm-cancel"),
-  toast: () => getCachedElementById("toast"),
-  colorSwatch: () => getCachedElementById("color-swatch"),
-  requireConfirmationCheckbox: () => getCachedElementById("step-require-confirmation"),
-  autoCloseCheckbox: () => getCachedElementById("setting-auto-close-popup"),
-  exportStepsBtn: () => getCachedElementById("btn-export-steps"),
-  importStepsBtn: () => getCachedElementById("btn-import-steps"),
-  importFileInput: () => getCachedElementById("import-file-input"),
-  importOverlay: () => getCachedElementById("import-overlay"),
-  importMessage: () => getCachedElementById("import-message"),
-  importCancel: () => getCachedElementById("import-cancel"),
-  importMerge: () => getCachedElementById("import-merge"),
-  importReplace: () => getCachedElementById("import-replace"),
-  stepEnabledCheckbox: () => getCachedElementById("step-enabled")
+  stepsList: () => getCachedElementById('steps-list'),
+  sidebarEmpty: () => getCachedElementById('sidebar-empty'),
+  placeholder: () => getCachedElementById('editor-placeholder'),
+  editor: () => getCachedElementById('editor'),
+  settingsView: () => getCachedElementById('settings-view'),
+  editorFooter: () => getCachedElementById('editor-footer'),
+  navSettingsBtn: () => getCachedElementById('btn-nav-settings'),
+  stepName: () => getCachedElementById('step-name'),
+  previewActions: () => getCachedElementById('editor-preview-actions'),
+  actionsList: () => getCachedElementById('actions-list'),
+  addActionBtn: () => getCachedElementById('btn-add-action'),
+  saveBtn: () => getCachedElementById('btn-save'),
+  deleteStepBtn: () => getCachedElementById('btn-delete-step'),
+  newStepBtn: () => getCachedElementById('btn-new-step'),
+  confirmOverlay: () => getCachedElementById('confirm-overlay'),
+  confirmMessage: () => getCachedElementById('confirm-message'),
+  confirmOk: () => getCachedElementById('confirm-ok'),
+  confirmCancel: () => getCachedElementById('confirm-cancel'),
+  toast: () => getCachedElementById('toast'),
+  colorSwatch: () => getCachedElementById('color-swatch'),
+  requireConfirmationCheckbox: () => getCachedElementById('step-require-confirmation'),
+  autoCloseCheckbox: () => getCachedElementById('setting-auto-close-popup'),
+  exportStepsBtn: () => getCachedElementById('btn-export-steps'),
+  importStepsBtn: () => getCachedElementById('btn-import-steps'),
+  importFileInput: () => getCachedElementById('import-file-input'),
+  importOverlay: () => getCachedElementById('import-overlay'),
+  importMessage: () => getCachedElementById('import-message'),
+  importCancel: () => getCachedElementById('import-cancel'),
+  importMerge: () => getCachedElementById('import-merge'),
+  importReplace: () => getCachedElementById('import-replace'),
+  stepEnabledCheckbox: () => getCachedElementById('step-enabled')
 };
 
-function showToast(message, type = "info") {
+function showToast(message, type = 'info') {
   notify({
     elm: els.toast(),
     message,
@@ -70,43 +72,43 @@ function showToast(message, type = "info") {
 function showConfirm(message) {
   return new Promise((resolve) => {
     els.confirmMessage().textContent = message;
-    els.confirmOverlay().classList.remove("hidden");
+    els.confirmOverlay().classList.remove('hidden');
 
     function done(result) {
-      els.confirmOverlay().classList.add("hidden");
-      els.confirmOk().removeEventListener("click", onOk);
-      els.confirmCancel().removeEventListener("click", onCancel);
+      els.confirmOverlay().classList.add('hidden');
+      els.confirmOk().removeEventListener('click', onOk);
+      els.confirmCancel().removeEventListener('click', onCancel);
       resolve(result);
     }
     const onOk = () => done(true);
     const onCancel = () => done(false);
 
-    els.confirmOk().addEventListener("click", onOk);
-    els.confirmCancel().addEventListener("click", onCancel);
+    els.confirmOk().addEventListener('click', onOk);
+    els.confirmCancel().addEventListener('click', onCancel);
   });
 }
 
 function showImportChoice(message) {
-  if (!state.steps.length) return "merge";
+  if (!state.steps.length) return 'merge';
 
   return new Promise((resolve) => {
     els.importMessage().textContent = message;
-    els.importOverlay().classList.remove("hidden");
+    els.importOverlay().classList.remove('hidden');
 
     function done(result) {
-      els.importOverlay().classList.add("hidden");
-      els.importCancel().removeEventListener("click", onCancel);
-      els.importMerge().removeEventListener("click", onMerge);
-      els.importReplace().removeEventListener("click", onReplace);
+      els.importOverlay().classList.add('hidden');
+      els.importCancel().removeEventListener('click', onCancel);
+      els.importMerge().removeEventListener('click', onMerge);
+      els.importReplace().removeEventListener('click', onReplace);
       resolve(result);
     }
-    const onCancel = () => done("cancel");
-    const onMerge = () => done("merge");
-    const onReplace = () => done("replace");
+    const onCancel = () => done('cancel');
+    const onMerge = () => done('merge');
+    const onReplace = () => done('replace');
 
-    els.importCancel().addEventListener("click", onCancel);
-    els.importMerge().addEventListener("click", onMerge);
-    els.importReplace().addEventListener("click", onReplace);
+    els.importCancel().addEventListener('click', onCancel);
+    els.importMerge().addEventListener('click', onMerge);
+    els.importReplace().addEventListener('click', onReplace);
   });
 }
 
@@ -115,7 +117,7 @@ async function ensureFoldersLoaded() {
 
   try {
     state.folders = await messenger.runtime.sendMessage({
-      type: "GET_ALL_FOLDERS"
+      type: 'GET_ALL_FOLDERS'
     });
 
     state.foldersById = {};
@@ -130,7 +132,7 @@ async function ensureFoldersLoaded() {
 
     state.foldersLoaded = true;
   } catch (e) {
-    console.error("[QuickSteps] Could not load folders:", e);
+    console.error('[QuickSteps] Could not load folders:', e);
     state.folders = [];
     state.foldersById = {};
     state.foldersByAccount = {};
@@ -138,23 +140,23 @@ async function ensureFoldersLoaded() {
 }
 
 function buildFolderSelect(action) {
-  const select = document.createElement("select");
-  select.className = "action-folder-select";
+  const select = document.createElement('select');
+  select.className = 'action-folder-select';
 
-  const blank = document.createElement("option");
-  blank.value = "";
-  blank.textContent = getTranslation("optionsSelectFolderPlaceholder");
+  const blank = document.createElement('option');
+  blank.value = '';
+  blank.textContent = getTranslation('optionsSelectFolderPlaceholder');
   select.appendChild(blank);
 
   for (const [accountName, folders] of Object.entries(state.foldersByAccount)) {
-    const group = document.createElement("optgroup");
+    const group = document.createElement('optgroup');
     group.label = accountName;
     for (const folder of folders) {
-      const opt = document.createElement("option");
+      const opt = document.createElement('option');
       opt.value = folder.id;
 
       const depth = (folder.path.match(/\//g) || []).length;
-      opt.textContent = "\u00a0".repeat(Math.max(0, depth - 1) * 2) + folder.name;
+      opt.textContent = '\u00a0'.repeat(Math.max(0, depth - 1) * 2) + folder.name;
 
       if (action.folder && action.folder.id === folder.id) {
         opt.selected = true;
@@ -170,14 +172,14 @@ function buildFolderSelect(action) {
 
 async function persistSteps() {
   await messenger.runtime.sendMessage({
-    type: "SAVE_QUICK_STEPS",
+    type: 'SAVE_QUICK_STEPS',
     steps: state.steps
   });
 }
 
 async function persistSettings() {
   await messenger.runtime.sendMessage({
-    type: "SAVE_SETTINGS",
+    type: 'SAVE_SETTINGS',
     settings: state.settings
   });
 }
@@ -190,7 +192,7 @@ async function autoSave() {
     return;
   }
 
-  if (!state.editing.name.trim()) state.editing.name = "Untitled";
+  if (!state.editing.name.trim()) state.editing.name = 'Untitled';
 
   const idx = state.steps.findIndex((x) => x.id === state.editing.id);
   const clone = JSON.parse(JSON.stringify(state.editing));
@@ -200,7 +202,7 @@ async function autoSave() {
   try {
     await persistSteps();
   } catch (e) {
-    console.error("[QuickSteps] Auto-save failed:", e);
+    console.error('[QuickSteps] Auto-save failed:', e);
   }
 }
 
@@ -220,7 +222,7 @@ function spliceReorder(arr, sourceIndex, targetIndex, dropBelow) {
 function setupDraggable({
   element,
   dragHandle = null,
-  dragType = "text/plain",
+  dragType = 'text/plain',
   dragValue,
   allSelector,
   onDrop
@@ -228,13 +230,13 @@ function setupDraggable({
   if (dragHandle) {
     element.draggable = false;
 
-    dragHandle.addEventListener("mousedown", () => {
+    dragHandle.addEventListener('mousedown', () => {
       element.draggable = true;
 
       window.addEventListener(
-        "mouseup",
+        'mouseup',
         () => {
-          if (!element.classList.contains("dragging")) {
+          if (!element.classList.contains('dragging')) {
             element.draggable = false;
           }
         },
@@ -245,32 +247,32 @@ function setupDraggable({
     element.draggable = true;
   }
 
-  element.addEventListener("dragstart", (e) => {
-    e.dataTransfer.effectAllowed = "move";
+  element.addEventListener('dragstart', (e) => {
+    e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData(dragType, String(dragValue));
-    element.classList.add("dragging");
+    element.classList.add('dragging');
   });
 
-  element.addEventListener("dragover", (e) => {
+  element.addEventListener('dragover', (e) => {
     e.preventDefault();
-    if (element.classList.contains("dragging")) return;
+    if (element.classList.contains('dragging')) return;
 
     const bounding = element.getBoundingClientRect();
     const dropBelow = e.clientY - bounding.top > bounding.height / 2;
 
-    element.classList.toggle("drag-over-bottom", dropBelow);
-    element.classList.toggle("drag-over-top", !dropBelow);
+    element.classList.toggle('drag-over-bottom', dropBelow);
+    element.classList.toggle('drag-over-top', !dropBelow);
   });
 
-  element.addEventListener("dragleave", (e) => {
+  element.addEventListener('dragleave', (e) => {
     if (!e.relatedTarget || !element.contains(e.relatedTarget)) {
-      element.classList.remove("drag-over-top", "drag-over-bottom");
+      element.classList.remove('drag-over-top', 'drag-over-bottom');
     }
   });
 
-  element.addEventListener("drop", async (e) => {
+  element.addEventListener('drop', async (e) => {
     e.preventDefault();
-    element.classList.remove("drag-over-top", "drag-over-bottom");
+    element.classList.remove('drag-over-top', 'drag-over-bottom');
 
     const incomingData = e.dataTransfer.getData(dragType);
     if (!incomingData) return;
@@ -281,11 +283,11 @@ function setupDraggable({
     await onDrop(incomingData, dropBelow);
   });
 
-  element.addEventListener("dragend", () => {
+  element.addEventListener('dragend', () => {
     if (dragHandle) element.draggable = false;
-    element.classList.remove("dragging");
+    element.classList.remove('dragging');
     document.querySelectorAll(allSelector).forEach((el) => {
-      el.classList.remove("drag-over-top", "drag-over-bottom");
+      el.classList.remove('drag-over-top', 'drag-over-bottom');
     });
   });
 }
@@ -293,9 +295,9 @@ function setupDraggable({
 function createQuickStepsDragAndDropListeners(item, stepId) {
   setupDraggable({
     element: item,
-    dragType: "application/x-quicksteps-step",
+    dragType: 'application/x-quicksteps-step',
     dragValue: stepId,
-    allSelector: ".step-item",
+    allSelector: '.step-item',
     onDrop: async (draggedStepId, dropBelow) => {
       const sourceIndex = state.steps.findIndex((s) => s.id === draggedStepId);
       const targetIndex = state.steps.findIndex((s) => s.id === stepId);
@@ -313,9 +315,9 @@ function createActionDragAndDropListeners(row, index, dragHandle) {
   setupDraggable({
     element: row,
     dragHandle: dragHandle,
-    dragType: "application/x-quicksteps-action",
+    dragType: 'application/x-quicksteps-action',
     dragValue: index,
-    allSelector: ".action-row",
+    allSelector: '.action-row',
     onDrop: (draggedIndexRaw, dropBelow) => {
       const sourceIndex = parseInt(draggedIndexRaw, 10);
       if (isNaN(sourceIndex) || sourceIndex === index) return;
@@ -329,46 +331,46 @@ function createActionDragAndDropListeners(row, index, dragHandle) {
 
 function renderSidebar() {
   const list = els.stepsList();
-  list.innerHTML = "";
+  list.innerHTML = '';
 
   if (!state.steps.length) {
-    els.sidebarEmpty().classList.remove("hidden");
+    els.sidebarEmpty().classList.remove('hidden');
     return;
   } else {
-    els.sidebarEmpty().classList.add("hidden");
+    els.sidebarEmpty().classList.add('hidden');
 
     for (const step of state.steps) {
-      const item = document.createElement("div");
+      const item = document.createElement('div');
       item.className =
-        "step-item" +
-        (!state.viewingSettings && state.editingId === step.id ? " active" : "") +
-        (step.enabled === false ? " step-item-disabled" : "");
+        'step-item' +
+        (!state.viewingSettings && state.editingId === step.id ? ' active' : '') +
+        (step.enabled === false ? ' step-item-disabled' : '');
       item.dataset.id = step.id;
 
-      const info = document.createElement("div");
-      info.className = "step-item-info";
+      const info = document.createElement('div');
+      info.className = 'step-item-info';
 
-      const name = document.createElement("div");
-      name.className = "step-item-name";
+      const name = document.createElement('div');
+      name.className = 'step-item-name';
       name.style.color = step.color || DEFAULT_COLOR;
-      name.textContent = step.name || getTranslation("optionsPlaceholderTitle");
+      name.textContent = step.name || getTranslation('optionsPlaceholderTitle');
 
-      const meta = document.createElement("div");
-      meta.className = "step-item-meta";
+      const meta = document.createElement('div');
+      meta.className = 'step-item-meta';
       meta.textContent = step.actions.length
-        ? step.actions.map(getActionLabel).join(" → ")
-        : getTranslation("optionsNoActionsAssigned");
+        ? step.actions.map(getActionLabel).join(' → ')
+        : getTranslation('optionsNoActionsAssigned');
 
       info.append(name, meta);
       item.append(info);
-      item.addEventListener("click", () => navigateTo(step.id));
+      item.addEventListener('click', () => navigateTo(step.id));
 
       createQuickStepsDragAndDropListeners(item, step.id);
       list.appendChild(item);
     }
   }
 
-  els.navSettingsBtn().classList.toggle("active", state.viewingSettings);
+  els.navSettingsBtn().classList.toggle('active', state.viewingSettings);
 }
 
 function renderEditor() {
@@ -376,18 +378,19 @@ function renderEditor() {
   const showPlaceholder = !state.viewingSettings && !state.editing;
   const showSettings = state.viewingSettings;
 
-  els.placeholder().classList.toggle("hidden", !showPlaceholder);
-  els.editor().classList.toggle("hidden", !showEditor);
-  els.settingsView().classList.toggle("hidden", !showSettings);
-  els.editorFooter().classList.toggle("hidden", showSettings);
+  els.placeholder().classList.toggle('hidden', !showPlaceholder);
+  els.editor().classList.toggle('hidden', !showEditor);
+  els.settingsView().classList.toggle('hidden', !showSettings);
+  els.editorFooter().classList.toggle('hidden', showSettings);
 
   els.saveBtn().disabled = !showEditor;
   els.deleteStepBtn().disabled = !showEditor;
 
   if (showEditor) {
-    els.stepName().value = state.editing.name || "";
+    els.stepName().value = state.editing.name || '';
     updatePreviewActions();
     renderActionsList();
+    renderAccountFilter();
     els.colorSwatch().style.backgroundColor = state.editing.color || DEFAULT_COLOR;
     els.requireConfirmationCheckbox().checked = !!state.editing.requireConfirmation;
     els.stepEnabledCheckbox().checked = state.editing.enabled !== false;
@@ -402,18 +405,111 @@ function renderSettingsView() {
   els.autoCloseCheckbox().checked = !!state.settings.autoClosePopup;
 }
 
+async function ensureAccountsLoaded() {
+  if (state.accountsLoaded) return;
+  try {
+    state.accounts = await messenger.runtime.sendMessage({ type: 'GET_ACCOUNTS' });
+    state.accountsLoaded = true;
+  } catch (e) {
+    console.error(e);
+    state.accounts = [];
+  }
+}
+
+function updateAccountSelectorLabel() {
+  const labelEl = getCachedElementById('account-selector-label');
+  const list = getCachedElementById('account-filter-list');
+  if (!labelEl || !list) return;
+
+  labelEl.className = 'account-selector-label';
+
+  const checkboxes = [...list.querySelectorAll('input[type=checkbox]')];
+  const checked = checkboxes.filter((cb) => cb.checked);
+  const total = checkboxes.length;
+
+  let text;
+  if (checked.length === total) {
+    text = getTranslation('optionsAccountsAll');
+    labelEl.classList.add('all');
+  } else if (checked.length === 1 || checked.length === 2) {
+    text = checked.map((cb) => cb.dataset.name).join(', ');
+  } else {
+    text = getTranslation('optionsAccountsCount', [checked.length, total]);
+  }
+
+  labelEl.textContent = text;
+}
+
+async function renderAccountFilter() {
+  if (!state.accountsLoaded) await ensureAccountsLoaded();
+
+  const group = getCachedElementById('account-filter-group');
+
+  if (state.accounts.length < 2) {
+    group.classList.add('hidden');
+    return;
+  }
+
+  group.classList.remove('hidden');
+
+  const list = getCachedElementById('account-filter-list');
+  list.innerHTML = '';
+
+  const currentAccountIds = state.editing?.accountIds;
+  const hasSelectedAccounts = currentAccountIds?.length > 0;
+
+  const fragment = document.createDocumentFragment();
+
+  for (const account of state.accounts) {
+    const label = document.createElement('label');
+    label.className = 'checkbox-row';
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = account.id;
+    input.dataset.name = account.name;
+    input.checked = !hasSelectedAccounts || currentAccountIds.includes(account.id);
+
+    input.addEventListener('change', (e) => {
+      if (!state.editing) return;
+
+      const checkedIds = [...list.querySelectorAll('input[type=checkbox]:checked')].map(
+        (cb) => cb.value
+      );
+
+      // Always keep at least one account checked
+      if (checkedIds.length === 0) {
+        e.target.checked = true;
+        return;
+      }
+
+      state.editing.accountIds = checkedIds.length === state.accounts.length ? null : checkedIds;
+
+      updateAccountSelectorLabel();
+    });
+
+    const span = document.createElement('span');
+    span.textContent = account.name;
+    label.append(input, span);
+    fragment.appendChild(label);
+  }
+
+  list.appendChild(fragment);
+  updateAccountSelectorLabel();
+}
+
 function updatePreviewActions() {
   if (!state.editing) return;
   els.previewActions().textContent = state.editing.actions.length
-    ? state.editing.actions.map(getActionLabel).join(" → ")
-    : getTranslation("optionsNoActionsYet");
+    ? state.editing.actions.map(getActionLabel).join(' → ')
+    : getTranslation('optionsNoActionsYet');
 }
 
 async function renderActionsList() {
   const list = els.actionsList();
-  list.innerHTML = "";
+  list.innerHTML = '';
 
-  const needsFolders = state.editing.actions.some((a) => a.type === "move" || a.type === "copy");
+  const needsFolders = state.editing.actions.some((a) => a.type === 'move' || a.type === 'copy');
   if (needsFolders && !state.foldersLoaded) await ensureFoldersLoaded();
 
   state.editing.actions.forEach((action, i) => {
@@ -422,35 +518,35 @@ async function renderActionsList() {
 }
 
 function createActionButtons(index) {
-  const btns = document.createElement("div");
-  btns.className = "action-btns";
+  const btns = document.createElement('div');
+  btns.className = 'action-btns';
 
-  const upBtn = document.createElement("button");
-  upBtn.className = "action-btn";
-  upBtn.title = getTranslation("optionsMoveUpTitle");
-  upBtn.textContent = "↑";
+  const upBtn = document.createElement('button');
+  upBtn.className = 'action-btn';
+  upBtn.title = getTranslation('optionsMoveUpTitle');
+  upBtn.textContent = '↑';
   upBtn.disabled = index === 0;
-  upBtn.addEventListener("click", () => moveAction(index, -1));
+  upBtn.addEventListener('click', () => moveAction(index, -1));
 
-  const downBtn = document.createElement("button");
-  downBtn.className = "action-btn";
-  downBtn.title = getTranslation("optionsMoveDownTitle");
-  downBtn.textContent = "↓";
+  const downBtn = document.createElement('button');
+  downBtn.className = 'action-btn';
+  downBtn.title = getTranslation('optionsMoveDownTitle');
+  downBtn.textContent = '↓';
   downBtn.disabled = index === state.editing.actions.length - 1;
-  downBtn.addEventListener("click", () => moveAction(index, 1));
+  downBtn.addEventListener('click', () => moveAction(index, 1));
 
-  const removeBtn = document.createElement("button");
-  removeBtn.className = "action-btn remove";
-  removeBtn.title = getTranslation("optionsRemoveTitle");
-  removeBtn.textContent = "X";
-  removeBtn.addEventListener("click", () => removeAction(index));
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'action-btn remove';
+  removeBtn.title = getTranslation('optionsRemoveTitle');
+  removeBtn.textContent = 'X';
+  removeBtn.addEventListener('click', () => removeAction(index));
 
   btns.append(upBtn, downBtn, removeBtn);
   return btns;
 }
 
 function attachFolderListener(select, actionIndex) {
-  select.addEventListener("change", () => {
+  select.addEventListener('change', () => {
     if (select.value) {
       const folder = state.foldersById[select.value];
       if (folder) state.editing.actions[actionIndex].folder = folder;
@@ -462,17 +558,17 @@ function attachFolderListener(select, actionIndex) {
 }
 
 function refreshFolderPicker(folderContainer, action, actionIndex) {
-  folderContainer.innerHTML = "";
+  folderContainer.innerHTML = '';
   const needsFolder = ACTION_TYPES.find((at) => at.value === action.type)?.needsFolder;
   if (!needsFolder) return;
 
   if (!state.foldersLoaded) {
-    const loading = document.createElement("span");
-    loading.className = "action-folder-loading";
-    loading.textContent = getTranslation("optionsFoldersLoading");
+    const loading = document.createElement('span');
+    loading.className = 'action-folder-loading';
+    loading.textContent = getTranslation('optionsFoldersLoading');
     folderContainer.appendChild(loading);
     ensureFoldersLoaded().then(() => {
-      folderContainer.innerHTML = "";
+      folderContainer.innerHTML = '';
       const select = buildFolderSelect(action);
       attachFolderListener(select, actionIndex);
       folderContainer.appendChild(select);
@@ -485,36 +581,36 @@ function refreshFolderPicker(folderContainer, action, actionIndex) {
 }
 
 function createDragHandle() {
-  const dragHandleTemplate = document.getElementById("drag-handle-icon");
+  const dragHandleTemplate = document.getElementById('drag-handle-icon');
   const dragHandleFragment = dragHandleTemplate.content.cloneNode(true);
   return dragHandleFragment.firstElementChild;
 }
 
 function buildActionRow(index, action) {
-  const row = document.createElement("div");
-  row.className = "action-row";
+  const row = document.createElement('div');
+  row.className = 'action-row';
 
-  const num = document.createElement("span");
-  num.className = "action-num";
+  const num = document.createElement('span');
+  num.className = 'action-num';
   num.textContent = index + 1;
 
-  const typeSelect = document.createElement("select");
-  typeSelect.className = "action-type-select";
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'action-type-select';
   for (const at of ACTION_TYPES) {
-    const opt = document.createElement("option");
+    const opt = document.createElement('option');
     opt.value = at.value;
     opt.textContent = getTranslation(at.i18nKey);
     if (at.value === action.type) opt.selected = true;
     typeSelect.appendChild(opt);
   }
 
-  const folderContainer = document.createElement("div");
-  folderContainer.style.flex = "1";
-  folderContainer.style.minWidth = "0";
+  const folderContainer = document.createElement('div');
+  folderContainer.style.flex = '1';
+  folderContainer.style.minWidth = '0';
 
   refreshFolderPicker(folderContainer, action, index);
 
-  typeSelect.addEventListener("change", () => {
+  typeSelect.addEventListener('change', () => {
     state.editing.actions[index].type = typeSelect.value;
     if (!ACTION_TYPES.find((at) => at.value === typeSelect.value)?.needsFolder) {
       delete state.editing.actions[index].folder;
@@ -532,10 +628,10 @@ function buildActionRow(index, action) {
 }
 
 function addAction() {
-  state.editing.actions.push({ type: "mark_read" });
+  state.editing.actions.push({ type: 'mark_read' });
   renderActionsList();
   updatePreviewActions();
-  els.actionsList().lastElementChild?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  els.actionsList().lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function removeAction(index) {
@@ -557,19 +653,19 @@ function syncSidebarItem() {
   if (!state.editing) return;
   const item = document.querySelector(`.step-item[data-id="${state.editing.id}"]`);
   if (!item) return;
-  const nameEl = item.querySelector(".step-item-name");
-  const metaEl = item.querySelector(".step-item-meta");
+  const nameEl = item.querySelector('.step-item-name');
+  const metaEl = item.querySelector('.step-item-meta');
 
   if (nameEl) {
-    nameEl.textContent = state.editing.name || getTranslation("optionsPlaceholderTitle");
+    nameEl.textContent = state.editing.name || getTranslation('optionsPlaceholderTitle');
     nameEl.style.color = state.editing.color || DEFAULT_COLOR;
   }
   if (metaEl)
     metaEl.textContent =
-      state.editing.actions.map(getActionLabel).join(" → ") ||
-      getTranslation("optionsNoActionsAssigned");
+      state.editing.actions.map(getActionLabel).join(' → ') ||
+      getTranslation('optionsNoActionsAssigned');
 
-  item.classList.toggle("step-item-disabled", state.editing.enabled === false);
+  item.classList.toggle('step-item-disabled', state.editing.enabled === false);
 }
 
 async function navigateTo(stepId) {
@@ -593,11 +689,12 @@ function startNewStep() {
   autoSave().then(() => {
     const newStep = {
       id: generateId(),
-      name: "",
+      name: '',
       color: DEFAULT_COLOR,
       requireConfirmation: false,
       enabled: true,
-      actions: [{ type: "mark_read" }]
+      accountIds: null,
+      actions: [{ type: 'mark_read' }]
     };
     state.steps.push(newStep);
     state.editingId = newStep.id;
@@ -626,15 +723,15 @@ async function saveCurrentStep() {
 
   if (!state.editing.name.trim()) {
     els.stepName().focus();
-    els.stepName().style.borderBottomColor = "#d32f2f";
-    setTimeout(() => (els.stepName().style.borderBottomColor = ""), 2000);
-    showToast(getTranslation("optionsToastNameRequired"), "error");
+    els.stepName().style.borderBottomColor = '#d32f2f';
+    setTimeout(() => (els.stepName().style.borderBottomColor = ''), 2000);
+    showToast(getTranslation('optionsToastNameRequired'), 'error');
     return;
   }
 
   for (const action of state.editing.actions) {
-    if ((action.type === "move" || action.type === "copy") && !action.folder) {
-      showToast(getTranslation("optionsToastFolderRequired"), "error");
+    if ((action.type === 'move' || action.type === 'copy') && !action.folder) {
+      showToast(getTranslation('optionsToastFolderRequired'), 'error');
       return;
     }
   }
@@ -649,15 +746,15 @@ async function saveCurrentStep() {
   try {
     await persistSteps();
     renderSidebar();
-    showToast(getTranslation("optionsToastSaved"), "success");
+    showToast(getTranslation('optionsToastSaved'), 'success');
   } catch (e) {
-    showToast(getTranslation("optionsToastSaveError", [e.message]), "error");
+    showToast(getTranslation('optionsToastSaveError', [e.message]), 'error');
   }
 }
 
 async function deleteCurrentStep() {
-  const name = state.editing?.name || "Quick Step";
-  const confirmed = await showConfirm(getTranslation("optionsConfirmDeleteMessage", [name]));
+  const name = state.editing?.name || 'Quick Step';
+  const confirmed = await showConfirm(getTranslation('optionsConfirmDeleteMessage', [name]));
   if (!confirmed) return;
 
   state.steps = state.steps.filter((s) => s.id !== state.editingId);
@@ -669,19 +766,19 @@ async function deleteCurrentStep() {
     await persistSteps();
     renderSidebar();
     renderEditor();
-    showToast(getTranslation("optionsToastDeleted"), "info");
+    showToast(getTranslation('optionsToastDeleted'), 'info');
   } catch (e) {
-    showToast(getTranslation("optionsToastDeleteError", [e.message]), "error");
+    showToast(getTranslation('optionsToastDeleteError', [e.message]), 'error');
   }
 }
 
 function exportSteps() {
   const dataStr = JSON.stringify(state.steps, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
+  const blob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 
   const date = new Date().toISOString().slice(0, 10);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = `quicksteps-export-${date}.json`;
   document.body.appendChild(a);
@@ -689,7 +786,7 @@ function exportSteps() {
   a.remove();
   URL.revokeObjectURL(url);
 
-  showToast(getTranslation("optionsToastExported"), "success");
+  showToast(getTranslation('optionsToastExported'), 'success');
 }
 
 // Accepts either a raw array of steps (the export format) or an object of
@@ -703,24 +800,24 @@ function normalizeImportedSteps(parsed) {
   const cleaned = [];
 
   for (const raw of list) {
-    if (!raw || typeof raw !== "object" || !Array.isArray(raw.actions)) continue;
+    if (!raw || typeof raw !== 'object' || !Array.isArray(raw.actions)) continue;
 
     const actions = raw.actions
       .filter((a) => a && validActionTypes.has(a.type))
       .map((a) => {
         const action = { type: a.type };
         if (
-          (a.type === "move" || a.type === "copy") &&
+          (a.type === 'move' || a.type === 'copy') &&
           a.folder &&
-          typeof a.folder === "object" &&
+          typeof a.folder === 'object' &&
           a.folder.id
         ) {
           action.folder = {
             id: a.folder.id,
-            name: a.folder.name || "",
-            path: a.folder.path || "",
+            name: a.folder.name || '',
+            path: a.folder.path || '',
             accountId: a.folder.accountId,
-            accountName: a.folder.accountName || ""
+            accountName: a.folder.accountName || ''
           };
         }
         return action;
@@ -729,10 +826,12 @@ function normalizeImportedSteps(parsed) {
     if (!actions.length) continue;
 
     cleaned.push({
-      name: typeof raw.name === "string" ? raw.name : "",
-      color: typeof raw.color === "string" ? raw.color : DEFAULT_COLOR,
+      name: typeof raw.name === 'string' ? raw.name : '',
+      color: typeof raw.color === 'string' ? raw.color : DEFAULT_COLOR,
       requireConfirmation: raw.requireConfirmation === true,
       enabled: raw.enabled !== false,
+      accountIds:
+        Array.isArray(raw.accountIds) && raw.accountIds.length > 0 ? raw.accountIds : null,
       actions
     });
   }
@@ -742,7 +841,7 @@ function normalizeImportedSteps(parsed) {
 
 async function handleImportFile(e) {
   const file = e.target.files[0];
-  e.target.value = "";
+  e.target.value = '';
   if (!file) return;
 
   let parsed;
@@ -750,113 +849,127 @@ async function handleImportFile(e) {
     const text = await file.text();
     parsed = JSON.parse(text);
   } catch {
-    showToast(getTranslation("optionsToastImportInvalid"), "error");
+    showToast(getTranslation('optionsToastImportInvalid'), 'error');
     return;
   }
 
   const importedSteps = normalizeImportedSteps(parsed);
   if (!importedSteps) {
-    showToast(getTranslation("optionsToastImportInvalid"), "error");
+    showToast(getTranslation('optionsToastImportInvalid'), 'error');
     return;
   }
   if (!importedSteps.length) {
-    showToast(getTranslation("optionsToastImportEmpty"), "info");
+    showToast(getTranslation('optionsToastImportEmpty'), 'info');
     return;
   }
 
   const choice = await showImportChoice(
-    getTranslation("optionsImportChoiceMessage", [importedSteps.length])
+    getTranslation('optionsImportChoiceMessage', [importedSteps.length])
   );
 
-  if (choice === "cancel") return;
+  if (choice === 'cancel') return;
 
   const freshSteps = importedSteps.map((s) => ({ ...s, id: generateId() }));
 
-  state.steps = choice === "replace" ? freshSteps : [...state.steps, ...freshSteps];
+  state.steps = choice === 'replace' ? freshSteps : [...state.steps, ...freshSteps];
 
   try {
     await persistSteps();
     renderSidebar();
-    showToast(getTranslation("optionsToastImported", [importedSteps.length]), "success");
+    showToast(getTranslation('optionsToastImported', [importedSteps.length]), 'success');
   } catch (err) {
-    showToast(getTranslation("optionsToastSaveError", [err.message]), "error");
+    showToast(getTranslation('optionsToastSaveError', [err.message]), 'error');
   }
 }
 
 async function init() {
   try {
     state.steps = await messenger.runtime.sendMessage({
-      type: "GET_QUICK_STEPS"
+      type: 'GET_QUICK_STEPS'
     });
   } catch (e) {
-    showToast(getTranslation("optionsToastLoadError", [e.message]), "error");
+    showToast(getTranslation('optionsToastLoadError', [e.message]), 'error');
     state.steps = [];
   }
 
   try {
     state.settings = await messenger.runtime.sendMessage({
-      type: "GET_SETTINGS"
+      type: 'GET_SETTINGS'
     });
   } catch (e) {
-    console.error("[QuickSteps] Could not load settings:", e);
+    console.error('[QuickSteps] Could not load settings:', e);
     state.settings = { ...DEFAULT_SETTINGS };
   }
 
   ensureFoldersLoaded();
+  ensureAccountsLoaded();
 
   renderSidebar();
   renderEditor();
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
       autoSave();
     }
   });
 
-  els.newStepBtn().addEventListener("click", startNewStep);
-  els.saveBtn().addEventListener("click", saveCurrentStep);
-  els.deleteStepBtn().addEventListener("click", deleteCurrentStep);
-  els.addActionBtn().addEventListener("click", addAction);
-  els.navSettingsBtn().addEventListener("click", goToSettings);
+  document.addEventListener('click', (event) => {
+    const accountSelect = getCachedElementById('account-selector');
 
-  els.exportStepsBtn().addEventListener("click", exportSteps);
-  els.importStepsBtn().addEventListener("click", () => els.importFileInput().click());
-  els.importFileInput().addEventListener("change", handleImportFile);
-
-  els.autoCloseCheckbox().addEventListener("change", async (e) => {
-    state.settings.autoClosePopup = e.target.checked;
-    try {
-      await persistSettings();
-      showToast(getTranslation("optionsToastSettingsSaved"), "success");
-    } catch (err) {
-      showToast(getTranslation("optionsToastSaveError", [err.message]), "error");
+    // close account select dropdown on outside click
+    if (
+      accountSelect &&
+      accountSelect.hasAttribute('open') &&
+      !accountSelect.contains(event.target)
+    ) {
+      accountSelect.removeAttribute('open');
     }
   });
 
-  els.requireConfirmationCheckbox().addEventListener("change", (e) => {
+  els.newStepBtn().addEventListener('click', startNewStep);
+  els.saveBtn().addEventListener('click', saveCurrentStep);
+  els.deleteStepBtn().addEventListener('click', deleteCurrentStep);
+  els.addActionBtn().addEventListener('click', addAction);
+  els.navSettingsBtn().addEventListener('click', goToSettings);
+
+  els.exportStepsBtn().addEventListener('click', exportSteps);
+  els.importStepsBtn().addEventListener('click', () => els.importFileInput().click());
+  els.importFileInput().addEventListener('change', handleImportFile);
+
+  els.autoCloseCheckbox().addEventListener('change', async (e) => {
+    state.settings.autoClosePopup = e.target.checked;
+    try {
+      await persistSettings();
+      showToast(getTranslation('optionsToastSettingsSaved'), 'success');
+    } catch (err) {
+      showToast(getTranslation('optionsToastSaveError', [err.message]), 'error');
+    }
+  });
+
+  els.requireConfirmationCheckbox().addEventListener('change', (e) => {
     if (!state.editing) return;
     state.editing.requireConfirmation = e.target.checked;
   });
 
-  els.stepName().addEventListener("input", (e) => {
+  els.stepName().addEventListener('input', (e) => {
     if (!state.editing) return;
     state.editing.name = e.target.value;
     updatePreviewActions();
     syncSidebarItem();
   });
 
-  els.stepEnabledCheckbox().addEventListener("change", (e) => {
+  els.stepEnabledCheckbox().addEventListener('change', (e) => {
     if (!state.editing) return;
     state.editing.enabled = e.target.checked;
     syncSidebarItem();
   });
 
-  const colorInput = getCachedElementById("step-color");
+  const colorInput = getCachedElementById('step-color');
   const colorSwatch = els.colorSwatch();
 
   colorSwatch.style.backgroundColor = DEFAULT_COLOR;
 
-  colorInput.addEventListener("input", (event) => {
+  colorInput.addEventListener('input', (event) => {
     const selectedColor = event.target.value;
     colorSwatch.style.backgroundColor = selectedColor;
 
@@ -867,4 +980,4 @@ async function init() {
   localizeDocument();
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener('DOMContentLoaded', init);

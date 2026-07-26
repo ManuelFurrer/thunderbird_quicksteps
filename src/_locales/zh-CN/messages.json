@@ -370,5 +370,22 @@
   },
   "optionsEnabledLabel": {
     "message": "已启用"
+  },
+  "optionsAccountsLabel": {
+    "message": "账户"
+  },
+  "optionsAccountsAll": {
+    "message": "所有账户"
+  },
+  "optionsAccountsCount": {
+    "message": "$COUNT$ / $TOTAL$ 个账户",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
   }
 }
