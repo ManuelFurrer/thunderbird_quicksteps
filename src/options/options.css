@@ -712,7 +712,7 @@ body {
   flex-shrink: 0;
 }
 
-.footer-right {
+.footer-group {
   display: flex;
   gap: 8px;
 }

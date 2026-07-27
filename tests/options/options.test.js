@@ -673,4 +673,115 @@ describe('options page', () => {
       expect(document.getElementById('toast').className).toContain('notify-error');
     });
   });
+
+  describe('duplicate step', () => {
+    const BASE = {
+      id: 's1',
+      name: 'Archive',
+      color: '#4CAF50',
+      enabled: true,
+      requireConfirmation: true,
+      actions: [{ type: 'archive' }, { type: 'mark_read' }]
+    };
+
+    it('the duplicate button is disabled when no step is open', async () => {
+      await mountOptions({ steps: [BASE] });
+
+      expect(document.getElementById('btn-duplicate-step').disabled).toBe(true);
+    });
+
+    it('the duplicate button is enabled once a step is open in the editor', async () => {
+      await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      expect(document.getElementById('btn-duplicate-step').disabled).toBe(false);
+    });
+
+    it('creates a second step with a fresh id and the (Copy) suffix in its name', async () => {
+      const { getSteps } = await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      expect(getSteps()).toHaveLength(2);
+      expect(getSteps()[1].id).not.toBe('s1');
+      expect(getSteps()[1].id).toMatch(/^qs_/);
+      expect(getSteps()[1].name).toBe('optionsDuplicateCopyName:Archive');
+    });
+
+    it('navigates to the duplicate and reflects its name in the editor', async () => {
+      const { getSteps } = await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      const dupId = getSteps()[1].id;
+      expect(
+        document.querySelector(`.step-item[data-id="${dupId}"]`).classList.contains('active')
+      ).toBe(true);
+      expect(document.getElementById('step-name').value).toBe('optionsDuplicateCopyName:Archive');
+    });
+
+    it('inherits all properties from the original', async () => {
+      const { getSteps } = await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      const dup = getSteps()[1];
+      expect(dup.color).toBe('#4CAF50');
+      expect(dup.enabled).toBe(true);
+      expect(dup.requireConfirmation).toBe(true);
+      expect(dup.actions).toEqual([{ type: 'archive' }, { type: 'mark_read' }]);
+    });
+
+    it('includes unsaved editor changes in both the saved original and the copy', async () => {
+      const { getSteps } = await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('step-name').value = 'Modified';
+      document.getElementById('step-name').dispatchEvent(new window.Event('input'));
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      expect(getSteps()[0].name).toBe('Modified');
+      expect(getSteps()[1].name).toBe('optionsDuplicateCopyName:Modified');
+    });
+
+    it('persists the updated steps list via sendMessage', async () => {
+      const { messenger } = await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      expect(messenger.runtime.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'SAVE_QUICK_STEPS', steps: expect.any(Array) })
+      );
+    });
+
+    it('shows a success toast', async () => {
+      await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      expect(document.getElementById('toast').className).toContain('notify-success');
+    });
+
+    it('reflects both steps in the sidebar after duplication', async () => {
+      await mountOptions({ steps: [BASE] });
+      await openStep('s1');
+
+      document.getElementById('btn-duplicate-step').click();
+      await flushPromises();
+
+      expect(document.querySelectorAll('.step-item')).toHaveLength(2);
+    });
+  });
 });

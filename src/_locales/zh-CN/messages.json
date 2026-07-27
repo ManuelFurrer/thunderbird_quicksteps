@@ -387,5 +387,19 @@
         "content": "$2"
       }
     }
+  },
+  "optionsDuplicateStep": {
+    "message": "复制"
+  },
+  "optionsDuplicateCopyName": {
+    "message": "$NAME$（副本）",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsToastDuplicated": {
+    "message": "Quick Step 已复制。"
   }
 }

@@ -385,5 +385,19 @@
         "content": "$2"
       }
     }
+  },
+  "optionsDuplicateStep": {
+    "message": "複製"
+  },
+  "optionsDuplicateCopyName": {
+    "message": "$NAME$（コピー）",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsToastDuplicated": {
+    "message": "Quick Step を複製しました。"
   }
 }

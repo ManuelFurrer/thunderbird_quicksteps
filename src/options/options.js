@@ -40,6 +40,7 @@ const els = {
   addActionBtn: () => getCachedElementById('btn-add-action'),
   saveBtn: () => getCachedElementById('btn-save'),
   deleteStepBtn: () => getCachedElementById('btn-delete-step'),
+  duplicateStepBtn: () => getCachedElementById('btn-duplicate-step'),
   newStepBtn: () => getCachedElementById('btn-new-step'),
   confirmOverlay: () => getCachedElementById('confirm-overlay'),
   confirmMessage: () => getCachedElementById('confirm-message'),
@@ -385,6 +386,7 @@ function renderEditor() {
 
   els.saveBtn().disabled = !showEditor;
   els.deleteStepBtn().disabled = !showEditor;
+  els.duplicateStepBtn().disabled = !showEditor;
 
   if (showEditor) {
     els.stepName().value = state.editing.name || '';
@@ -685,6 +687,12 @@ function loadStep(stepId) {
   renderEditor();
 }
 
+function scrollToStep(stepId) {
+  document
+    .querySelector(`.step-item[data-id="${stepId}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 function startNewStep() {
   autoSave().then(() => {
     const newStep = {
@@ -703,7 +711,10 @@ function startNewStep() {
     state.viewingSettings = false;
     renderSidebar();
     renderEditor();
-    setTimeout(() => els.stepName().focus(), 50);
+    setTimeout(() => {
+      els.stepName().focus();
+      scrollToStep(newStep.id);
+    }, 50);
   });
 }
 
@@ -769,6 +780,38 @@ async function deleteCurrentStep() {
     showToast(getTranslation('optionsToastDeleted'), 'info');
   } catch (e) {
     showToast(getTranslation('optionsToastDeleteError', [e.message]), 'error');
+  }
+}
+
+async function duplicateCurrentStep() {
+  if (!state.editing) return;
+
+  state.isNew = false;
+  await autoSave();
+
+  const source = JSON.parse(JSON.stringify(state.editing));
+
+  const duplicate = {
+    ...source,
+    id: generateId(),
+    name: getTranslation('optionsDuplicateCopyName', [source.name])
+  };
+
+  state.steps.push(duplicate);
+
+  state.editingId = duplicate.id;
+  state.editing = JSON.parse(JSON.stringify(duplicate));
+
+  try {
+    await persistSteps();
+    renderSidebar();
+    renderEditor();
+    showToast(getTranslation('optionsToastDuplicated'), 'success');
+    setTimeout(() => {
+      scrollToStep(duplicate.id);
+    }, 50);
+  } catch (e) {
+    showToast(getTranslation('optionsToastSaveError', [e.message]), 'error');
   }
 }
 
@@ -929,6 +972,7 @@ async function init() {
   els.newStepBtn().addEventListener('click', startNewStep);
   els.saveBtn().addEventListener('click', saveCurrentStep);
   els.deleteStepBtn().addEventListener('click', deleteCurrentStep);
+  els.duplicateStepBtn().addEventListener('click', duplicateCurrentStep);
   els.addActionBtn().addEventListener('click', addAction);
   els.navSettingsBtn().addEventListener('click', goToSettings);
 

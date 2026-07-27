@@ -259,7 +259,7 @@
     "message": "Quick Step gelöscht."
   },
   "optionsToastNameRequired": {
-    "message": "Bitte gib einen Namen für diesen Quick Step ein."
+    "message": "Bitte geben Sie einen Namen für diesen Quick Step ein."
   },
   "optionsToastFolderRequired": {
     "message": "Bitte wähle für alle Verschieben-/Kopieren-Aktionen einen Zielordner aus."
@@ -340,7 +340,7 @@
     "message": "Der Export speichert alle Ihre Quick Steps in einer JSON-Datei, die Sie als Backup verwenden oder auf einen anderen Computer übertragen können. Der Import lädt Quick Steps aus einer von Ihnen ausgewählten JSON-Datei."
   },
   "optionsImportChoiceMessage": {
-    "message": "In dieser Datei wurden $1 Quick Step(s) gefunden. Wie möchten Sie sie importieren?"
+    "message": "In dieser Datei wurden $1 Quick Step(s) gefunden. Wie möchten Sie die importieren?"
   },
   "optionsImportMerge": {
     "message": "Mit bestehenden zusammenführen"
@@ -385,5 +385,19 @@
         "content": "$2"
       }
     }
+  },
+  "optionsDuplicateStep": {
+    "message": "Duplizieren"
+  },
+  "optionsDuplicateCopyName": {
+    "message": "$NAME$ (Kopie)",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsToastDuplicated": {
+    "message": "Quick Step dupliziert."
   }
 }

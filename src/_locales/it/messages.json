@@ -385,5 +385,19 @@
         "content": "$2"
       }
     }
+  },
+  "optionsDuplicateStep": {
+    "message": "Duplica"
+  },
+  "optionsDuplicateCopyName": {
+    "message": "$NAME$ (copia)",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsToastDuplicated": {
+    "message": "Quick Step duplicato."
   }
 }
