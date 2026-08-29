@@ -199,19 +199,31 @@ async function executeQuickStep(quickStepId, tabId) {
   const steps = await getQuickSteps();
   const step = steps.find((s) => s.id === quickStepId);
 
-  if (!step)
+  if (!step) {
     return {
       success: false,
       errors: [messenger.i18n.getMessage('errorQuickStepNotFound')]
     };
+  }
 
-  if (!step.actions?.length)
+  if (!step.actions?.length) {
     return {
       success: false,
       errors: [messenger.i18n.getMessage('errorNoActionsAssigned')]
     };
+  }
 
-  const messages = (await messenger.messageDisplay.getDisplayedMessages(tabId)).messages || [];
+  let messages = [];
+
+  if (tabId !== null) {
+    const displayed = await messenger.messageDisplay.getDisplayedMessages(tabId).catch(() => ({}));
+    messages = displayed.messages || [];
+
+    if (messages.length === 0) {
+      const selected = await messenger.mailTabs.getSelectedMessages(tabId).catch(() => ({}));
+      messages = selected.messages || [];
+    }
+  }
 
   if (messages.length === 0) {
     return {

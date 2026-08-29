@@ -7,15 +7,14 @@ import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
 let settings = { ...DEFAULT_SETTINGS };
 
 async function getCurrentMailTabId() {
-  try {
-    const mailTabs = await messenger.mailTabs.query({
+  const [tab] = await messenger.tabs
+    .query({
       active: true,
       currentWindow: true
-    });
-    if (mailTabs.length > 0) return mailTabs[0].tabId;
-  } catch {}
+    })
+    .catch(() => []);
 
-  return null;
+  return tab?.id || null;
 }
 
 function showStatus(message, type = 'info') {
