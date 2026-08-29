@@ -135,9 +135,21 @@ function createStepButton(step) {
 
 async function getCurrentAccountId() {
   try {
-    const mailTabs = await messenger.mailTabs.query({ active: true, currentWindow: true });
-    return mailTabs[0]?.displayedFolder?.accountId ?? null;
+    const [mailTab] = await messenger.mailTabs.query({ active: true, currentWindow: true });
+    const accountId = mailTab?.displayedFolder?.accountId;
+    if (accountId) return accountId;
   } catch {}
+
+  try {
+    const [tab] = await messenger.tabs.query({ active: true, currentWindow: true });
+
+    if (tab?.id) {
+      const { messages } = await messenger.messageDisplay.getDisplayedMessages(tab.id);
+      const accountId = messages?.[0]?.folder?.accountId;
+      if (accountId) return accountId;
+    }
+  } catch {}
+
   return null;
 }
 
