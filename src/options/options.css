@@ -515,6 +515,7 @@ body {
 }
 
 .action-row {
+  min-width: 450px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -604,7 +605,8 @@ body {
   font-size: 13px;
   cursor: pointer;
   outline: none;
-  min-width: 0;
+  width: 100%;
+  min-width: 100px;
 }
 
 .action-folder-select:focus {
