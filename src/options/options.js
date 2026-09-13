@@ -392,10 +392,7 @@ function createFolderSidebarItem(folder, depth) {
   const iconEl = document.createElement('span');
   iconEl.className = 'folder-icon';
   iconEl.setAttribute('aria-hidden', 'true');
-  iconEl.innerHTML =
-    `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">` +
-    `<path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>` +
-    `</svg>`;
+  iconEl.appendChild(getIconTemplate('icon-folder'));
 
   const info = document.createElement('div');
   info.className = 'step-item-info';
@@ -416,10 +413,7 @@ function createFolderSidebarItem(folder, depth) {
   const collapseBtn = document.createElement('button');
   collapseBtn.className = 'folder-btn collapse-btn' + (isCollapsed ? ' collapsed' : '');
   collapseBtn.title = getTranslation(isCollapsed ? 'optionsFolderExpand' : 'optionsFolderCollapse');
-  collapseBtn.innerHTML =
-    `<svg width="10" height="6" viewBox="0 0 10 6" fill="none">` +
-    `<path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" ` +
-    `stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  collapseBtn.appendChild(getIconTemplate('icon-collapse'));
 
   collapseBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -687,10 +681,10 @@ function refreshFolderPicker(folderContainer, action, actionIndex) {
   }
 }
 
-function createDragHandle() {
-  const dragHandleTemplate = document.getElementById('drag-handle-icon');
-  const dragHandleFragment = dragHandleTemplate.content.cloneNode(true);
-  return dragHandleFragment.firstElementChild;
+function getIconTemplate(id) {
+  const template = document.getElementById(id);
+  const fragment = template.content.cloneNode(true);
+  return fragment.firstElementChild;
 }
 
 function buildActionRow(index, action) {
@@ -727,7 +721,7 @@ function buildActionRow(index, action) {
   });
 
   const btns = createActionButtons(index);
-  const dragHandle = createDragHandle();
+  const dragHandle = getIconTemplate('drag-handle-icon');
 
   row.append(dragHandle, num, typeSelect, folderContainer, btns);
   createActionDragAndDropListeners(row, index, dragHandle);
