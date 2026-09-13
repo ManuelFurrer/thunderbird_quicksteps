@@ -471,7 +471,7 @@ function renderEditor() {
 
   els.saveBtn().disabled = !isStep && !isFolder;
   els.deleteStepBtn().classList.toggle('hidden', !isStep && !isFolder);
-  els.duplicateStepBtn().classList.toggle('hidden', !isStep);
+  els.duplicateStepBtn().classList.toggle('hidden', !isStep && !isFolder);
 
   if (isStep) {
     els.stepName().value = state.editing.name || '';
@@ -985,18 +985,29 @@ async function deleteFolderById(folderId) {
 }
 
 async function duplicateCurrentStep() {
-  if (!state.editing || state.editing.type !== 'step') return;
+  if (!state.editing) return;
   state.isNew = false;
   await autoSave();
 
   const source = JSON.parse(JSON.stringify(state.editing));
+  const isFolder = state.editing.type === 'folder';
 
-  const duplicate = {
-    ...source,
-    type: 'step',
-    id: generateId(),
-    name: getTranslation('optionsDuplicateCopyName', [source.name])
-  };
+  let duplicate;
+  if (isFolder) {
+    [duplicate] = assignNewIds([
+      {
+        ...source,
+        name: getTranslation('optionsDuplicateCopyName', [source.name])
+      }
+    ]);
+  } else {
+    duplicate = {
+      ...source,
+      type: 'step',
+      id: generateId(),
+      name: getTranslation('optionsDuplicateCopyName', [source.name])
+    };
+  }
 
   const ctx = findItemContext(state.steps, state.editing.id);
   if (ctx) ctx.array.splice(ctx.index + 1, 0, duplicate);
@@ -1009,7 +1020,10 @@ async function duplicateCurrentStep() {
     await persistSteps();
     renderSidebar();
     renderEditor();
-    showToast(getTranslation('optionsToastDuplicated'), 'success');
+    showToast(
+      getTranslation(isFolder ? 'optionsToastDuplicatedFolder' : 'optionsToastDuplicatedStep'),
+      'success'
+    );
     setTimeout(() => scrollToItem(duplicate.id), 50);
   } catch (e) {
     showToast(getTranslation('optionsToastSaveError', [e.message]), 'error');

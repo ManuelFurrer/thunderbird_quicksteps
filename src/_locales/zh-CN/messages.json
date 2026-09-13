@@ -399,8 +399,11 @@
       }
     }
   },
-  "optionsToastDuplicated": {
+  "optionsToastDuplicatedStep": {
     "message": "Quick Step 已复制。"
+  },
+  "optionsToastDuplicatedFolder": {
+    "message": "文件夹已复制。"
   },
   "optionsNewFolder": {
     "message": "新建文件夹"

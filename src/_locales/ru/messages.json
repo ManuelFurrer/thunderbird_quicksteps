@@ -397,8 +397,11 @@
       }
     }
   },
-  "optionsToastDuplicated": {
+  "optionsToastDuplicatedStep": {
     "message": "Quick Step дублирован."
+  },
+  "optionsToastDuplicatedFolder": {
+    "message": "Папка дублирована."
   },
   "optionsNewFolder": {
     "message": "Новая папка"

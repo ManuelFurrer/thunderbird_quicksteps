@@ -397,8 +397,11 @@
       }
     }
   },
-  "optionsToastDuplicated": {
+  "optionsToastDuplicatedStep": {
     "message": "Quick Step dupliziert."
+  },
+  "optionsToastDuplicatedFolder": {
+    "message": "Ordner dupliziert."
   },
   "optionsNewFolder": {
     "message": "Neuer Ordner"

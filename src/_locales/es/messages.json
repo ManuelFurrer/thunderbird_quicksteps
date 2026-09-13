@@ -397,8 +397,11 @@
       }
     }
   },
-  "optionsToastDuplicated": {
+  "optionsToastDuplicatedStep": {
     "message": "Quick Step duplicado."
+  },
+  "optionsToastDuplicatedFolder": {
+    "message": "Carpeta duplicada."
   },
   "optionsNewFolder": {
     "message": "Nueva carpeta"

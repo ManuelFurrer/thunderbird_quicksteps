@@ -397,8 +397,11 @@
       }
     }
   },
-  "optionsToastDuplicated": {
+  "optionsToastDuplicatedStep": {
     "message": "Quick Step を複製しました。"
+  },
+  "optionsToastDuplicatedFolder": {
+    "message": "フォルダーを複製しました。"
   },
   "optionsNewFolder": {
     "message": "新しいフォルダー"
