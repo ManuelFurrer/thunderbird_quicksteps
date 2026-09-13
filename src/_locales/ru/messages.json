@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ Добавить действие"
   },
-  "optionsDeleteStep": {
-    "message": "Удалить шаг"
+  "optionsDelete": {
+    "message": "Удалить"
   },
   "optionsSave": {
     "message": "Сохранить"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step дублирован."
+  },
+  "optionsNewFolder": {
+    "message": "Новая папка"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "Название папки…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "Папка без названия"
+  },
+  "optionsFolderCollapse": {
+    "message": "Свернуть папку"
+  },
+  "optionsFolderExpand": {
+    "message": "Развернуть папку"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Быстрое действие"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ Вложенная папка"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "Удалить папку \"$NAME$\"?\n\nСодержащиеся в ней $COUNT$ быстрых действий будут перемещены на один уровень вверх.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "Показывать папку в виде плоского списка во всплывающем окне"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "Групповой"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "Плоский (встроенный)"
+  },
+  "optionsFolderGroupHint": {
+    "message": "Отображается как сворачиваемая папка с содержащимися в ней элементами."
+  },
+  "optionsFolderFlatHint": {
+    "message": "Заголовок папки скрыт. Её содержимое (быстрые действия и вложенные папки) отображается непосредственно в списке."
   }
 }

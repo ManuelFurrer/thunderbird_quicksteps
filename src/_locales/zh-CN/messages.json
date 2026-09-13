@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ 添加操作"
   },
-  "optionsDeleteStep": {
-    "message": "删除此步"
+  "optionsDelete": {
+    "message": "删除"
   },
   "optionsSave": {
     "message": "保存"
@@ -401,5 +401,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step 已复制。"
+  },
+  "optionsNewFolder": {
+    "message": "新建文件夹"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "文件夹名称…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "未命名文件夹"
+  },
+  "optionsFolderCollapse": {
+    "message": "折叠文件夹"
+  },
+  "optionsFolderExpand": {
+    "message": "展开文件夹"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Quick Step"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ 子文件夹"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "删除文件夹“$NAME$”？\n\n其中的 $COUNT$ 个 Quick Step 将上移一级。",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "在弹出窗口中以平铺方式显示文件夹"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "分组"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "平铺（内联）"
+  },
+  "optionsFolderGroupHint": {
+    "message": "显示为包含其项目的可折叠文件夹。"
+  },
+  "optionsFolderFlatHint": {
+    "message": "文件夹标题将被隐藏。其内容（Quick Step 和子文件夹）将直接显示在列表中。"
   }
 }

@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ Aggiungi azione"
   },
-  "optionsDeleteStep": {
-    "message": "Elimina azione"
+  "optionsDelete": {
+    "message": "Elimina"
   },
   "optionsSave": {
     "message": "Salva"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step duplicato."
+  },
+  "optionsNewFolder": {
+    "message": "Nuova cartella"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "Nome della cartella…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "Cartella senza nome"
+  },
+  "optionsFolderCollapse": {
+    "message": "Comprimi cartella"
+  },
+  "optionsFolderExpand": {
+    "message": "Espandi cartella"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Azione rapida"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ Sottocartella"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "Eliminare la cartella \"$NAME$\"?\n\nLe $COUNT$ azioni rapide verranno spostate di un livello verso l’alto.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "Mostra la cartella in modalità piatta nel popup"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "Raggruppata"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "Piatta (in linea)"
+  },
+  "optionsFolderGroupHint": {
+    "message": "Visualizza una cartella comprimibile contenente i suoi elementi."
+  },
+  "optionsFolderFlatHint": {
+    "message": "L’intestazione della cartella è nascosta. I suoi contenuti (azioni rapide e sottocartelle) appaiono direttamente nell’elenco."
   }
 }

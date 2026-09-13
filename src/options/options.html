@@ -16,10 +16,32 @@
             </svg>
             <span data-i18n-content="optionsSidebarTitle"></span>
           </div>
-          <button id="btn-new-step" data-i18n-title="optionsNewStep">
-            <span class="plus">+</span>
-            <span data-i18n-content="optionsNewStep"></span>
-          </button>
+
+          <div class="sidebar-header-actions">
+            <button id="btn-new-step" data-i18n-title="optionsNewStep">
+              <span class="plus">+</span>
+              <span data-i18n-content="optionsNewStep"></span>
+            </button>
+
+            <button id="btn-new-folder" data-i18n-title="optionsNewFolder">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                />
+                <line x1="12" y1="11" x2="12" y2="17" />
+                <line x1="9" y1="14" x2="15" y2="14" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div id="steps-list"></div>
@@ -152,6 +174,36 @@
           </div>
         </div>
 
+        <div id="folder-editor" class="hidden">
+          <div class="editor-header">
+            <div class="editor-title-block">
+              <div class="step-name-wrap">
+                <input
+                  type="text"
+                  id="folder-editor-name"
+                  data-i18n-placeholder="optionsFolderNamePlaceholder"
+                  maxlength="60"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="editor-body">
+            <section class="section section-meta">
+              <div class="meta-group">
+                <span class="meta-group-label" data-i18n-content="optionsSectionAppearance"></span>
+                <div class="meta-group-body stack">
+                  <label class="checkbox-row" for="folder-display-mode">
+                    <input type="checkbox" id="folder-display-mode" />
+                    <span data-i18n-content="optionsFolderFlattenLabel"></span>
+                  </label>
+                  <p class="hint" id="folder-display-hint"></p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
         <div id="settings-view" class="hidden">
           <div class="editor-header">
             <div class="editor-title-block">
@@ -199,7 +251,7 @@
             <button
               id="btn-delete-step"
               class="btn-danger"
-              data-i18n-content="optionsDeleteStep"
+              data-i18n-content="optionsDelete"
             ></button>
             <button
               id="btn-duplicate-step"

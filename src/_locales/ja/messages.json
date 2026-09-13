@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ アクションを追加"
   },
-  "optionsDeleteStep": {
-    "message": "ステップを削除"
+  "optionsDelete": {
+    "message": "削除"
   },
   "optionsSave": {
     "message": "保存"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step を複製しました。"
+  },
+  "optionsNewFolder": {
+    "message": "新しいフォルダー"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "フォルダー名…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "無題のフォルダー"
+  },
+  "optionsFolderCollapse": {
+    "message": "フォルダーを折りたたむ"
+  },
+  "optionsFolderExpand": {
+    "message": "フォルダーを展開"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ クイックステップ"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ サブフォルダー"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "フォルダー「$NAME$」を削除しますか？\n\n含まれている $COUNT$ 件のクイックステップは 1 つ上の階層に移動されます。",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "ポップアップでフォルダーをフラット表示"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "グループ"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "フラット（インライン）"
+  },
+  "optionsFolderGroupHint": {
+    "message": "項目を含む折りたたみ可能なフォルダーとして表示します。"
+  },
+  "optionsFolderFlatHint": {
+    "message": "フォルダーのヘッダーは非表示になります。内容（クイックステップとサブフォルダー）はリストに直接表示されます。"
   }
 }

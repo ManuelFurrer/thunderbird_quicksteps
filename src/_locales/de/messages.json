@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ Aktion hinzufügen"
   },
-  "optionsDeleteStep": {
-    "message": "Quick Step löschen"
+  "optionsDelete": {
+    "message": "Löschen"
   },
   "optionsSave": {
     "message": "Speichern"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step dupliziert."
+  },
+  "optionsNewFolder": {
+    "message": "Neuer Ordner"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "Ordnername…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "Unbenannter Ordner"
+  },
+  "optionsFolderCollapse": {
+    "message": "Ordner einklappen"
+  },
+  "optionsFolderExpand": {
+    "message": "Ordner ausklappen"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Quick Step"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ Unterordner"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "Ordner \"$NAME$\" löschen?\n\nDie $COUNT$ Quick Step(s) darin werden eine Ebene nach oben verschoben.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "Ordner im Popup als flache Liste anzeigen"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "Gruppiert"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "Flach (inline)"
+  },
+  "optionsFolderGroupHint": {
+    "message": "Wird als einklappbarer Ordner mit seinen Elementen angezeigt."
+  },
+  "optionsFolderFlatHint": {
+    "message": "Die Ordnerüberschrift wird ausgeblendet. Die Inhalte (Schritte und Unterordner) werden direkt in der Liste angezeigt."
   }
 }

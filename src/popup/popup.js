@@ -133,6 +133,55 @@ function createStepButton(step) {
   return btn;
 }
 
+function createFolderGroup(folder) {
+  const details = document.createElement('details');
+  details.className = 'folder-group';
+  details.open = true;
+
+  const summary = document.createElement('summary');
+  summary.className = 'folder-summary';
+
+  const arrow = document.createElement('span');
+  arrow.className = 'folder-arrow';
+  arrow.setAttribute('aria-hidden', 'true');
+
+  const name = document.createElement('span');
+  name.className = 'folder-group-name';
+  name.textContent = folder.name || getTranslation('optionsFolderDefaultName');
+
+  summary.append(arrow, name);
+
+  const childContainer = document.createElement('div');
+  childContainer.className = 'folder-children';
+
+  details.append(summary, childContainer);
+  return { groupElement: details, childContainer };
+}
+
+function renderFolderItem(folder, container) {
+  const children = folder.children || [];
+
+  if (folder.isFlattened) {
+    renderTreeItems(children, container);
+    return;
+  }
+
+  const { groupElement, childContainer } = createFolderGroup(folder);
+
+  renderTreeItems(children, childContainer);
+  container.appendChild(groupElement);
+}
+
+function renderTreeItems(items, container) {
+  for (const item of items) {
+    if (item.type === 'folder') {
+      renderFolderItem(item, container);
+    } else {
+      container.appendChild(createStepButton(item));
+    }
+  }
+}
+
 async function getCurrentAccountId() {
   try {
     const [mailTab] = await messenger.mailTabs.query({ active: true, currentWindow: true });
@@ -186,10 +235,10 @@ async function loadAndRender() {
 
   container.innerHTML = '';
 
-  for (const step of steps) {
-    container.appendChild(createStepButton(step));
-  }
+  const fragment = document.createDocumentFragment();
+  renderTreeItems(steps, fragment);
 
+  container.appendChild(fragment);
   container.classList.remove('hidden');
 }
 

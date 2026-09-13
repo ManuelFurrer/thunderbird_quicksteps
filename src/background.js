@@ -1,10 +1,13 @@
 import { generateId } from './utils/general-utils.js';
 import { DEFAULT_SETTINGS } from './utils/quickstep-settings.js';
 
+const CURRENT_SCHEMA = 1;
+
 function getDefaultQuickSteps() {
   return [
     {
       id: generateId(),
+      type: 'step',
       name: messenger.i18n.getMessage('defaultStep1Name'),
       color: '#4CAF50',
       requireConfirmation: false,
@@ -13,6 +16,7 @@ function getDefaultQuickSteps() {
     },
     {
       id: generateId(),
+      type: 'step',
       name: messenger.i18n.getMessage('defaultStep2Name'),
       color: '#f44336',
       requireConfirmation: true,
@@ -21,6 +25,7 @@ function getDefaultQuickSteps() {
     },
     {
       id: generateId(),
+      type: 'step',
       name: messenger.i18n.getMessage('defaultStep3Name'),
       color: '#FF9800',
       requireConfirmation: false,
@@ -30,27 +35,72 @@ function getDefaultQuickSteps() {
   ];
 }
 
+function migrateTree(items) {
+  if (!Array.isArray(items)) return [];
+
+  return items.flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+
+    if (item.type === 'folder') {
+      return [{ ...item, children: migrateTree(item.children) }];
+    }
+
+    return [{ type: 'step', ...item }];
+  });
+}
+
+function filterTree(items, onlyEnabled, accountId) {
+  const result = [];
+  for (const item of items) {
+    if (item.type === 'folder') {
+      const filteredChildren = filterTree(item.children || [], onlyEnabled, accountId);
+      if (filteredChildren.length > 0 || !onlyEnabled) {
+        result.push({ ...item, children: filteredChildren });
+      }
+    } else {
+      const enabledOk = !onlyEnabled || item.enabled !== false; // Uses !== false to include legacy items that lack the 'enabled' property.
+      const accountOk =
+        !accountId ||
+        !item.accountIds ||
+        item.accountIds.length === 0 ||
+        item.accountIds.includes(accountId);
+      if (enabledOk && accountOk) result.push(item);
+    }
+  }
+  return result;
+}
+
+function findStepInTree(items, id) {
+  for (const item of items) {
+    if (item.type === 'step' && item.id === id) return item;
+    if (item.type === 'folder') {
+      const found = findStepInTree(item.children || [], id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 async function getQuickSteps(onlyEnabled = false, accountId = null) {
-  let { quicksteps } = await messenger.storage.local.get('quicksteps');
+  let { quicksteps, schemaVersion } = await messenger.storage.local.get([
+    'quicksteps',
+    'schemaVersion'
+  ]);
 
   if (quicksteps === undefined) {
     quicksteps = getDefaultQuickSteps();
-    await messenger.storage.local.set({ quicksteps });
+    await messenger.storage.local.set({ quicksteps, schemaVersion: CURRENT_SCHEMA });
+  } else if (!schemaVersion) {
+    quicksteps = migrateTree(quicksteps);
+    await messenger.storage.local.set({ quicksteps, schemaVersion: CURRENT_SCHEMA });
   }
 
-  if (!quicksteps || !quicksteps.length) {
+  if (!quicksteps?.length) {
     return [];
   }
 
-  return quicksteps.filter((step) => {
-    return (
-      (!onlyEnabled || step.enabled !== false) && // Uses !== false to include legacy items that lack the 'enabled' property.
-      (!accountId ||
-        !step.accountIds ||
-        step.accountIds.length === 0 ||
-        step.accountIds.includes(accountId))
-    );
-  });
+  if (!onlyEnabled && !accountId) return quicksteps;
+  return filterTree(quicksteps, onlyEnabled, accountId);
 }
 
 async function saveQuickSteps(steps) {
@@ -197,7 +247,7 @@ async function executeActions(messages, actions) {
 
 async function executeQuickStep(quickStepId, tabId) {
   const steps = await getQuickSteps();
-  const step = steps.find((s) => s.id === quickStepId);
+  const step = findStepInTree(steps, quickStepId);
 
   if (!step) {
     return {

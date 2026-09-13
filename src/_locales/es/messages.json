@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ Añadir acción"
   },
-  "optionsDeleteStep": {
-    "message": "Eliminar acción"
+  "optionsDelete": {
+    "message": "Eliminar"
   },
   "optionsSave": {
     "message": "Guardar"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step duplicado."
+  },
+  "optionsNewFolder": {
+    "message": "Nueva carpeta"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "Nombre de la carpeta…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "Carpeta sin título"
+  },
+  "optionsFolderCollapse": {
+    "message": "Contraer carpeta"
+  },
+  "optionsFolderExpand": {
+    "message": "Expandir carpeta"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Acción rápida"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ Subcarpeta"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "¿Eliminar la carpeta \"$NAME$\"?\n\nSus $COUNT$ acción(es) rápida(s) se moverán un nivel hacia arriba.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "Mostrar la carpeta en modo plano en la ventana emergente"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "Agrupada"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "Plana (en línea)"
+  },
+  "optionsFolderGroupHint": {
+    "message": "Se muestra como una carpeta contraíble que contiene sus elementos."
+  },
+  "optionsFolderFlatHint": {
+    "message": "El encabezado de la carpeta está oculto. Su contenido (acciones rápidas y subcarpetas) aparece directamente en la lista."
   }
 }

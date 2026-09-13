@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ Ajouter une action"
   },
-  "optionsDeleteStep": {
-    "message": "Supprimer l'étape"
+  "optionsDelete": {
+    "message": "Supprimer"
   },
   "optionsSave": {
     "message": "Enregistrer"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step dupliqué."
+  },
+  "optionsNewFolder": {
+    "message": "Nouveau dossier"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "Nom du dossier…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "Dossier sans titre"
+  },
+  "optionsFolderCollapse": {
+    "message": "Réduire le dossier"
+  },
+  "optionsFolderExpand": {
+    "message": "Développer le dossier"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Action rapide"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ Sous-dossier"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "Supprimer le dossier \"$NAME$\" ?\n\nSes $COUNT$ action(s) rapide(s) seront remontées d’un niveau.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "Afficher le dossier à plat dans la fenêtre contextuelle"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "Groupé"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "À plat (en ligne)"
+  },
+  "optionsFolderGroupHint": {
+    "message": "Affiche un dossier réductible contenant ses éléments."
+  },
+  "optionsFolderFlatHint": {
+    "message": "L’en-tête du dossier est masqué. Son contenu (actions rapides et sous-dossiers) apparaît directement dans la liste."
   }
 }

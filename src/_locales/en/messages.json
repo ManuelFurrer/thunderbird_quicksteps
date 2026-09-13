@@ -190,8 +190,8 @@
   "optionsAddAction": {
     "message": "+ Add Action"
   },
-  "optionsDeleteStep": {
-    "message": "Delete Step"
+  "optionsDelete": {
+    "message": "Delete"
   },
   "optionsSave": {
     "message": "Save"
@@ -399,5 +399,52 @@
   },
   "optionsToastDuplicated": {
     "message": "Quick Step duplicated."
+  },
+  "optionsNewFolder": {
+    "message": "New Folder"
+  },
+  "optionsFolderNamePlaceholder": {
+    "message": "Folder name…"
+  },
+  "optionsFolderDefaultName": {
+    "message": "Untitled Folder"
+  },
+  "optionsFolderCollapse": {
+    "message": "Collapse folder"
+  },
+  "optionsFolderExpand": {
+    "message": "Expand folder"
+  },
+  "optionsFolderAddStep": {
+    "message": "+ Quick Step"
+  },
+  "optionsFolderAddFolder": {
+    "message": "+ Subfolder"
+  },
+  "optionsConfirmDeleteFolderMessage": {
+    "message": "Delete folder \"$NAME$\"?\n\nIts $COUNT$ quick step(s) will be moved up one level.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      },
+      "count": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsFolderFlattenLabel": {
+    "message": "Flatten folder in popup"
+  },
+  "optionsFolderDisplayGroup": {
+    "message": "Group"
+  },
+  "optionsFolderDisplayFlat": {
+    "message": "Flat (inline)"
+  },
+  "optionsFolderGroupHint": {
+    "message": "Displays as a collapsible folder containing its items."
+  },
+  "optionsFolderFlatHint": {
+    "message": "The folder header is hidden. Its contents (steps and subfolders) appear directly in the list."
   }
 }

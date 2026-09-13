@@ -4,6 +4,7 @@ import { getActionLabel, ACTION_TYPES } from '../utils/quickstep-actions.js';
 import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
+import { createDragAndDropManager, setupFlatListDraggable } from '../utils/dragDropUtils.js';
 
 const DEFAULT_COLOR = '#0078D4';
 
@@ -13,6 +14,7 @@ function isStepBlank(step) {
 
 let state = {
   steps: [],
+  collapsedFolders: new Set(),
   folders: [],
   foldersById: {},
   foldersByAccount: {},
@@ -31,6 +33,7 @@ const els = {
   sidebarEmpty: () => getCachedElementById('sidebar-empty'),
   placeholder: () => getCachedElementById('editor-placeholder'),
   editor: () => getCachedElementById('editor'),
+  folderEditor: () => getCachedElementById('folder-editor'),
   settingsView: () => getCachedElementById('settings-view'),
   editorFooter: () => getCachedElementById('editor-footer'),
   navSettingsBtn: () => getCachedElementById('btn-nav-settings'),
@@ -38,10 +41,14 @@ const els = {
   previewActions: () => getCachedElementById('editor-preview-actions'),
   actionsList: () => getCachedElementById('actions-list'),
   addActionBtn: () => getCachedElementById('btn-add-action'),
+  folderEditorName: () => getCachedElementById('folder-editor-name'),
+  folderDisplayCheckbox: () => getCachedElementById('folder-display-mode'),
+  folderDisplayHint: () => getCachedElementById('folder-display-hint'),
   saveBtn: () => getCachedElementById('btn-save'),
   deleteStepBtn: () => getCachedElementById('btn-delete-step'),
   duplicateStepBtn: () => getCachedElementById('btn-duplicate-step'),
   newStepBtn: () => getCachedElementById('btn-new-step'),
+  newFolderBtn: () => getCachedElementById('btn-new-folder'),
   confirmOverlay: () => getCachedElementById('confirm-overlay'),
   confirmMessage: () => getCachedElementById('confirm-message'),
   confirmOk: () => getCachedElementById('confirm-ok'),
@@ -60,6 +67,74 @@ const els = {
   importReplace: () => getCachedElementById('import-replace'),
   stepEnabledCheckbox: () => getCachedElementById('step-enabled')
 };
+
+const dndManager = createDragAndDropManager({
+  getSteps: () => state.steps,
+  findItemInTree,
+  removeFromTree,
+  renderSidebar,
+  persistSteps
+});
+
+function findItemInTree(items, id) {
+  for (const item of items) {
+    if (item.id === id) return item;
+    if (item.type === 'folder') {
+      const found = findItemInTree(item.children || [], id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function findItemContext(items, id) {
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].id === id) return { array: items, index: i };
+    if (items[i].type === 'folder') {
+      const found = findItemContext(items[i].children || [], id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function removeFromTree(id) {
+  const ctx = findItemContext(state.steps, id);
+  if (!ctx) return null;
+  const [removed] = ctx.array.splice(ctx.index, 1);
+  return removed;
+}
+
+function upsertItemInTree(item) {
+  const clone = JSON.parse(JSON.stringify(item));
+  const ctx = findItemContext(state.steps, item.id);
+
+  if (ctx) {
+    ctx.array[ctx.index] = clone;
+  } else {
+    state.steps.push(clone);
+  }
+}
+
+function countStepsInTree(items) {
+  let stepsCount = 0;
+  for (const item of items) {
+    if (!item.type || item.type === 'step') {
+      stepsCount++;
+    } else if (item.type === 'folder') {
+      stepsCount += countStepsInTree(item.children || []);
+    }
+  }
+  return stepsCount;
+}
+
+function assignNewIds(items) {
+  return items.map((item) => {
+    if (item.type === 'folder')
+      return { ...item, id: generateId(), children: assignNewIds(item.children || []) };
+    return { ...item, id: generateId() };
+  });
+}
 
 function showToast(message, type = 'info') {
   notify({
@@ -188,17 +263,25 @@ async function persistSettings() {
 async function autoSave() {
   if (!state.editing) return;
 
+  if (state.editing.type === 'folder') {
+    upsertItemInTree(state.editing);
+
+    try {
+      await persistSteps();
+    } catch (e) {
+      console.error('[QuickSteps] Auto-save failed:', e);
+    }
+    return;
+  }
+
   if (state.isNew && isStepBlank(state.editing)) {
-    state.steps = state.steps.filter((x) => x.id !== state.editing.id);
+    removeFromTree(state.editing.id);
     return;
   }
 
   if (!state.editing.name.trim()) state.editing.name = 'Untitled';
 
-  const idx = state.steps.findIndex((x) => x.id === state.editing.id);
-  const clone = JSON.parse(JSON.stringify(state.editing));
-  if (idx >= 0) state.steps[idx] = clone;
-  else state.steps.push(clone);
+  upsertItemInTree(state.editing);
 
   try {
     await persistSteps();
@@ -220,105 +303,12 @@ function spliceReorder(arr, sourceIndex, targetIndex, dropBelow) {
   arr.splice(insertAt, 0, item);
 }
 
-function setupDraggable({
-  element,
-  dragHandle = null,
-  dragType = 'text/plain',
-  dragValue,
-  allSelector,
-  onDrop
-}) {
-  if (dragHandle) {
-    element.draggable = false;
-
-    dragHandle.addEventListener('mousedown', () => {
-      element.draggable = true;
-
-      window.addEventListener(
-        'mouseup',
-        () => {
-          if (!element.classList.contains('dragging')) {
-            element.draggable = false;
-          }
-        },
-        { once: true }
-      );
-    });
-  } else {
-    element.draggable = true;
-  }
-
-  element.addEventListener('dragstart', (e) => {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData(dragType, String(dragValue));
-    element.classList.add('dragging');
-  });
-
-  element.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    if (element.classList.contains('dragging')) return;
-
-    const bounding = element.getBoundingClientRect();
-    const dropBelow = e.clientY - bounding.top > bounding.height / 2;
-
-    element.classList.toggle('drag-over-bottom', dropBelow);
-    element.classList.toggle('drag-over-top', !dropBelow);
-  });
-
-  element.addEventListener('dragleave', (e) => {
-    if (!e.relatedTarget || !element.contains(e.relatedTarget)) {
-      element.classList.remove('drag-over-top', 'drag-over-bottom');
-    }
-  });
-
-  element.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    element.classList.remove('drag-over-top', 'drag-over-bottom');
-
-    const incomingData = e.dataTransfer.getData(dragType);
-    if (!incomingData) return;
-
-    const bounding = element.getBoundingClientRect();
-    const dropBelow = e.clientY - bounding.top > bounding.height / 2;
-
-    await onDrop(incomingData, dropBelow);
-  });
-
-  element.addEventListener('dragend', () => {
-    if (dragHandle) element.draggable = false;
-    element.classList.remove('dragging');
-    document.querySelectorAll(allSelector).forEach((el) => {
-      el.classList.remove('drag-over-top', 'drag-over-bottom');
-    });
-  });
-}
-
-function createQuickStepsDragAndDropListeners(item, stepId) {
-  setupDraggable({
-    element: item,
-    dragType: 'application/x-quicksteps-step',
-    dragValue: stepId,
-    allSelector: '.step-item',
-    onDrop: async (draggedStepId, dropBelow) => {
-      const sourceIndex = state.steps.findIndex((s) => s.id === draggedStepId);
-      const targetIndex = state.steps.findIndex((s) => s.id === stepId);
-
-      if (sourceIndex === -1 || targetIndex === -1 || sourceIndex === targetIndex) return;
-
-      spliceReorder(state.steps, sourceIndex, targetIndex, dropBelow);
-      renderSidebar();
-      await persistSteps();
-    }
-  });
-}
-
 function createActionDragAndDropListeners(row, index, dragHandle) {
-  setupDraggable({
+  setupFlatListDraggable({
     element: row,
     dragHandle: dragHandle,
     dragType: 'application/x-quicksteps-action',
     dragValue: index,
-    allSelector: '.action-row',
     onDrop: (draggedIndexRaw, dropBelow) => {
       const sourceIndex = parseInt(draggedIndexRaw, 10);
       if (isNaN(sourceIndex) || sourceIndex === index) return;
@@ -336,59 +326,160 @@ function renderSidebar() {
 
   if (!state.steps.length) {
     els.sidebarEmpty().classList.remove('hidden');
-    return;
   } else {
     els.sidebarEmpty().classList.add('hidden');
-
-    for (const step of state.steps) {
-      const item = document.createElement('div');
-      item.className =
-        'step-item' +
-        (!state.viewingSettings && state.editingId === step.id ? ' active' : '') +
-        (step.enabled === false ? ' step-item-disabled' : '');
-      item.dataset.id = step.id;
-
-      const info = document.createElement('div');
-      info.className = 'step-item-info';
-
-      const name = document.createElement('div');
-      name.className = 'step-item-name';
-      name.style.color = step.color || DEFAULT_COLOR;
-      name.textContent = step.name || getTranslation('optionsPlaceholderTitle');
-
-      const meta = document.createElement('div');
-      meta.className = 'step-item-meta';
-      meta.textContent = step.actions.length
-        ? step.actions.map(getActionLabel).join(' → ')
-        : getTranslation('optionsNoActionsAssigned');
-
-      info.append(name, meta);
-      item.append(info);
-      item.addEventListener('click', () => navigateTo(step.id));
-
-      createQuickStepsDragAndDropListeners(item, step.id);
-      list.appendChild(item);
-    }
+    renderSidebarItems(state.steps, list, 0);
   }
 
   els.navSettingsBtn().classList.toggle('active', state.viewingSettings);
 }
 
+function renderSidebarItems(items, container, depth) {
+  for (const item of items) {
+    container.appendChild(
+      item.type === 'folder'
+        ? createFolderSidebarItem(item, depth)
+        : createStepSidebarItem(item, depth)
+    );
+  }
+}
+
+function createStepSidebarItem(step, depth) {
+  const item = document.createElement('div');
+  item.className =
+    'step-item' +
+    (!state.viewingSettings && state.editingId === step.id ? ' active' : '') +
+    (step.enabled === false ? ' step-item-disabled' : '');
+
+  item.dataset.id = step.id;
+  item.dataset.type = 'step';
+
+  if (depth > 0) item.style.paddingLeft = `${10 + depth * 16}px`;
+
+  const info = document.createElement('div');
+  info.className = 'step-item-info';
+
+  const name = document.createElement('div');
+  name.className = 'step-item-name';
+  name.style.color = step.color || DEFAULT_COLOR;
+  name.textContent = step.name || getTranslation('optionsPlaceholderTitle');
+
+  const meta = document.createElement('div');
+  meta.className = 'step-item-meta';
+  meta.textContent = step.actions.length
+    ? step.actions.map(getActionLabel).join(' → ')
+    : getTranslation('optionsNoActionsAssigned');
+
+  info.append(name, meta);
+  item.append(info);
+  item.addEventListener('click', () => navigateTo(step.id));
+  dndManager.setupTreeDraggable(item, step.id, 'step');
+  return item;
+}
+
+function createFolderSidebarItem(folder, depth) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'folder-wrapper';
+
+  const header = document.createElement('div');
+  header.className =
+    'step-item folder-item' +
+    (!state.viewingSettings && state.editingId === folder.id ? ' active' : '');
+  header.dataset.id = folder.id;
+  header.dataset.type = 'folder';
+  if (depth > 0) header.style.paddingLeft = `${10 + depth * 16}px`;
+
+  const iconEl = document.createElement('span');
+  iconEl.className = 'folder-icon';
+  iconEl.setAttribute('aria-hidden', 'true');
+  iconEl.innerHTML =
+    `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">` +
+    `<path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/>` +
+    `</svg>`;
+
+  const info = document.createElement('div');
+  info.className = 'step-item-info';
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'step-item-name';
+  nameEl.textContent = folder.name || getTranslation('optionsFolderDefaultName');
+
+  const meta = document.createElement('div');
+  meta.className = 'step-item-meta';
+  meta.textContent = folder.isFlattened
+    ? getTranslation('optionsFolderDisplayFlat')
+    : getTranslation('optionsFolderDisplayGroup');
+
+  info.append(nameEl, meta);
+
+  const isCollapsed = state.collapsedFolders.has(folder.id);
+  const collapseBtn = document.createElement('button');
+  collapseBtn.className = 'folder-btn collapse-btn' + (isCollapsed ? ' collapsed' : '');
+  collapseBtn.title = getTranslation(isCollapsed ? 'optionsFolderExpand' : 'optionsFolderCollapse');
+  collapseBtn.innerHTML =
+    `<svg width="10" height="6" viewBox="0 0 10 6" fill="none">` +
+    `<path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" ` +
+    `stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  collapseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (state.collapsedFolders.has(folder.id)) state.collapsedFolders.delete(folder.id);
+    else state.collapsedFolders.add(folder.id);
+    renderSidebar();
+  });
+
+  header.append(iconEl, info, collapseBtn);
+  header.addEventListener('click', () => navigateTo(folder.id));
+  dndManager.setupTreeDraggable(header, folder.id, 'folder', !isCollapsed);
+
+  const childrenContainer = document.createElement('div');
+  childrenContainer.className = 'folder-children-sidebar';
+  if (!isCollapsed) {
+    renderSidebarItems(folder.children || [], childrenContainer, depth + 1);
+    childrenContainer.appendChild(createFolderAddRow(folder.id, depth + 1));
+  }
+  dndManager.setupFolderChildrenDropZone(childrenContainer, folder.id);
+
+  wrapper.append(header, childrenContainer);
+  return wrapper;
+}
+
+function createFolderAddRow(folderId, depth) {
+  const row = document.createElement('div');
+  row.className = 'folder-add-row';
+  row.style.paddingLeft = `${10 + depth * 16}px`;
+
+  const addStepBtn = document.createElement('button');
+  addStepBtn.className = 'folder-add-btn';
+  addStepBtn.textContent = getTranslation('optionsFolderAddStep');
+  addStepBtn.addEventListener('click', () => startNewStep(folderId));
+
+  const addFolderBtn = document.createElement('button');
+  addFolderBtn.className = 'folder-add-btn';
+  addFolderBtn.textContent = getTranslation('optionsFolderAddFolder');
+  addFolderBtn.addEventListener('click', () => startNewFolder(folderId));
+
+  row.append(addStepBtn, addFolderBtn);
+  return row;
+}
+
 function renderEditor() {
-  const showEditor = !state.viewingSettings && !!state.editing;
+  const isStep = !state.viewingSettings && state.editing?.type === 'step';
+  const isFolder = !state.viewingSettings && state.editing?.type === 'folder';
   const showPlaceholder = !state.viewingSettings && !state.editing;
   const showSettings = state.viewingSettings;
 
   els.placeholder().classList.toggle('hidden', !showPlaceholder);
-  els.editor().classList.toggle('hidden', !showEditor);
+  els.editor().classList.toggle('hidden', !isStep);
+  els.folderEditor().classList.toggle('hidden', !isFolder);
   els.settingsView().classList.toggle('hidden', !showSettings);
   els.editorFooter().classList.toggle('hidden', showSettings);
 
-  els.saveBtn().disabled = !showEditor;
-  els.deleteStepBtn().disabled = !showEditor;
-  els.duplicateStepBtn().disabled = !showEditor;
+  els.saveBtn().disabled = !isStep && !isFolder;
+  els.deleteStepBtn().classList.toggle('hidden', !isStep && !isFolder);
+  els.duplicateStepBtn().classList.toggle('hidden', !isStep);
 
-  if (showEditor) {
+  if (isStep) {
     els.stepName().value = state.editing.name || '';
     updatePreviewActions();
     renderActionsList();
@@ -398,9 +489,23 @@ function renderEditor() {
     els.stepEnabledCheckbox().checked = state.editing.enabled !== false;
   }
 
-  if (showSettings) {
-    renderSettingsView();
-  }
+  if (isFolder) renderFolderEditor();
+  if (showSettings) renderSettingsView();
+}
+
+function renderFolderEditor() {
+  if (!state.editing || state.editing.type !== 'folder') return;
+  els.folderEditorName().value = state.editing.name || '';
+  els.folderDisplayCheckbox().checked = state.editing.isFlattened === true;
+  updateFolderDisplayHint();
+}
+
+function updateFolderDisplayHint() {
+  const hint = els.folderDisplayHint();
+  if (!hint || !state.editing) return;
+  hint.textContent = state.editing.isFlattened
+    ? getTranslation('optionsFolderFlatHint')
+    : getTranslation('optionsFolderGroupHint');
 }
 
 function renderSettingsView() {
@@ -658,6 +763,20 @@ function syncSidebarItem() {
   const nameEl = item.querySelector('.step-item-name');
   const metaEl = item.querySelector('.step-item-meta');
 
+  if (state.editing.type === 'folder') {
+    if (nameEl) {
+      nameEl.textContent = state.editing.name || getTranslation('optionsFolderDefaultName');
+    }
+
+    if (metaEl) {
+      metaEl.textContent = state.editing.isFlattened
+        ? getTranslation('optionsFolderDisplayFlat')
+        : getTranslation('optionsFolderDisplayGroup');
+    }
+
+    return;
+  }
+
   if (nameEl) {
     nameEl.textContent = state.editing.name || getTranslation('optionsPlaceholderTitle');
     nameEl.style.color = state.editing.color || DEFAULT_COLOR;
@@ -670,33 +789,32 @@ function syncSidebarItem() {
   item.classList.toggle('step-item-disabled', state.editing.enabled === false);
 }
 
-async function navigateTo(stepId) {
-  if (!state.viewingSettings && state.editingId === stepId) return;
+async function navigateTo(id) {
+  if (!state.viewingSettings && state.editingId === id) return;
   await autoSave();
   state.viewingSettings = false;
-  loadStep(stepId);
+
+  const item = findItemInTree(state.steps, id);
+  if (!item) return;
+
+  state.editingId = id;
+  state.editing = JSON.parse(JSON.stringify(item));
+  state.isNew = false;
+  renderEditor();
   renderSidebar();
 }
 
-function loadStep(stepId) {
-  const step = state.steps.find((s) => s.id === stepId);
-  if (!step) return;
-  state.editingId = stepId;
-  state.editing = JSON.parse(JSON.stringify(step));
-  state.isNew = false;
-  renderEditor();
-}
-
-function scrollToStep(stepId) {
+function scrollToItem(id) {
   document
-    .querySelector(`.step-item[data-id="${stepId}"]`)
+    .querySelector(`.step-item[data-id="${id}"]`)
     ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function startNewStep() {
+function startNewStep(parentId = null) {
   autoSave().then(() => {
     const newStep = {
       id: generateId(),
+      type: 'step',
       name: '',
       color: DEFAULT_COLOR,
       requireConfirmation: false,
@@ -704,7 +822,20 @@ function startNewStep() {
       accountIds: null,
       actions: [{ type: 'mark_read' }]
     };
-    state.steps.push(newStep);
+
+    if (parentId) {
+      const folder = findItemInTree(state.steps, parentId);
+      if (folder?.type === 'folder') {
+        folder.children = folder.children || [];
+        folder.children.push(newStep);
+        state.collapsedFolders.delete(parentId);
+      } else {
+        state.steps.push(newStep);
+      }
+    } else {
+      state.steps.push(newStep);
+    }
+
     state.editingId = newStep.id;
     state.editing = JSON.parse(JSON.stringify(newStep));
     state.isNew = true;
@@ -713,9 +844,47 @@ function startNewStep() {
     renderEditor();
     setTimeout(() => {
       els.stepName().focus();
-      scrollToStep(newStep.id);
+      scrollToItem(newStep.id);
     }, 50);
   });
+}
+
+async function startNewFolder(parentId = null) {
+  await autoSave();
+
+  const newFolder = {
+    id: generateId(),
+    type: 'folder',
+    name: '',
+    isFlattened: false,
+    children: []
+  };
+
+  if (parentId) {
+    const folder = findItemInTree(state.steps, parentId);
+    if (folder?.type === 'folder') {
+      folder.children = folder.children || [];
+      folder.children.push(newFolder);
+      state.collapsedFolders.delete(parentId);
+    } else {
+      state.steps.push(newFolder);
+    }
+  } else {
+    state.steps.push(newFolder);
+  }
+
+  state.editingId = newFolder.id;
+  state.editing = JSON.parse(JSON.stringify(newFolder));
+  state.isNew = false;
+  state.viewingSettings = false;
+
+  await persistSteps();
+  renderSidebar();
+  renderEditor();
+  setTimeout(() => {
+    els.folderEditorName().focus();
+    scrollToItem(newFolder.id);
+  }, 50);
 }
 
 async function goToSettings() {
@@ -732,6 +901,19 @@ async function goToSettings() {
 async function saveCurrentStep() {
   if (!state.editing) return;
 
+  if (state.editing.type === 'folder') {
+    upsertItemInTree(state.editing);
+
+    try {
+      await persistSteps();
+      renderSidebar();
+      showToast(getTranslation('optionsToastSaved'), 'success');
+    } catch (e) {
+      showToast(getTranslation('optionsToastSaveError', [e.message]), 'error');
+    }
+    return;
+  }
+
   if (!state.editing.name.trim()) {
     els.stepName().focus();
     els.stepName().style.borderBottomColor = '#d32f2f';
@@ -747,10 +929,7 @@ async function saveCurrentStep() {
     }
   }
 
-  const idx = state.steps.findIndex((x) => x.id === state.editing.id);
-  const clone = JSON.parse(JSON.stringify(state.editing));
-  if (idx >= 0) state.steps[idx] = clone;
-  else state.steps.push(clone);
+  upsertItemInTree(state.editing);
 
   state.isNew = false;
 
@@ -767,8 +946,7 @@ async function deleteCurrentStep() {
   const name = state.editing?.name || 'Quick Step';
   const confirmed = await showConfirm(getTranslation('optionsConfirmDeleteMessage', [name]));
   if (!confirmed) return;
-
-  state.steps = state.steps.filter((s) => s.id !== state.editingId);
+  removeFromTree(state.editingId);
   state.editing = null;
   state.editingId = null;
   state.isNew = false;
@@ -783,9 +961,37 @@ async function deleteCurrentStep() {
   }
 }
 
-async function duplicateCurrentStep() {
-  if (!state.editing) return;
+async function deleteFolderById(folderId) {
+  const folder = findItemInTree(state.steps, folderId);
+  if (!folder) return;
 
+  if ((folder.children || []).length > 0) {
+    const stepCount = countStepsInTree(folder.children);
+    const confirmed = await showConfirm(
+      getTranslation('optionsConfirmDeleteFolderMessage', [
+        folder.name || getTranslation('optionsFolderDefaultName'),
+        stepCount
+      ])
+    );
+    if (!confirmed) return;
+  }
+
+  if (state.editingId === folderId) {
+    state.editing = null;
+    state.editingId = null;
+  }
+
+  const ctx = findItemContext(state.steps, folderId);
+  if (!ctx) return;
+  ctx.array.splice(ctx.index, 1, ...(folder.children || []));
+
+  await persistSteps();
+  renderSidebar();
+  renderEditor();
+}
+
+async function duplicateCurrentStep() {
+  if (!state.editing || state.editing.type !== 'step') return;
   state.isNew = false;
   await autoSave();
 
@@ -793,11 +999,14 @@ async function duplicateCurrentStep() {
 
   const duplicate = {
     ...source,
+    type: 'step',
     id: generateId(),
     name: getTranslation('optionsDuplicateCopyName', [source.name])
   };
 
-  state.steps.push(duplicate);
+  const ctx = findItemContext(state.steps, state.editing.id);
+  if (ctx) ctx.array.splice(ctx.index + 1, 0, duplicate);
+  else state.steps.push(duplicate);
 
   state.editingId = duplicate.id;
   state.editing = JSON.parse(JSON.stringify(duplicate));
@@ -807,9 +1016,7 @@ async function duplicateCurrentStep() {
     renderSidebar();
     renderEditor();
     showToast(getTranslation('optionsToastDuplicated'), 'success');
-    setTimeout(() => {
-      scrollToStep(duplicate.id);
-    }, 50);
+    setTimeout(() => scrollToItem(duplicate.id), 50);
   } catch (e) {
     showToast(getTranslation('optionsToastSaveError', [e.message]), 'error');
   }
@@ -832,19 +1039,23 @@ function exportSteps() {
   showToast(getTranslation('optionsToastExported'), 'success');
 }
 
-// Accepts either a raw array of steps (the export format) or an object of
-// the shape { steps: [...] }, and returns a cleaned array of valid step
-// objects (without ids/colors assumptions), or null if the shape is invalid.
-function normalizeImportedSteps(parsed) {
-  const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.steps) ? parsed.steps : null;
-  if (!list) return null;
-
+function normalizeTreeItems(list) {
   const validActionTypes = new Set(ACTION_TYPES.map((a) => a.value));
-  const cleaned = [];
-
+  const result = [];
   for (const raw of list) {
-    if (!raw || typeof raw !== 'object' || !Array.isArray(raw.actions)) continue;
+    if (!raw || typeof raw !== 'object') continue;
 
+    if (raw.type === 'folder') {
+      result.push({
+        type: 'folder',
+        name: typeof raw.name === 'string' ? raw.name : '',
+        isFlattened: raw.isFlattened === true,
+        children: normalizeTreeItems(raw.children || [])
+      });
+      continue;
+    }
+
+    if (!Array.isArray(raw.actions)) continue;
     const actions = raw.actions
       .filter((a) => a && validActionTypes.has(a.type))
       .map((a) => {
@@ -868,7 +1079,8 @@ function normalizeImportedSteps(parsed) {
 
     if (!actions.length) continue;
 
-    cleaned.push({
+    result.push({
+      type: 'step',
       name: typeof raw.name === 'string' ? raw.name : '',
       color: typeof raw.color === 'string' ? raw.color : DEFAULT_COLOR,
       requireConfirmation: raw.requireConfirmation === true,
@@ -878,8 +1090,13 @@ function normalizeImportedSteps(parsed) {
       actions
     });
   }
+  return result;
+}
 
-  return cleaned;
+function normalizeImportedSteps(parsed) {
+  const list = Array.isArray(parsed) ? parsed : Array.isArray(parsed?.steps) ? parsed.steps : null;
+  if (!list) return null;
+  return normalizeTreeItems(list);
 }
 
 async function handleImportFile(e) {
@@ -895,31 +1112,29 @@ async function handleImportFile(e) {
     showToast(getTranslation('optionsToastImportInvalid'), 'error');
     return;
   }
-
-  const importedSteps = normalizeImportedSteps(parsed);
-  if (!importedSteps) {
+  const importedItems = normalizeImportedSteps(parsed);
+  if (!importedItems) {
     showToast(getTranslation('optionsToastImportInvalid'), 'error');
     return;
   }
-  if (!importedSteps.length) {
+
+  const stepCount = countStepsInTree(importedItems);
+  const hasFolders = importedItems.some((i) => i.type === 'folder');
+  if (stepCount === 0 && !hasFolders) {
     showToast(getTranslation('optionsToastImportEmpty'), 'info');
     return;
   }
 
-  const choice = await showImportChoice(
-    getTranslation('optionsImportChoiceMessage', [importedSteps.length])
-  );
-
+  const choice = await showImportChoice(getTranslation('optionsImportChoiceMessage', [stepCount]));
   if (choice === 'cancel') return;
 
-  const freshSteps = importedSteps.map((s) => ({ ...s, id: generateId() }));
-
-  state.steps = choice === 'replace' ? freshSteps : [...state.steps, ...freshSteps];
+  const freshItems = assignNewIds(importedItems);
+  state.steps = choice === 'replace' ? freshItems : [...state.steps, ...freshItems];
 
   try {
     await persistSteps();
     renderSidebar();
-    showToast(getTranslation('optionsToastImported', [importedSteps.length]), 'success');
+    showToast(getTranslation('optionsToastImported', [stepCount]), 'success');
   } catch (err) {
     showToast(getTranslation('optionsToastSaveError', [err.message]), 'error');
   }
@@ -969,9 +1184,18 @@ async function init() {
     }
   });
 
-  els.newStepBtn().addEventListener('click', startNewStep);
+  els.newStepBtn().addEventListener('click', () => startNewStep());
+  els.newFolderBtn().addEventListener('click', () => startNewFolder());
+
   els.saveBtn().addEventListener('click', saveCurrentStep);
-  els.deleteStepBtn().addEventListener('click', deleteCurrentStep);
+  els.deleteStepBtn().addEventListener('click', () => {
+    if (!state.editing) return;
+    if (state.editing.type === 'folder') {
+      deleteFolderById(state.editing.id);
+    } else {
+      deleteCurrentStep();
+    }
+  });
   els.duplicateStepBtn().addEventListener('click', duplicateCurrentStep);
   els.addActionBtn().addEventListener('click', addAction);
   els.navSettingsBtn().addEventListener('click', goToSettings);
@@ -991,19 +1215,19 @@ async function init() {
   });
 
   els.requireConfirmationCheckbox().addEventListener('change', (e) => {
-    if (!state.editing) return;
+    if (!state.editing || state.editing.type !== 'step') return;
     state.editing.requireConfirmation = e.target.checked;
   });
 
   els.stepName().addEventListener('input', (e) => {
-    if (!state.editing) return;
+    if (!state.editing || state.editing.type !== 'step') return;
     state.editing.name = e.target.value;
     updatePreviewActions();
     syncSidebarItem();
   });
 
   els.stepEnabledCheckbox().addEventListener('change', (e) => {
-    if (!state.editing) return;
+    if (!state.editing || state.editing.type !== 'step') return;
     state.editing.enabled = e.target.checked;
     syncSidebarItem();
   });
@@ -1014,10 +1238,24 @@ async function init() {
   colorSwatch.style.backgroundColor = DEFAULT_COLOR;
 
   colorInput.addEventListener('input', (event) => {
+    if (!state.editing || state.editing.type !== 'step') return;
     const selectedColor = event.target.value;
     colorSwatch.style.backgroundColor = selectedColor;
 
     state.editing.color = selectedColor;
+    syncSidebarItem();
+  });
+
+  els.folderEditorName().addEventListener('input', (e) => {
+    if (!state.editing || state.editing.type !== 'folder') return;
+    state.editing.name = e.target.value;
+    syncSidebarItem();
+  });
+
+  els.folderDisplayCheckbox().addEventListener('change', (e) => {
+    if (!state.editing || state.editing.type !== 'folder') return;
+    state.editing.isFlattened = e.target.checked;
+    updateFolderDisplayHint();
     syncSidebarItem();
   });
 
