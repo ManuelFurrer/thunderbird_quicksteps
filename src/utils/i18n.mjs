@@ -57,7 +57,7 @@
 const i18nAttrRegex = /^data-i18n-(?<target>.*)/;
 
 let _extension = null;
-let _keyPrefix = "__MSG_";
+let _keyPrefix = '__MSG_';
 
 const getTranslationFromKey = (key, substitutions = []) => {
   let rv = _extension
@@ -67,7 +67,7 @@ const getTranslationFromKey = (key, substitutions = []) => {
 };
 
 const getTranslationFromEscapedKey = (placeholder) => {
-  const prefixRegex = new RegExp(_keyPrefix + "(.+?)__", "g");
+  const prefixRegex = new RegExp(_keyPrefix + '(.+?)__', 'g');
   return placeholder.replace(prefixRegex, (escapedKey) => {
     const key = escapedKey.slice(_keyPrefix.length, -2);
     return getTranslationFromKey(key);
@@ -108,7 +108,7 @@ const updateSubtree = (sourceDocument, node) => {
     const { ownerElement } = attr;
     let { target } = i18nAttrRegex.exec(attr.name).groups;
 
-    if (target == "content") {
+    if (target == 'content') {
       ownerElement.textContent = value;
     } else {
       // Assume it is an attribute.
