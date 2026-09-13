@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "scripts": {
     "lint": "oxfmt && oxlint --fix",
     "lint:check": "oxfmt --check && oxlint",
@@ -6,10 +7,10 @@
     "test:ui": "vitest run --watch --ui"
   },
   "devDependencies": {
-    "@vitest/ui": "^4.1.10",
+    "@vitest/ui": "^5.0.0",
     "jsdom": "^29.1.1",
-    "oxfmt": "^0.60.0",
-    "oxlint": "^1.75.0",
-    "vitest": "^4.1.10"
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "vitest": "^5.0.0"
   }
 }
