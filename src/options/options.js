@@ -4,7 +4,7 @@ import { getActionLabel, ACTION_TYPES } from '../utils/quickstep-actions.js';
 import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
-import { createDragAndDropManager, setupFlatListDraggable } from '../utils/dragDropUtils.js';
+import { createDragAndDropManager, setupFlatListDraggable } from '../utils/drag-drop-utils.js';
 import { searchTree } from '../utils/search-utils.js';
 
 const DEFAULT_COLOR = '#0078D4';
