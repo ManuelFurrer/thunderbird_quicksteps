@@ -1,5 +1,6 @@
 const DEFAULT_SETTINGS = {
-  autoClosePopup: false
+  autoClosePopup: false,
+  showSearchBar: true
 };
 
 export { DEFAULT_SETTINGS };

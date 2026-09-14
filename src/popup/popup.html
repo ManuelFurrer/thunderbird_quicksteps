@@ -32,6 +32,10 @@
         </button>
       </header>
 
+      <div id="search-bar" class="hidden">
+        <input type="search" id="search-input" data-i18n-placeholder="searchPlaceholder" />
+      </div>
+
       <div id="content">
         <div id="loading">
           <div class="spinner"></div>
@@ -49,6 +53,10 @@
             class="btn-primary"
             data-i18n-content="popupCreateFirst"
           ></button>
+        </div>
+
+        <div id="search-empty" class="hidden">
+          <p data-i18n-content="searchNoResults"></p>
         </div>
       </div>
 

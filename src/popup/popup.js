@@ -3,18 +3,11 @@ import { getActionLabel } from '../utils/quickstep-actions.js';
 import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
-
-let settings = { ...DEFAULT_SETTINGS };
+import { searchTree } from '../utils/search-utils.js';
 
 async function getCurrentMailTabId() {
-  const [tab] = await messenger.tabs
-    .query({
-      active: true,
-      currentWindow: true
-    })
-    .catch(() => []);
-
-  return tab?.id || null;
+  const [tab] = await messenger.tabs.query({ active: true, currentWindow: true }).catch(() => []);
+  return tab?.id ?? null;
 }
 
 function showStatus(message, type = 'info') {
@@ -35,17 +28,17 @@ function showConfirm(message) {
     messageEl.textContent = message;
     overlay.classList.remove('hidden');
 
-    function done(result) {
-      overlay.classList.add('hidden');
-      runBtn.removeEventListener('click', onRun);
-      cancelBtn.removeEventListener('click', onCancel);
-      resolve(result);
-    }
-    const onRun = () => done(true);
-    const onCancel = () => done(false);
+    const controller = new AbortController();
+    const { signal } = controller;
 
-    runBtn.addEventListener('click', onRun);
-    cancelBtn.addEventListener('click', onCancel);
+    const done = (result) => {
+      overlay.classList.add('hidden');
+      controller.abort();
+      resolve(result);
+    };
+
+    runBtn.addEventListener('click', () => done(true), { signal });
+    cancelBtn.addEventListener('click', () => done(false), { signal });
   });
 }
 
@@ -54,7 +47,7 @@ function openOptions() {
   window.close();
 }
 
-async function executeStep(step, btn) {
+async function executeStep(step, btn, autoClosePopup) {
   btn.disabled = true;
   btn.classList.add('executing');
 
@@ -76,7 +69,7 @@ async function executeStep(step, btn) {
       const key = count === 1 ? 'statusAppliedSingle' : 'statusAppliedMultiple';
       showStatus(getTranslation(key, [step.name, count.toString()]), 'success');
 
-      if (settings.autoClosePopup) {
+      if (autoClosePopup) {
         window.close();
       }
     } else if (result.anySucceeded) {
@@ -100,16 +93,16 @@ async function executeStep(step, btn) {
   }
 }
 
-async function handleStepClick(step, btn) {
+async function handleStepClick(step, btn, autoClosePopup) {
   if (step.requireConfirmation) {
     const confirmed = await showConfirm(getTranslation('popupConfirmMessage', [step.name]));
     if (!confirmed) return;
   }
 
-  await executeStep(step, btn);
+  await executeStep(step, btn, autoClosePopup);
 }
 
-function createStepButton(step) {
+function createStepButton(step, autoClosePopup) {
   const btn = document.createElement('button');
   btn.className = 'step-btn';
   btn.style.setProperty('--step-color', step.color || '#0078D4');
@@ -129,7 +122,7 @@ function createStepButton(step) {
   btn.append(info);
   btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(' → ')}`;
 
-  btn.addEventListener('click', () => handleStepClick(step, btn));
+  btn.addEventListener('click', () => handleStepClick(step, btn, autoClosePopup));
   return btn;
 }
 
@@ -155,31 +148,57 @@ function createFolderGroup(folder) {
   childContainer.className = 'folder-children';
 
   details.append(summary, childContainer);
-  return { groupElement: details, childContainer };
+  return details;
 }
 
-function renderFolderItem(folder, container) {
-  const children = folder.children || [];
+function renderTreeItems(items, container, autoClosePopup) {
+  for (const item of items) {
+    if (item.type === 'folder') {
+      renderFolderItem(item, container, autoClosePopup);
+    } else {
+      container.appendChild(createStepButton(item, autoClosePopup));
+    }
+  }
+}
 
+function renderFolderItem(folder, container, autoClosePopup) {
+  const children = folder.children || [];
   if (folder.isFlattened) {
-    renderTreeItems(children, container);
+    renderTreeItems(children, container, autoClosePopup);
     return;
   }
 
-  const { groupElement, childContainer } = createFolderGroup(folder);
+  const group = createFolderGroup(folder);
+  const childContainer = group.querySelector('.folder-children');
+  renderTreeItems(children, childContainer, autoClosePopup);
 
-  renderTreeItems(children, childContainer);
-  container.appendChild(groupElement);
+  if (childContainer.children.length > 0) {
+    container.appendChild(group);
+  }
 }
 
-function renderTreeItems(items, container) {
-  for (const item of items) {
-    if (item.type === 'folder') {
-      renderFolderItem(item, container);
-    } else {
-      container.appendChild(createStepButton(item));
-    }
+function renderFilteredSteps(steps, query, autoClosePopup) {
+  const container = getCachedElementById('steps-container');
+  const emptyState = getCachedElementById('empty-state');
+  const searchEmpty = getCachedElementById('search-empty');
+
+  if (!steps || steps.length === 0) {
+    container.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+    searchEmpty.classList.add('hidden');
+    return;
   }
+
+  const items = query ? searchTree(steps, query) : steps;
+
+  const fragment = document.createDocumentFragment();
+  renderTreeItems(items, fragment, autoClosePopup);
+  container.replaceChildren(fragment);
+
+  const hasContent = container.children.length > 0;
+  container.classList.toggle('hidden', !hasContent);
+  emptyState.classList.toggle('hidden', hasContent || !!query);
+  searchEmpty.classList.toggle('hidden', hasContent || !query);
 }
 
 async function getCurrentAccountId() {
@@ -202,59 +221,69 @@ async function getCurrentAccountId() {
   return null;
 }
 
-async function loadAndRender() {
-  const loading = getCachedElementById('loading');
-  const container = getCachedElementById('steps-container');
-  const emptyState = getCachedElementById('empty-state');
+async function fetchInitialData() {
+  const [settingsResult, accountId] = await Promise.all([
+    messenger.runtime.sendMessage({ type: 'GET_SETTINGS' }).catch(() => DEFAULT_SETTINGS),
+    getCurrentAccountId()
+  ]);
 
-  loading.classList.remove('hidden');
-  container.classList.add('hidden');
-  emptyState.classList.add('hidden');
+  const settings = { ...DEFAULT_SETTINGS, ...settingsResult };
 
-  const accountId = await getCurrentAccountId();
+  const steps = await messenger.runtime.sendMessage({
+    type: 'GET_QUICK_STEPS',
+    onlyEnabled: true,
+    accountId
+  });
 
-  let steps;
-  try {
-    steps = await messenger.runtime.sendMessage({
-      type: 'GET_QUICK_STEPS',
-      onlyEnabled: true,
-      accountId
-    });
-  } catch (e) {
-    loading.classList.add('hidden');
-    showStatus(getTranslation('statusLoadError', [e.message]), 'error');
-    return;
-  }
-
-  loading.classList.add('hidden');
-
-  if (!steps || steps.length === 0) {
-    emptyState.classList.remove('hidden');
-    return;
-  }
-
-  container.innerHTML = '';
-
-  const fragment = document.createDocumentFragment();
-  renderTreeItems(steps, fragment);
-
-  container.appendChild(fragment);
-  container.classList.remove('hidden');
+  return { settings, steps };
 }
 
-async function loadSettings() {
-  try {
-    settings = await messenger.runtime.sendMessage({ type: 'GET_SETTINGS' });
-  } catch (e) {
-    console.error('[QuickSteps] Could not load settings:', e);
-  }
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+async function initPopup() {
   getCachedElementById('btn-settings').addEventListener('click', openOptions);
   getCachedElementById('createFirstBtn').addEventListener('click', openOptions);
 
-  loadSettings();
-  loadAndRender();
-  localizeDocument();
-});
+  const loading = getCachedElementById('loading');
+  const searchBar = getCachedElementById('search-bar');
+  const searchInput = getCachedElementById('search-input');
+
+  loading.classList.remove('hidden');
+  getCachedElementById('steps-container').classList.add('hidden');
+  getCachedElementById('empty-state').classList.add('hidden');
+  getCachedElementById('search-empty').classList.add('hidden');
+
+  try {
+    const { settings, steps } = await fetchInitialData();
+
+    const showSearch = !!settings.showSearchBar;
+    searchBar.classList.toggle('hidden', !showSearch);
+    if (searchInput) searchInput.value = '';
+
+    searchInput.addEventListener(
+      'input',
+      debounce((e) => {
+        renderFilteredSteps(steps, e.target.value, settings.autoClosePopup);
+      }, 150)
+    );
+
+    renderFilteredSteps(steps, '', settings.autoClosePopup);
+  } catch (e) {
+    showStatus(getTranslation('statusLoadError', [e.message]), 'error');
+  } finally {
+    loading.classList.add('hidden');
+    localizeDocument();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initPopup);

@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "L’intestazione della cartella è nascosta. I suoi contenuti (azioni rapide e sottocartelle) appaiono direttamente nell’elenco."
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "Mostra barra di ricerca nel popup"
+  },
+  "searchPlaceholder": {
+    "message": "Cerca…"
+  },
+  "searchNoResults": {
+    "message": "Nessun risultato"
   }
 }

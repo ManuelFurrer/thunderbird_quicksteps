@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "Заголовок папки скрыт. Её содержимое (быстрые действия и вложенные папки) отображается непосредственно в списке."
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "Показывать строку поиска во всплывающем окне"
+  },
+  "searchPlaceholder": {
+    "message": "Поиск…"
+  },
+  "searchNoResults": {
+    "message": "Нет результатов"
   }
 }

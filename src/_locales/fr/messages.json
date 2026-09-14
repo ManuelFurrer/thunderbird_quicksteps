@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "L’en-tête du dossier est masqué. Son contenu (actions rapides et sous-dossiers) apparaît directement dans la liste."
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "Afficher la barre de recherche dans le popup"
+  },
+  "searchPlaceholder": {
+    "message": "Rechercher…"
+  },
+  "searchNoResults": {
+    "message": "Aucun résultat"
   }
 }

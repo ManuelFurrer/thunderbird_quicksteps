@@ -451,5 +451,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "文件夹标题将被隐藏。其内容（Quick Step 和子文件夹）将直接显示在列表中。"
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "在弹出窗口中显示搜索栏"
+  },
+  "searchPlaceholder": {
+    "message": "搜索…"
+  },
+  "searchNoResults": {
+    "message": "没有结果"
   }
 }

@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "El encabezado de la carpeta está oculto. Su contenido (acciones rápidas y subcarpetas) aparece directamente en la lista."
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "Mostrar barra de búsqueda en la ventana emergente"
+  },
+  "searchPlaceholder": {
+    "message": "Buscar…"
+  },
+  "searchNoResults": {
+    "message": "Sin resultados"
   }
 }

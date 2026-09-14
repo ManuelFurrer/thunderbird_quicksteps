@@ -430,3 +430,32 @@ details[open] .folder-arrow {
 .folder-children .folder-group {
   margin-left: 6px;
 }
+
+#search-bar {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#search-input {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#search-input:focus {
+  border-color: var(--accent);
+}
+
+#search-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}

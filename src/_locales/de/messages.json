@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "Die Ordnerüberschrift wird ausgeblendet. Die Inhalte (Schritte und Unterordner) werden direkt in der Liste angezeigt."
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "Suchleiste im Popup anzeigen"
+  },
+  "searchPlaceholder": {
+    "message": "Suchen…"
+  },
+  "searchNoResults": {
+    "message": "Keine Ergebnisse"
   }
 }

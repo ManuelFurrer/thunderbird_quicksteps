@@ -296,6 +296,10 @@ body {
   overflow: hidden;
 }
 
+.setting-group {
+  margin-bottom: 16px;
+}
+
 .editor-header {
   display: flex;
   align-items: center;
@@ -1175,4 +1179,33 @@ button:disabled {
   opacity: 0.8;
   line-height: 1.5;
   max-width: 380px;
+}
+
+#sidebar-search {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#sidebar-search-input {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#sidebar-search-input:focus {
+  border-color: var(--accent);
+}
+
+.sidebar-search-empty {
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
 }

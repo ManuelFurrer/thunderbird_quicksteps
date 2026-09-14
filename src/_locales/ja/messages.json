@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "フォルダーのヘッダーは非表示になります。内容（クイックステップとサブフォルダー）はリストに直接表示されます。"
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "ポップアップに検索バーを表示"
+  },
+  "searchPlaceholder": {
+    "message": "検索…"
+  },
+  "searchNoResults": {
+    "message": "結果なし"
   }
 }

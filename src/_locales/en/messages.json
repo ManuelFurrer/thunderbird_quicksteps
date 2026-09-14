@@ -449,5 +449,14 @@
   },
   "optionsFolderFlatHint": {
     "message": "The folder header is hidden. Its contents (steps and subfolders) appear directly in the list."
+  },
+  "optionsShowSearchBarLabel": {
+    "message": "Show search bar in popup"
+  },
+  "searchPlaceholder": {
+    "message": "Search…"
+  },
+  "searchNoResults": {
+    "message": "No results"
   }
 }

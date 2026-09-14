@@ -5,6 +5,7 @@ import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
 import { createDragAndDropManager, setupFlatListDraggable } from '../utils/dragDropUtils.js';
+import { searchTree } from '../utils/search-utils.js';
 
 const DEFAULT_COLOR = '#0078D4';
 
@@ -25,6 +26,7 @@ let state = {
   editingId: null,
   isNew: false,
   viewingSettings: false,
+  searchQuery: '',
   settings: { ...DEFAULT_SETTINGS }
 };
 
@@ -65,7 +67,9 @@ const els = {
   importCancel: () => getCachedElementById('import-cancel'),
   importMerge: () => getCachedElementById('import-merge'),
   importReplace: () => getCachedElementById('import-replace'),
-  stepEnabledCheckbox: () => getCachedElementById('step-enabled')
+  stepEnabledCheckbox: () => getCachedElementById('step-enabled'),
+  sidebarSearchInput: () => getCachedElementById('sidebar-search-input'),
+  showSearchBarCheckbox: () => getCachedElementById('setting-show-search-bar')
 };
 
 const dndManager = createDragAndDropManager({
@@ -254,10 +258,15 @@ async function persistSteps() {
 }
 
 async function persistSettings() {
-  await messenger.runtime.sendMessage({
-    type: 'SAVE_SETTINGS',
-    settings: state.settings
-  });
+  try {
+    await messenger.runtime.sendMessage({
+      type: 'SAVE_SETTINGS',
+      settings: state.settings
+    });
+    showToast(getTranslation('optionsToastSettingsSaved'), 'success');
+  } catch (err) {
+    showToast(getTranslation('optionsToastSaveError', [err.message]), 'error');
+  }
 }
 
 async function autoSave() {
@@ -324,11 +333,22 @@ function renderSidebar() {
   const list = els.stepsList();
   list.innerHTML = '';
 
+  const query = state.searchQuery.trim();
+  const items = query ? searchTree(state.steps, query) : state.steps;
+
   if (!state.steps.length) {
     els.sidebarEmpty().classList.remove('hidden');
   } else {
     els.sidebarEmpty().classList.add('hidden');
-    renderSidebarItems(state.steps, list, 0);
+
+    if (items.length) {
+      renderSidebarItems(items, list, 0);
+    } else {
+      const msg = document.createElement('p');
+      msg.className = 'sidebar-search-empty';
+      msg.textContent = getTranslation('searchNoResults');
+      list.appendChild(msg);
+    }
   }
 
   els.navSettingsBtn().classList.toggle('active', state.viewingSettings);
@@ -504,6 +524,7 @@ function updateFolderDisplayHint() {
 
 function renderSettingsView() {
   els.autoCloseCheckbox().checked = !!state.settings.autoClosePopup;
+  els.showSearchBarCheckbox().checked = !!state.settings.showSearchBar;
 }
 
 async function ensureAccountsLoaded() {
@@ -1214,12 +1235,7 @@ async function init() {
 
   els.autoCloseCheckbox().addEventListener('change', async (e) => {
     state.settings.autoClosePopup = e.target.checked;
-    try {
-      await persistSettings();
-      showToast(getTranslation('optionsToastSettingsSaved'), 'success');
-    } catch (err) {
-      showToast(getTranslation('optionsToastSaveError', [err.message]), 'error');
-    }
+    await persistSettings();
   });
 
   els.requireConfirmationCheckbox().addEventListener('change', (e) => {
@@ -1265,6 +1281,16 @@ async function init() {
     state.editing.isFlattened = e.target.checked;
     updateFolderDisplayHint();
     syncSidebarItem();
+  });
+
+  els.sidebarSearchInput().addEventListener('input', (e) => {
+    state.searchQuery = e.target.value;
+    renderSidebar();
+  });
+
+  els.showSearchBarCheckbox().addEventListener('change', async (e) => {
+    state.settings.showSearchBar = e.target.checked;
+    await persistSettings();
   });
 
   localizeDocument();

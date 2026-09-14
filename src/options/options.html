@@ -44,6 +44,14 @@
           </div>
         </div>
 
+        <div id="sidebar-search">
+          <input
+            type="search"
+            id="sidebar-search-input"
+            data-i18n-placeholder="searchPlaceholder"
+          />
+        </div>
+
         <div id="steps-list"></div>
 
         <div id="sidebar-empty" class="hidden">
@@ -214,11 +222,21 @@
           <div class="editor-body">
             <section class="section">
               <h3 class="section-title" data-i18n-content="optionsSectionPopupBehavior"></h3>
-              <label class="checkbox-row" for="setting-auto-close-popup">
-                <input type="checkbox" id="setting-auto-close-popup" />
-                <span data-i18n-content="optionsAutoClosePopupLabel"></span>
-              </label>
-              <p class="hint" data-i18n-content="optionsAutoClosePopupHint"></p>
+
+              <div class="setting-group">
+                <label class="checkbox-row" for="setting-auto-close-popup">
+                  <input type="checkbox" id="setting-auto-close-popup" />
+                  <span data-i18n-content="optionsAutoClosePopupLabel"></span>
+                </label>
+                <p class="hint" data-i18n-content="optionsAutoClosePopupHint"></p>
+              </div>
+
+              <div class="setting-group">
+                <label class="checkbox-row" for="setting-show-search-bar">
+                  <input type="checkbox" id="setting-show-search-bar" />
+                  <span data-i18n-content="optionsShowSearchBarLabel"></span>
+                </label>
+              </div>
             </section>
 
             <section class="section">
