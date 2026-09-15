@@ -4,7 +4,8 @@
     "lint": "oxfmt && oxlint --fix",
     "lint:check": "oxfmt --check && oxlint",
     "test": "vitest run",
-    "test:ui": "vitest run --watch --ui"
+    "test:ui": "vitest run --watch --ui",
+    "build:xpi": "node scripts/build-xpi.js"
   },
   "devDependencies": {
     "@vitest/ui": "^5.0.0",
