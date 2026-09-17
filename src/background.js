@@ -89,10 +89,10 @@ async function getQuickSteps(onlyEnabled = false, accountId = null) {
 
   if (quicksteps === undefined) {
     quicksteps = getDefaultQuickSteps();
-    await messenger.storage.local.set({ quicksteps, schemaVersion: CURRENT_SCHEMA });
+    await saveQuickSteps(quicksteps);
   } else if (!schemaVersion) {
     quicksteps = migrateTree(quicksteps);
-    await messenger.storage.local.set({ quicksteps, schemaVersion: CURRENT_SCHEMA });
+    await saveQuickSteps(quicksteps);
   }
 
   if (!quicksteps?.length) {
@@ -104,7 +104,7 @@ async function getQuickSteps(onlyEnabled = false, accountId = null) {
 }
 
 async function saveQuickSteps(steps) {
-  await messenger.storage.local.set({ quicksteps: steps });
+  await messenger.storage.local.set({ quicksteps: steps, schemaVersion: CURRENT_SCHEMA });
   return { success: true };
 }
 
