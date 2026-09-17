@@ -490,8 +490,8 @@ function renderEditor() {
   els.editorFooter().classList.toggle('hidden', showSettings);
 
   els.saveBtn().disabled = !isStep && !isFolder;
-  els.deleteStepBtn().classList.toggle('hidden', !isStep && !isFolder);
-  els.duplicateStepBtn().classList.toggle('hidden', !isStep && !isFolder);
+  els.deleteStepBtn().disabled = !isStep && !isFolder;
+  els.duplicateStepBtn().disabled = !isStep && !isFolder;
 
   if (isStep) {
     els.stepName().value = state.editing.name || '';
