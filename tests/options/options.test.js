@@ -114,6 +114,7 @@ describe('options page', () => {
         steps: [
           {
             id: 's1',
+            type: 'step',
             name: 'Archive',
             color: '#4CAF50',
             enabled: true,
@@ -197,7 +198,9 @@ describe('options page', () => {
   describe('quickstep settings', () => {
     it('adds, removes and reorders actions with the up/down/remove buttons', async () => {
       await mountOptions({
-        steps: [{ id: 's1', name: 'Step', enabled: true, actions: [{ type: 'mark_read' }] }]
+        steps: [
+          { id: 's1', type: 'step', name: 'Step', enabled: true, actions: [{ type: 'mark_read' }] }
+        ]
       });
       await openStep('s1');
 
@@ -216,7 +219,9 @@ describe('options page', () => {
 
     it("toggling enabled updates the sidebar item's disabled styling immediately", async () => {
       await mountOptions({
-        steps: [{ id: 's1', name: 'Step', enabled: true, actions: [{ type: 'mark_read' }] }]
+        steps: [
+          { id: 's1', type: 'step', name: 'Step', enabled: true, actions: [{ type: 'mark_read' }] }
+        ]
       });
       await openStep('s1');
 
@@ -234,6 +239,7 @@ describe('options page', () => {
         steps: [
           {
             id: 's1',
+            type: 'step',
             name: 'Step',
             color: '#0078D4',
             enabled: true,
@@ -253,7 +259,15 @@ describe('options page', () => {
 
     it('asks for confirmation before deleting a step, and removes it once confirmed', async () => {
       const { getSteps } = await mountOptions({
-        steps: [{ id: 's1', name: 'DeleteMe', enabled: true, actions: [{ type: 'mark_read' }] }]
+        steps: [
+          {
+            id: 's1',
+            type: 'step',
+            name: 'DeleteMe',
+            enabled: true,
+            actions: [{ type: 'mark_read' }]
+          }
+        ]
       });
       await openStep('s1');
 
@@ -274,8 +288,20 @@ describe('options page', () => {
     it('autosaves the current step when navigating to another one', async () => {
       const { getSteps } = await mountOptions({
         steps: [
-          { id: 's1', name: 'First', enabled: true, actions: [{ type: 'mark_read' }] },
-          { id: 's2', name: 'Second', enabled: true, actions: [{ type: 'mark_read' }] }
+          {
+            id: 's1',
+            type: 'step',
+            name: 'First',
+            enabled: true,
+            actions: [{ type: 'mark_read' }]
+          },
+          {
+            id: 's2',
+            type: 'step',
+            name: 'Second',
+            enabled: true,
+            actions: [{ type: 'mark_read' }]
+          }
         ]
       });
       await openStep('s1');
@@ -290,7 +316,9 @@ describe('options page', () => {
 
     it('discards a brand new, untouched step when navigating away without saving', async () => {
       const { getSteps } = await mountOptions({
-        steps: [{ id: 's1', name: 'First', enabled: true, actions: [{ type: 'mark_read' }] }]
+        steps: [
+          { id: 's1', type: 'step', name: 'First', enabled: true, actions: [{ type: 'mark_read' }] }
+        ]
       });
 
       document.getElementById('btn-new-step').click();
@@ -313,6 +341,7 @@ describe('options page', () => {
     ];
     const BASE_STEP = {
       id: 's1',
+      type: 'step',
       name: 'Step',
       enabled: true,
       actions: [{ type: 'mark_read' }]
@@ -514,7 +543,13 @@ describe('options page', () => {
     });
 
     it('collapses the selector when navigating to a different step', async () => {
-      const step2 = { id: 's2', name: 'Other', enabled: true, actions: [{ type: 'archive' }] };
+      const step2 = {
+        id: 's2',
+        type: 'step',
+        name: 'Other',
+        enabled: true,
+        actions: [{ type: 'archive' }]
+      };
       await mountOptions({ steps: [BASE_STEP, step2], accounts: ACCOUNTS });
       await openStep('s1');
 
@@ -530,6 +565,7 @@ describe('options page', () => {
       const stepAll = { ...BASE_STEP, id: 's1', accountIds: null };
       const stepRestricted = {
         id: 's2',
+        type: 'step',
         name: 'Restricted',
         enabled: true,
         actions: [{ type: 'archive' }],
@@ -677,6 +713,7 @@ describe('options page', () => {
   describe('duplicate step', () => {
     const BASE = {
       id: 's1',
+      type: 'step',
       name: 'Archive',
       color: '#4CAF50',
       enabled: true,

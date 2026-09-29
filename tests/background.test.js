@@ -63,15 +63,25 @@ describe('background', () => {
       expect(new Set(ids).size).toBe(3);
       expect(ids.every((id) => id.startsWith('qs_'))).toBe(true);
 
-      expect(messenger.storage.local.set).toHaveBeenCalledWith({ quicksteps: steps });
+      expect(messenger.storage.local.set).toHaveBeenCalledWith({
+        quicksteps: steps,
+        schemaVersion: 1
+      });
     });
 
     it('returns previously persisted steps instead of regenerating defaults', async () => {
       const existing = [
-        { id: 'qs_1', name: 'Custom', color: '#000', enabled: true, actions: [{ type: 'flag' }] }
+        {
+          id: 'qs_1',
+          type: 'step',
+          name: 'Custom',
+          color: '#000',
+          enabled: true,
+          actions: [{ type: 'flag' }]
+        }
       ];
       const { listener } = await loadBackground({
-        storage: { local: { get: vi.fn(() => ({ quicksteps: existing })) } }
+        storage: { local: { get: vi.fn(() => ({ quicksteps: existing, schemaVersion: 1 })) } }
       });
 
       const steps = await listener({ type: 'GET_QUICK_STEPS' });
@@ -151,7 +161,10 @@ describe('background', () => {
       const result = await listener({ type: 'SAVE_QUICK_STEPS', steps });
 
       expect(result).toEqual({ success: true });
-      expect(messenger.storage.local.set).toHaveBeenCalledWith({ quicksteps: steps });
+      expect(messenger.storage.local.set).toHaveBeenCalledWith({
+        quicksteps: steps,
+        schemaVersion: 1
+      });
 
       const updatedSteps = await listener({ type: 'GET_QUICK_STEPS' });
       expect(updatedSteps).toStrictEqual(steps);
@@ -164,7 +177,7 @@ describe('background', () => {
 
       const settings = await listener({ type: 'GET_SETTINGS' });
 
-      expect(settings).toEqual({ autoClosePopup: false });
+      expect(settings).toEqual({ autoClosePopup: false, showSearchBar: true });
     });
 
     it('merges stored settings over the defaults', async () => {
@@ -174,7 +187,7 @@ describe('background', () => {
 
       const settings = await listener({ type: 'GET_SETTINGS' });
 
-      expect(settings).toEqual({ autoClosePopup: true });
+      expect(settings).toEqual({ autoClosePopup: true, showSearchBar: true });
     });
 
     it('persists settings via SAVE_SETTINGS', async () => {
@@ -340,7 +353,7 @@ describe('background', () => {
       const step = baseStep();
       const { listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages: [] })) }
+        messageDisplay: { getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [] })) }
       });
 
       const result = await listener({
@@ -357,7 +370,7 @@ describe('background', () => {
       const messages = [{ id: 'm1' }, { id: 'm2' }];
       const { messenger, listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages })) }
+        messageDisplay: { getDisplayedMessages: vi.fn(() => Promise.resolve({ messages })) }
       });
 
       const result = await listener({
@@ -386,7 +399,9 @@ describe('background', () => {
       });
       const { listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages: [{ id: 'm1' }] })) }
+        messageDisplay: {
+          getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [{ id: 'm1' }] }))
+        }
       });
 
       const result = await listener({
@@ -413,7 +428,9 @@ describe('background', () => {
       });
       const { messenger, listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages: [{ id: 'm1' }] })) }
+        messageDisplay: {
+          getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [{ id: 'm1' }] }))
+        }
       });
 
       const result = await listener({
@@ -431,7 +448,9 @@ describe('background', () => {
       const step = baseStep({ actions: [{ type: 'delete_permanent' }] });
       const { messenger, listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages: [{ id: 'm1' }] })) }
+        messageDisplay: {
+          getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [{ id: 'm1' }] }))
+        }
       });
 
       await listener({ type: 'EXECUTE_QUICK_STEP', quickStepId: 'step1', tabId: 1 });
@@ -443,7 +462,9 @@ describe('background', () => {
       const step = baseStep({ actions: [{ type: 'flag' }, { type: 'unflag' }] });
       const { messenger, listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages: [{ id: 'm1' }] })) }
+        messageDisplay: {
+          getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [{ id: 'm1' }] }))
+        }
       });
 
       await listener({ type: 'EXECUTE_QUICK_STEP', quickStepId: 'step1', tabId: 1 });
@@ -456,7 +477,9 @@ describe('background', () => {
       const step = baseStep({ actions: [{ type: 'not_a_real_action' }] });
       const { listener } = await loadBackground({
         storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
-        messageDisplay: { getDisplayedMessages: vi.fn(() => ({ messages: [{ id: 'm1' }] })) }
+        messageDisplay: {
+          getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [{ id: 'm1' }] }))
+        }
       });
 
       const result = await listener({ type: 'EXECUTE_QUICK_STEP', quickStepId: 'step1', tabId: 1 });

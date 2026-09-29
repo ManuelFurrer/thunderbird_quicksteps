@@ -33,7 +33,10 @@ export function createMessengerMock(overrides = {}) {
     storage: {
       local: {
         get: vi.fn((key) => {
-          if (typeof key !== 'string') throw new Error('mock only supports string keys');
+          if (Array.isArray(key)) {
+            return key.reduce((acc, k) => ({ ...acc, [k]: storageData[k] }), {});
+          }
+          if (typeof key !== 'string') throw new Error('mock only supports string or array keys');
           return { [key]: storageData[key] };
         }),
         set: vi.fn((obj) => {
@@ -52,10 +55,14 @@ export function createMessengerMock(overrides = {}) {
       update: vi.fn(() => {})
     },
     messageDisplay: {
-      getDisplayedMessages: vi.fn(() => ({ messages: [] }))
+      getDisplayedMessages: vi.fn(() => Promise.resolve({ messages: [] }))
     },
     mailTabs: {
-      query: vi.fn(() => [])
+      query: vi.fn(() => []),
+      getSelectedMessages: vi.fn(() => Promise.resolve({ messages: [] }))
+    },
+    tabs: {
+      query: vi.fn(() => Promise.resolve([{ id: 13 }]))
     },
     runtime: {
       onMessage: { addListener: vi.fn() },
