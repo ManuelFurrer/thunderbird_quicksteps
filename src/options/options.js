@@ -1,9 +1,9 @@
 import { localizeDocument, getTranslation } from '../utils/i18n.mjs';
-import { generateId } from '../utils/general-utils.js';
+import { generateId, countStepsInTree } from '../utils/general-utils.js';
 import { getActionLabel, ACTION_TYPES } from '../utils/quickstep-actions.js';
 import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
-import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
+import { DEFAULT_SETTINGS, normalizeSearchBarMinSteps } from '../utils/quickstep-settings.js';
 import { createDragAndDropManager, setupFlatListDraggable } from '../utils/drag-drop-utils.js';
 import { searchTree } from '../utils/search-utils.js';
 
@@ -69,7 +69,8 @@ const els = {
   importReplace: () => getCachedElementById('import-replace'),
   stepEnabledCheckbox: () => getCachedElementById('step-enabled'),
   sidebarSearchInput: () => getCachedElementById('sidebar-search-input'),
-  showSearchBarCheckbox: () => getCachedElementById('setting-show-search-bar')
+  showSearchBarCheckbox: () => getCachedElementById('setting-show-search-bar'),
+  searchBarMinStepsInput: () => getCachedElementById('setting-search-bar-min-steps')
 };
 
 const dndManager = createDragAndDropManager({
@@ -118,18 +119,6 @@ function upsertItemInTree(item) {
   } else {
     state.steps.push(clone);
   }
-}
-
-function countStepsInTree(items) {
-  let stepsCount = 0;
-  for (const item of items) {
-    if (!item.type || item.type === 'step') {
-      stepsCount++;
-    } else if (item.type === 'folder') {
-      stepsCount += countStepsInTree(item.children || []);
-    }
-  }
-  return stepsCount;
 }
 
 function assignNewIds(items) {
@@ -525,6 +514,8 @@ function updateFolderDisplayHint() {
 function renderSettingsView() {
   els.autoCloseCheckbox().checked = !!state.settings.autoClosePopup;
   els.showSearchBarCheckbox().checked = !!state.settings.showSearchBar;
+  els.searchBarMinStepsInput().value = normalizeSearchBarMinSteps(state.settings.searchBarMinSteps);
+  els.searchBarMinStepsInput().disabled = !state.settings.showSearchBar;
 }
 
 async function ensureAccountsLoaded() {
@@ -1290,6 +1281,14 @@ async function init() {
 
   els.showSearchBarCheckbox().addEventListener('change', async (e) => {
     state.settings.showSearchBar = e.target.checked;
+    els.searchBarMinStepsInput().disabled = !e.target.checked;
+    await persistSettings();
+  });
+
+  els.searchBarMinStepsInput().addEventListener('change', async (e) => {
+    const value = normalizeSearchBarMinSteps(e.target.value);
+    e.target.value = value;
+    state.settings.searchBarMinSteps = value;
     await persistSettings();
   });
 

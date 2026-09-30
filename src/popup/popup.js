@@ -3,7 +3,7 @@ import { getActionLabel } from '../utils/quickstep-actions.js';
 import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
-import { searchTree } from '../utils/search-utils.js';
+import { searchTree, shouldShowSearchBar } from '../utils/search-utils.js';
 
 async function getCurrentMailTabId() {
   const [tab] = await messenger.tabs.query({ active: true, currentWindow: true }).catch(() => []);
@@ -266,7 +266,7 @@ async function initPopup() {
   try {
     const { settings, steps } = await fetchInitialData();
 
-    const showSearch = !!settings.showSearchBar;
+    const showSearch = shouldShowSearchBar(settings, steps);
     searchBar.classList.toggle('hidden', !showSearch);
     if (searchInput) searchInput.value = '';
 

@@ -177,7 +177,11 @@ describe('background', () => {
 
       const settings = await listener({ type: 'GET_SETTINGS' });
 
-      expect(settings).toEqual({ autoClosePopup: false, showSearchBar: true });
+      expect(settings).toEqual({
+        autoClosePopup: false,
+        showSearchBar: true,
+        searchBarMinSteps: 5
+      });
     });
 
     it('merges stored settings over the defaults', async () => {
@@ -187,7 +191,7 @@ describe('background', () => {
 
       const settings = await listener({ type: 'GET_SETTINGS' });
 
-      expect(settings).toEqual({ autoClosePopup: true, showSearchBar: true });
+      expect(settings).toEqual({ autoClosePopup: true, showSearchBar: true, searchBarMinSteps: 5 });
     });
 
     it('persists settings via SAVE_SETTINGS', async () => {

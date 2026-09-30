@@ -453,6 +453,12 @@
   "optionsShowSearchBarLabel": {
     "message": "Mostrar barra de búsqueda en la ventana emergente"
   },
+  "optionsSearchBarMinStepsPrefix": {
+    "message": "cuando hay más de"
+  },
+  "optionsSearchBarMinStepsSuffix": {
+    "message": "Quick Steps"
+  },
   "searchPlaceholder": {
     "message": "Buscar…"
   },

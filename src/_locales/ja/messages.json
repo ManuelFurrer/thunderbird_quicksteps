@@ -453,6 +453,12 @@
   "optionsShowSearchBarLabel": {
     "message": "ポップアップに検索バーを表示"
   },
+  "optionsSearchBarMinStepsPrefix": {
+    "message": "クイックステップが"
+  },
+  "optionsSearchBarMinStepsSuffix": {
+    "message": "個より多い場合"
+  },
   "searchPlaceholder": {
     "message": "検索…"
   },

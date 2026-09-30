@@ -1209,3 +1209,38 @@ button:disabled {
   color: var(--text-muted);
   font-size: 12px;
 }
+
+.setting-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.setting-inline .checkbox-row {
+  margin-bottom: 0;
+}
+
+#setting-search-bar-min-steps {
+  width: 64px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#setting-search-bar-min-steps:focus {
+  border-color: var(--accent);
+}
+
+#setting-search-bar-min-steps:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

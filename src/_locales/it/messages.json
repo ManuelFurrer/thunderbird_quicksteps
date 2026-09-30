@@ -453,6 +453,12 @@
   "optionsShowSearchBarLabel": {
     "message": "Mostra barra di ricerca nel popup"
   },
+  "optionsSearchBarMinStepsPrefix": {
+    "message": "quando ci sono più di"
+  },
+  "optionsSearchBarMinStepsSuffix": {
+    "message": "Quick Step"
+  },
   "searchPlaceholder": {
     "message": "Cerca…"
   },

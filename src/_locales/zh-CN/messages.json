@@ -455,6 +455,12 @@
   "optionsShowSearchBarLabel": {
     "message": "在弹出窗口中显示搜索栏"
   },
+  "optionsSearchBarMinStepsPrefix": {
+    "message": "当快速步骤超过"
+  },
+  "optionsSearchBarMinStepsSuffix": {
+    "message": "个时"
+  },
   "searchPlaceholder": {
     "message": "搜索…"
   },

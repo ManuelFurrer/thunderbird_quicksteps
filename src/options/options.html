@@ -232,10 +232,22 @@
               </div>
 
               <div class="setting-group">
-                <label class="checkbox-row" for="setting-show-search-bar">
-                  <input type="checkbox" id="setting-show-search-bar" />
-                  <span data-i18n-content="optionsShowSearchBarLabel"></span>
-                </label>
+                <div class="setting-inline">
+                  <label class="checkbox-row" for="setting-show-search-bar">
+                    <input type="checkbox" id="setting-show-search-bar" />
+                    <span data-i18n-content="optionsShowSearchBarLabel"></span>
+                  </label>
+                  <span data-i18n-content="optionsSearchBarMinStepsPrefix"></span>
+                  <input
+                    type="number"
+                    id="setting-search-bar-min-steps"
+                    min="0"
+                    max="999"
+                    step="1"
+                    inputmode="numeric"
+                  />
+                  <span data-i18n-content="optionsSearchBarMinStepsSuffix"></span>
+                </div>
               </div>
             </section>
 

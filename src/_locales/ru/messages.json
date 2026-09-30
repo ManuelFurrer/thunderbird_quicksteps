@@ -453,6 +453,12 @@
   "optionsShowSearchBarLabel": {
     "message": "Показывать строку поиска во всплывающем окне"
   },
+  "optionsSearchBarMinStepsPrefix": {
+    "message": "если больше"
+  },
+  "optionsSearchBarMinStepsSuffix": {
+    "message": "быстрых шагов"
+  },
   "searchPlaceholder": {
     "message": "Поиск…"
   },

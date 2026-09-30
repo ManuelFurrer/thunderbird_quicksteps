@@ -453,6 +453,12 @@
   "optionsShowSearchBarLabel": {
     "message": "Suchleiste im Popup anzeigen"
   },
+  "optionsSearchBarMinStepsPrefix": {
+    "message": "wenn mehr als"
+  },
+  "optionsSearchBarMinStepsSuffix": {
+    "message": "Quick Steps vorhanden sind"
+  },
   "searchPlaceholder": {
     "message": "Suchen…"
   },

@@ -1,3 +1,11 @@
+import { normalizeSearchBarMinSteps } from './quickstep-settings.js';
+import { countStepsInTree } from './general-utils.js';
+
+export function shouldShowSearchBar(settings, steps) {
+  if (!settings?.showSearchBar) return false;
+  return countStepsInTree(steps) > normalizeSearchBarMinSteps(settings.searchBarMinSteps);
+}
+
 function filterNodes(nodes, query) {
   const result = [];
 
