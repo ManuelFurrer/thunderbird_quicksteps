@@ -1009,8 +1009,8 @@ button:disabled {
   width: 28px;
   height: 28px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
   border-radius: 5px;
   cursor: pointer;
   padding: 0;
@@ -1022,9 +1022,9 @@ button:disabled {
 }
 
 #btn-new-folder:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--step-item-hover);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .folder-wrapper {
