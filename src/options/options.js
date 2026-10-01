@@ -6,6 +6,7 @@ import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS, normalizeSearchBarMinSteps } from '../utils/quickstep-settings.js';
 import { createDragAndDropManager, setupFlatListDraggable } from '../utils/drag-drop-utils.js';
 import { searchTree } from '../utils/search-utils.js';
+import { buildFolderPicker, closeOpenFolderPickers } from '../components/folder-picker.js';
 
 const DEFAULT_COLOR = '#0078D4';
 
@@ -206,37 +207,6 @@ async function ensureFoldersLoaded() {
     state.foldersById = {};
     state.foldersByAccount = {};
   }
-}
-
-function buildFolderSelect(action) {
-  const select = document.createElement('select');
-  select.className = 'action-folder-select';
-
-  const blank = document.createElement('option');
-  blank.value = '';
-  blank.textContent = getTranslation('optionsSelectFolderPlaceholder');
-  select.appendChild(blank);
-
-  for (const [accountName, folders] of Object.entries(state.foldersByAccount)) {
-    const group = document.createElement('optgroup');
-    group.label = accountName;
-    for (const folder of folders) {
-      const opt = document.createElement('option');
-      opt.value = folder.id;
-
-      const depth = (folder.path.match(/\//g) || []).length;
-      opt.textContent = '\u00a0'.repeat(Math.max(0, depth - 1) * 2) + folder.name;
-
-      if (action.folder && action.folder.id === folder.id) {
-        opt.selected = true;
-      }
-
-      group.appendChild(opt);
-    }
-    select.appendChild(group);
-  }
-
-  return select;
 }
 
 async function persistSteps() {
@@ -658,15 +628,21 @@ function createActionButtons(index) {
   return btns;
 }
 
-function attachFolderListener(select, actionIndex) {
-  select.addEventListener('change', () => {
-    if (select.value) {
-      const folder = state.foldersById[select.value];
-      if (folder) state.editing.actions[actionIndex].folder = folder;
-    } else {
-      delete state.editing.actions[actionIndex].folder;
-    }
-    updatePreviewActions();
+function setActionFolder(actionIndex, folderId) {
+  if (folderId) {
+    const folder = state.foldersById[folderId];
+    if (folder) state.editing.actions[actionIndex].folder = folder;
+  } else {
+    delete state.editing.actions[actionIndex].folder;
+  }
+  updatePreviewActions();
+}
+
+function buildFolderControl(action, actionIndex) {
+  return buildFolderPicker({
+    action,
+    foldersByAccount: state.foldersByAccount,
+    onSelect: (folderId) => setActionFolder(actionIndex, folderId)
   });
 }
 
@@ -681,15 +657,10 @@ function refreshFolderPicker(folderContainer, action, actionIndex) {
     loading.textContent = getTranslation('optionsFoldersLoading');
     folderContainer.appendChild(loading);
     ensureFoldersLoaded().then(() => {
-      folderContainer.innerHTML = '';
-      const select = buildFolderSelect(action);
-      attachFolderListener(select, actionIndex);
-      folderContainer.appendChild(select);
+      folderContainer.replaceChildren(buildFolderControl(action, actionIndex));
     });
   } else {
-    const select = buildFolderSelect(action);
-    attachFolderListener(select, actionIndex);
-    folderContainer.appendChild(select);
+    folderContainer.appendChild(buildFolderControl(action, actionIndex));
   }
 }
 
@@ -1193,6 +1164,7 @@ async function init() {
 
   document.addEventListener('click', (event) => {
     const accountSelect = getCachedElementById('account-selector');
+    closeOpenFolderPickers(event.target);
 
     // close account select dropdown on outside click
     if (
