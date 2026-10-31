@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "Quitar bandera"
   },
+  "actionMarkJunk": {
+    "message": "Marcar como correo no deseado"
+  },
+  "actionMarkNotJunk": {
+    "message": "Marcar como correo deseado"
+  },
   "optionsTitle": {
     "message": "QuickSteps — Configuración"
   },
@@ -228,6 +234,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "Quitar bandera"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "Marcar como correo no deseado"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "Marcar como correo deseado"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "Archivar"

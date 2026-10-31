@@ -23,6 +23,16 @@ const ACTION_TYPES = Object.freeze(
       needsFolder: false
     },
     {
+      value: 'mark_junk',
+      i18nKey: 'optionsActionTypeMarkJunkLabel',
+      needsFolder: false
+    },
+    {
+      value: 'mark_not_junk',
+      i18nKey: 'optionsActionTypeMarkNotJunkLabel',
+      needsFolder: false
+    },
+    {
       value: 'archive',
       i18nKey: 'optionsActionTypeArchiveLabel',
       needsFolder: false
@@ -55,6 +65,8 @@ const ACTION_LABELS = Object.freeze({
   mark_unread: () => getTranslation('actionMarkUnread'),
   flag: () => getTranslation('actionFlag'),
   unflag: () => getTranslation('actionUnflag'),
+  mark_junk: () => getTranslation('actionMarkJunk'),
+  mark_not_junk: () => getTranslation('actionMarkNotJunk'),
   archive: () => getTranslation('actionArchive'),
   delete: () => getTranslation('actionDeleteTrash'),
   delete_permanent: () => getTranslation('actionDeletePermanent'),

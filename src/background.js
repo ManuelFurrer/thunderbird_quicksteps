@@ -231,6 +231,14 @@ async function executeActions(messages, actions) {
           );
           break;
 
+        case 'mark_junk':
+          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { junk: true })));
+          break;
+
+        case 'mark_not_junk':
+          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { junk: false })));
+          break;
+
         default:
           throw new Error(messenger.i18n.getMessage('errorUnknownActionType'));
       }

@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "Rimuovi contrassegno"
   },
+  "actionMarkJunk": {
+    "message": "Segna come spam"
+  },
+  "actionMarkNotJunk": {
+    "message": "Segna come non spam"
+  },
   "optionsTitle": {
     "message": "QuickSteps — Impostazioni"
   },
@@ -228,6 +234,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "Rimuovi contrassegno"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "Segna come spam"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "Segna come non spam"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "Archivia"

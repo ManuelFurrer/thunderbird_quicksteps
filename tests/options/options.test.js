@@ -677,6 +677,26 @@ describe('options page', () => {
       expect(getSteps()[0].accountIds).toEqual(['a1', 'a2']);
     });
 
+    it('keeps the junk actions when importing', async () => {
+      const { getSteps } = await mountOptions({ steps: [] });
+
+      document.getElementById('btn-nav-settings').click();
+      await flushPromises();
+
+      const importedRaw = [
+        { name: 'Spam', actions: [{ type: 'mark_junk' }, { type: 'mark_not_junk' }] }
+      ];
+      const file = new window.File([JSON.stringify(importedRaw)], 'export.json', {
+        type: 'application/json'
+      });
+      const input = document.getElementById('import-file-input');
+      setInputFiles(input, file);
+      input.dispatchEvent(new window.Event('change'));
+      await flushPromises();
+
+      expect(getSteps()[0].actions).toEqual([{ type: 'mark_junk' }, { type: 'mark_not_junk' }]);
+    });
+
     it('normalizes a missing accountIds on import to null', async () => {
       const { getSteps } = await mountOptions({ steps: [] });
 

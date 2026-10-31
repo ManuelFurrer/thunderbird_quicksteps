@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "Снять флажок"
   },
+  "actionMarkJunk": {
+    "message": "Пометить как спам"
+  },
+  "actionMarkNotJunk": {
+    "message": "Пометить как не спам"
+  },
   "optionsTitle": {
     "message": "QuickSteps — Настройки"
   },
@@ -228,6 +234,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "Снять флажок"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "Пометить как спам"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "Пометить как не спам"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "Архивировать"

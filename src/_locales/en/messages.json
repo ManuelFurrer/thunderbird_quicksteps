@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "Unflag"
   },
+  "actionMarkJunk": {
+    "message": "Mark as Spam"
+  },
+  "actionMarkNotJunk": {
+    "message": "Mark as Not Spam"
+  },
   "optionsTitle": {
     "message": "QuickSteps — Settings"
   },
@@ -228,6 +234,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "Remove Flag"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "Mark as Spam"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "Mark as Not Spam"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "Archive"

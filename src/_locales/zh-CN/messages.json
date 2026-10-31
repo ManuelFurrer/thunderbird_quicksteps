@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "清除旗标"
   },
+  "actionMarkJunk": {
+    "message": "标记为垃圾邮件"
+  },
+  "actionMarkNotJunk": {
+    "message": "标记为非垃圾邮件"
+  },
   "optionsTitle": {
     "message": "QuickSteps — 设置"
   },
@@ -230,6 +236,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "清除旗标"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "标记为垃圾邮件"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "标记为非垃圾邮件"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "归档"

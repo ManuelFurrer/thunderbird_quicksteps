@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "フラグを外す"
   },
+  "actionMarkJunk": {
+    "message": "迷惑メールとしてマーク"
+  },
+  "actionMarkNotJunk": {
+    "message": "迷惑メールではないとしてマーク"
+  },
   "optionsTitle": {
     "message": "QuickSteps — 設定"
   },
@@ -228,6 +234,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "フラグを外す"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "迷惑メールとしてマーク"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "迷惑メールではないとしてマーク"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "アーカイブ"

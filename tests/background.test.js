@@ -477,6 +477,30 @@ describe('background', () => {
       expect(messenger.messages.update).toHaveBeenCalledWith('m1', { flagged: false });
     });
 
+    it('marks every message as junk and not junk', async () => {
+      const step = baseStep({ actions: [{ type: 'mark_junk' }, { type: 'mark_not_junk' }] });
+      const { messenger, listener } = await loadBackground({
+        storage: { local: { get: vi.fn(() => ({ quicksteps: [step] })) } },
+        messageDisplay: {
+          getDisplayedMessages: vi.fn(() =>
+            Promise.resolve({ messages: [{ id: 'm1' }, { id: 'm2' }] })
+          )
+        }
+      });
+
+      const result = await listener({ type: 'EXECUTE_QUICK_STEP', quickStepId: 'step1', tabId: 1 });
+
+      expect(result.success).toBe(true);
+      expect(result.results).toEqual([
+        { action: 'mark_junk', success: true },
+        { action: 'mark_not_junk', success: true }
+      ]);
+      expect(messenger.messages.update).toHaveBeenCalledWith('m1', { junk: true });
+      expect(messenger.messages.update).toHaveBeenCalledWith('m2', { junk: true });
+      expect(messenger.messages.update).toHaveBeenCalledWith('m1', { junk: false });
+      expect(messenger.messages.update).toHaveBeenCalledWith('m2', { junk: false });
+    });
+
     it('reports an unknown action type as an error', async () => {
       const step = baseStep({ actions: [{ type: 'not_a_real_action' }] });
       const { listener } = await loadBackground({

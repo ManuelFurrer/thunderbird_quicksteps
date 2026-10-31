@@ -129,6 +129,12 @@
   "actionUnflag": {
     "message": "Retirer le drapeau"
   },
+  "actionMarkJunk": {
+    "message": "Marquer comme indésirable"
+  },
+  "actionMarkNotJunk": {
+    "message": "Marquer comme légitime"
+  },
   "optionsTitle": {
     "message": "QuickSteps — Paramètres"
   },
@@ -228,6 +234,12 @@
   },
   "optionsActionTypeUnflagLabel": {
     "message": "Retirer le drapeau"
+  },
+  "optionsActionTypeMarkJunkLabel": {
+    "message": "Marquer comme indésirable"
+  },
+  "optionsActionTypeMarkNotJunkLabel": {
+    "message": "Marquer comme légitime"
   },
   "optionsActionTypeArchiveLabel": {
     "message": "Archiver"
