@@ -7,6 +7,7 @@ import { DEFAULT_SETTINGS, normalizeSearchBarMinSteps } from '../utils/quickstep
 import { createDragAndDropManager, setupFlatListDraggable } from '../utils/drag-drop-utils.js';
 import { searchTree } from '../utils/search-utils.js';
 import { buildFolderPicker, closeOpenFolderPickers } from '../components/folder-picker.js';
+import { STEP_ICON_PRESETS, normalizeStepIcon } from '../utils/quickstep-icons.js';
 
 const DEFAULT_COLOR = '#0078D4';
 
@@ -71,7 +72,12 @@ const els = {
   stepEnabledCheckbox: () => getCachedElementById('step-enabled'),
   sidebarSearchInput: () => getCachedElementById('sidebar-search-input'),
   showSearchBarCheckbox: () => getCachedElementById('setting-show-search-bar'),
-  searchBarMinStepsInput: () => getCachedElementById('setting-search-bar-min-steps')
+  searchBarMinStepsInput: () => getCachedElementById('setting-search-bar-min-steps'),
+  iconPicker: () => getCachedElementById('icon-picker'),
+  iconPickerPreview: () => getCachedElementById('icon-picker-preview'),
+  iconPickerGrid: () => getCachedElementById('icon-picker-grid'),
+  iconPickerNone: () => getCachedElementById('icon-picker-none'),
+  iconPickerCustom: () => getCachedElementById('icon-picker-custom')
 };
 
 const dndManager = createDragAndDropManager({
@@ -351,6 +357,8 @@ function createStepSidebarItem(step, depth) {
 
   info.append(name, meta);
   item.append(info);
+
+  syncSidebarIcon(item, step.icon);
   item.addEventListener('click', () => navigateTo(step.id));
   dndManager.setupTreeDraggable(item, step.id, 'step');
   return item;
@@ -457,6 +465,8 @@ function renderEditor() {
     updatePreviewActions();
     renderActionsList();
     renderAccountFilter();
+    renderIconPicker();
+
     els.colorSwatch().style.backgroundColor = state.editing.color || DEFAULT_COLOR;
     els.requireConfirmationCheckbox().checked = !!state.editing.requireConfirmation;
     els.stepEnabledCheckbox().checked = state.editing.enabled !== false;
@@ -579,6 +589,66 @@ async function renderAccountFilter() {
 
   list.appendChild(fragment);
   updateAccountSelectorLabel();
+}
+
+function syncSidebarIcon(item, icon) {
+  let el = item.querySelector(':scope > .step-item-icon');
+  if (!icon) {
+    el?.remove();
+    return;
+  }
+
+  if (!el) {
+    el = document.createElement('span');
+    el.className = 'step-item-icon';
+    el.setAttribute('aria-hidden', 'true');
+    item.append(el);
+  }
+  el.textContent = icon;
+}
+
+function renderIconPicker() {
+  const icon = state.editing?.icon || null;
+
+  const preview = els.iconPickerPreview();
+  preview.textContent = icon || getTranslation('optionsIconNone');
+  preview.classList.toggle('placeholder', !icon);
+
+  els.iconPickerNone().classList.toggle('selected', !icon);
+
+  for (const btn of els.iconPickerGrid().children) {
+    btn.classList.toggle('selected', btn.dataset.icon === icon);
+  }
+
+  els.iconPickerCustom().value = icon && !STEP_ICON_PRESETS.includes(icon) ? icon : '';
+}
+
+function setStepIcon(value) {
+  if (!state.editing || state.editing.type === 'folder') return;
+
+  state.editing.icon = normalizeStepIcon(value);
+
+  renderIconPicker();
+  syncSidebarItem();
+
+  els.iconPicker().removeAttribute('open');
+}
+
+function buildIconGrid() {
+  const fragment = document.createDocumentFragment();
+
+  for (const icon of STEP_ICON_PRESETS) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'icon-picker-option';
+    btn.dataset.icon = icon;
+    btn.textContent = icon;
+    btn.addEventListener('click', () => setStepIcon(icon));
+
+    fragment.appendChild(btn);
+  }
+
+  els.iconPickerGrid().replaceChildren(fragment);
 }
 
 function updatePreviewActions() {
@@ -763,6 +833,7 @@ function syncSidebarItem() {
       state.editing.actions.map(getActionLabel).join(' → ') ||
       getTranslation('optionsNoActionsAssigned');
 
+  syncSidebarIcon(item, state.editing.icon);
   item.classList.toggle('step-item-disabled', state.editing.enabled === false);
 }
 
@@ -797,7 +868,8 @@ function startNewStep(parentId = null) {
       requireConfirmation: false,
       enabled: true,
       accountIds: null,
-      actions: [{ type: 'mark_read' }]
+      actions: [{ type: 'mark_read' }],
+      icon: null
     };
 
     if (parentId) {
@@ -1078,7 +1150,8 @@ function normalizeTreeItems(list) {
       enabled: raw.enabled !== false,
       accountIds:
         Array.isArray(raw.accountIds) && raw.accountIds.length > 0 ? raw.accountIds : null,
-      actions
+      actions,
+      icon: normalizeStepIcon(raw.icon)
     });
   }
   return result;
@@ -1174,6 +1247,11 @@ async function init() {
     ) {
       accountSelect.removeAttribute('open');
     }
+
+    const iconPicker = els.iconPicker();
+    if (iconPicker?.hasAttribute('open') && !iconPicker.contains(event.target)) {
+      iconPicker.removeAttribute('open');
+    }
   });
 
   els.newStepBtn().addEventListener('click', () => startNewStep());
@@ -1262,6 +1340,18 @@ async function init() {
     e.target.value = value;
     state.settings.searchBarMinSteps = value;
     await persistSettings();
+  });
+
+  buildIconGrid();
+
+  els.iconPickerNone().addEventListener('click', () => setStepIcon(null));
+  els.iconPickerCustom().addEventListener('change', (e) => setStepIcon(e.target.value));
+  els.iconPicker().addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.stopPropagation();
+      els.iconPicker().removeAttribute('open');
+      els.iconPicker().querySelector('summary').focus();
+    }
   });
 
   localizeDocument();

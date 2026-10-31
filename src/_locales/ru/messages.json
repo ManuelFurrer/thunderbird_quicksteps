@@ -464,5 +464,8 @@
   },
   "searchNoResults": {
     "message": "Нет результатов"
-  }
+  },
+  "optionsIconLabel": { "message": "Значок" },
+  "optionsIconNone": { "message": "Без значка" },
+  "optionsIconCustomPlaceholder": { "message": "Или введите свой значок..." }
 }

@@ -466,5 +466,8 @@
   },
   "searchNoResults": {
     "message": "没有结果"
-  }
+  },
+  "optionsIconLabel": { "message": "图标" },
+  "optionsIconNone": { "message": "无图标" },
+  "optionsIconCustomPlaceholder": { "message": "或者输入自己的图标..." }
 }

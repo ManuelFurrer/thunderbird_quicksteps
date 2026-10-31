@@ -198,6 +198,7 @@ header {
 }
 
 .step-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -458,4 +459,12 @@ details[open] .folder-arrow {
   padding: 24px 16px;
   color: var(--text-muted);
   font-size: 13px;
+}
+
+.step-icon {
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+  font-size: 17px;
+  line-height: 1;
 }

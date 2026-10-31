@@ -464,5 +464,8 @@
   },
   "searchNoResults": {
     "message": "Aucun résultat"
-  }
+  },
+  "optionsIconLabel": { "message": "Icône" },
+  "optionsIconNone": { "message": "Aucune icône" },
+  "optionsIconCustomPlaceholder": { "message": "Ou saisissez votre propre icône..." }
 }

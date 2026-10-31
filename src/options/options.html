@@ -125,6 +125,48 @@
               </div>
 
               <div class="meta-group">
+                <span class="meta-group-label" data-i18n-content="optionsIconLabel"></span>
+                <div class="meta-group-body">
+                  <details class="icon-picker" id="icon-picker">
+                    <summary>
+                      <span id="icon-picker-preview" class="icon-picker-preview"></span>
+                      <svg
+                        class="icon-picker-caret"
+                        width="10"
+                        height="6"
+                        viewBox="0 0 10 6"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M1 1L5 5L9 1"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </summary>
+                    <div class="icon-picker-body">
+                      <button
+                        type="button"
+                        id="icon-picker-none"
+                        class="icon-picker-none"
+                        data-i18n-content="optionsIconNone"
+                      ></button>
+                      <div id="icon-picker-grid" class="icon-picker-grid"></div>
+                      <input
+                        type="text"
+                        id="icon-picker-custom"
+                        class="icon-picker-custom"
+                        data-i18n-placeholder="optionsIconCustomPlaceholder"
+                      />
+                    </div>
+                  </details>
+                </div>
+              </div>
+
+              <div class="meta-group">
                 <span class="meta-group-label" data-i18n-content="optionsBehavior"></span>
                 <div class="meta-group-body stack">
                   <label class="checkbox-row" for="step-enabled">

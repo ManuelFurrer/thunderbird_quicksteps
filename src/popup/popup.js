@@ -120,6 +120,15 @@ function createStepButton(step, autoClosePopup) {
 
   info.append(name, desc);
   btn.append(info);
+
+  if (step.icon) {
+    const icon = document.createElement('span');
+    icon.className = 'step-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = step.icon;
+    btn.append(icon);
+  }
+
   btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(' → ')}`;
 
   btn.addEventListener('click', () => handleStepClick(step, btn, autoClosePopup));

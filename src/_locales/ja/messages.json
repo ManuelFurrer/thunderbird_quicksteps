@@ -464,5 +464,8 @@
   },
   "searchNoResults": {
     "message": "結果なし"
-  }
+  },
+  "optionsIconLabel": { "message": "アイコン" },
+  "optionsIconNone": { "message": "アイコンなし" },
+  "optionsIconCustomPlaceholder": { "message": "または独自のアイコンを入力..." }
 }
