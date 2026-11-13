@@ -2,6 +2,14 @@ function generateId() {
   return 'qs_' + crypto.randomUUID();
 }
 
+function debounce(fn, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), wait);
+  };
+}
+
 function countStepsInTree(items) {
   let count = 0;
 
@@ -18,4 +26,4 @@ function countStepsInTree(items) {
   return count;
 }
 
-export { generateId, countStepsInTree };
+export { generateId, debounce, countStepsInTree };

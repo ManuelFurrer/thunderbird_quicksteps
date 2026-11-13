@@ -4,6 +4,7 @@ import { notify } from '../utils/notifications.js';
 import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
 import { searchTree, shouldShowSearchBar } from '../utils/search-utils.js';
+import { debounce } from '../utils/general-utils.js';
 
 async function getCurrentMailTabId() {
   const [tab] = await messenger.tabs.query({ active: true, currentWindow: true }).catch(() => []);
@@ -129,8 +130,6 @@ function createStepButton(step, autoClosePopup) {
     btn.append(icon);
   }
 
-  btn.title = `${step.name}\n${step.actions.map(getActionLabel).join(' → ')}`;
-
   btn.addEventListener('click', () => handleStepClick(step, btn, autoClosePopup));
   return btn;
 }
@@ -245,18 +244,6 @@ async function fetchInitialData() {
   });
 
   return { settings, steps };
-}
-
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
 }
 
 async function initPopup() {
