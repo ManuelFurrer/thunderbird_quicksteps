@@ -8,11 +8,11 @@
     "build:xpi": "node scripts/build-xpi.js"
   },
   "devDependencies": {
-    "@vitest/ui": "^5.0.0",
+    "@vitest/ui": "^5.1.0",
     "adm-zip": "^0.6.1",
     "jsdom": "^29.1.1",
-    "oxfmt": "^0.67.0",
-    "oxlint": "^1.82.0",
-    "vitest": "^5.0.0"
+    "oxfmt": "^0.78.0",
+    "oxlint": "^1.93.0",
+    "vitest": "^5.1.0"
   }
 }
