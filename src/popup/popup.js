@@ -5,6 +5,7 @@ import { getCachedElementById } from '../utils/dom-utils.js';
 import { DEFAULT_SETTINGS } from '../utils/quickstep-settings.js';
 import { searchTree, shouldShowSearchBar } from '../utils/search-utils.js';
 import { debounce } from '../utils/general-utils.js';
+import { showModal } from '../utils/modal.js';
 
 async function getCurrentMailTabId() {
   const [tab] = await messenger.tabs.query({ active: true, currentWindow: true }).catch(() => []);
@@ -20,26 +21,14 @@ function showStatus(message, type = 'info') {
 }
 
 function showConfirm(message) {
-  return new Promise((resolve) => {
-    const overlay = getCachedElementById('confirm-overlay');
-    const messageEl = getCachedElementById('confirm-message');
-    const runBtn = getCachedElementById('confirm-run');
-    const cancelBtn = getCachedElementById('confirm-cancel');
-
-    messageEl.textContent = message;
-    overlay.classList.remove('hidden');
-
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    const done = (result) => {
-      overlay.classList.add('hidden');
-      controller.abort();
-      resolve(result);
-    };
-
-    runBtn.addEventListener('click', () => done(true), { signal });
-    cancelBtn.addEventListener('click', () => done(false), { signal });
+  return showModal({
+    overlay: getCachedElementById('confirm-overlay'),
+    messageEl: getCachedElementById('confirm-message'),
+    message,
+    choices: [
+      [getCachedElementById('confirm-run'), true],
+      [getCachedElementById('confirm-cancel'), false]
+    ]
   });
 }
 
@@ -264,7 +253,7 @@ async function initPopup() {
 
     const showSearch = shouldShowSearchBar(settings, steps);
     searchBar.classList.toggle('hidden', !showSearch);
-    if (searchInput) searchInput.value = '';
+    searchInput.value = '';
 
     searchInput.addEventListener(
       'input',

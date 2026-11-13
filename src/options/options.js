@@ -8,6 +8,7 @@ import { createDragAndDropManager, setupFlatListDraggable } from '../utils/drag-
 import { searchTree } from '../utils/search-utils.js';
 import { buildFolderPicker, closeOpenFolderPickers } from '../components/folder-picker.js';
 import { STEP_ICON_PRESETS, normalizeStepIcon } from '../utils/quickstep-icons.js';
+import { showModal } from '../utils/modal.js';
 
 const DEFAULT_COLOR = '#0078D4';
 
@@ -15,7 +16,7 @@ function isStepBlank(step) {
   return !step.name.trim() && step.actions.length === 1 && step.actions[0].type === 'mark_read';
 }
 
-let state = {
+const state = {
   steps: [],
   collapsedFolders: new Set(),
   folders: [],
@@ -145,46 +146,30 @@ function showToast(message, type = 'info') {
   });
 }
 
-function showConfirm(message) {
-  return new Promise((resolve) => {
-    els.confirmMessage().textContent = message;
-    els.confirmOverlay().classList.remove('hidden');
-
-    function done(result) {
-      els.confirmOverlay().classList.add('hidden');
-      els.confirmOk().removeEventListener('click', onOk);
-      els.confirmCancel().removeEventListener('click', onCancel);
-      resolve(result);
-    }
-    const onOk = () => done(true);
-    const onCancel = () => done(false);
-
-    els.confirmOk().addEventListener('click', onOk);
-    els.confirmCancel().addEventListener('click', onCancel);
+const showConfirm = (message) => {
+  return showModal({
+    overlay: els.confirmOverlay(),
+    messageEl: els.confirmMessage(),
+    message,
+    choices: [
+      [els.confirmOk(), true],
+      [els.confirmCancel(), false]
+    ]
   });
-}
+};
 
 function showImportChoice(message) {
   if (!state.steps.length) return 'merge';
 
-  return new Promise((resolve) => {
-    els.importMessage().textContent = message;
-    els.importOverlay().classList.remove('hidden');
-
-    function done(result) {
-      els.importOverlay().classList.add('hidden');
-      els.importCancel().removeEventListener('click', onCancel);
-      els.importMerge().removeEventListener('click', onMerge);
-      els.importReplace().removeEventListener('click', onReplace);
-      resolve(result);
-    }
-    const onCancel = () => done('cancel');
-    const onMerge = () => done('merge');
-    const onReplace = () => done('replace');
-
-    els.importCancel().addEventListener('click', onCancel);
-    els.importMerge().addEventListener('click', onMerge);
-    els.importReplace().addEventListener('click', onReplace);
+  return showModal({
+    overlay: els.importOverlay(),
+    messageEl: els.importMessage(),
+    message,
+    choices: [
+      [els.importCancel(), 'cancel'],
+      [els.importMerge(), 'merge'],
+      [els.importReplace(), 'replace']
+    ]
   });
 }
 
@@ -670,31 +655,40 @@ async function renderActionsList() {
   });
 }
 
+function createActionButton({ title, text, className = 'action-btn', disabled = false, onClick }) {
+  const btn = document.createElement('button');
+  btn.className = className;
+  btn.title = title;
+  btn.textContent = text;
+  btn.disabled = disabled;
+  btn.addEventListener('click', onClick);
+  return btn;
+}
+
 function createActionButtons(index) {
   const btns = document.createElement('div');
   btns.className = 'action-btns';
 
-  const upBtn = document.createElement('button');
-  upBtn.className = 'action-btn';
-  upBtn.title = getTranslation('optionsMoveUpTitle');
-  upBtn.textContent = '↑';
-  upBtn.disabled = index === 0;
-  upBtn.addEventListener('click', () => moveAction(index, -1));
-
-  const downBtn = document.createElement('button');
-  downBtn.className = 'action-btn';
-  downBtn.title = getTranslation('optionsMoveDownTitle');
-  downBtn.textContent = '↓';
-  downBtn.disabled = index === state.editing.actions.length - 1;
-  downBtn.addEventListener('click', () => moveAction(index, 1));
-
-  const removeBtn = document.createElement('button');
-  removeBtn.className = 'action-btn remove';
-  removeBtn.title = getTranslation('optionsRemoveTitle');
-  removeBtn.textContent = 'X';
-  removeBtn.addEventListener('click', () => removeAction(index));
-
-  btns.append(upBtn, downBtn, removeBtn);
+  btns.append(
+    createActionButton({
+      title: getTranslation('optionsMoveUpTitle'),
+      text: '↑',
+      disabled: index === 0,
+      onClick: () => moveAction(index, -1)
+    }),
+    createActionButton({
+      title: getTranslation('optionsMoveDownTitle'),
+      text: '↓',
+      disabled: index === state.editing.actions.length - 1,
+      onClick: () => moveAction(index, 1)
+    }),
+    createActionButton({
+      title: getTranslation('optionsRemoveTitle'),
+      text: 'X',
+      className: 'action-btn remove',
+      onClick: () => removeAction(index)
+    })
+  );
   return btns;
 }
 
@@ -735,7 +729,7 @@ function refreshFolderPicker(folderContainer, action, actionIndex) {
 }
 
 function getIconTemplate(id) {
-  const template = document.getElementById(id);
+  const template = getCachedElementById(id);
   const fragment = template.content.cloneNode(true);
   return fragment.firstElementChild;
 }
