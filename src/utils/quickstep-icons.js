@@ -31,21 +31,11 @@ const STEP_ICON_PRESETS = Object.freeze([
   '⚠️'
 ]);
 
-const segmenter =
-  typeof Intl !== 'undefined' && Intl.Segmenter
-    ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-    : null;
+const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
 
 function firstGrapheme(text) {
-  if (segmenter) {
-    for (const { segment } of segmenter.segment(text)) {
-      return segment;
-    }
-
-    return '';
-  }
-
-  return Array.from(text)[0] ?? '';
+  const [first] = segmenter.segment(text);
+  return first?.segment ?? '';
 }
 
 function normalizeStepIcon(value) {

@@ -53,6 +53,11 @@ function isIllegalDrop(draggedItem, targetId) {
   return treeContainsId(draggedItem.children || [], targetId);
 }
 
+function isDropBelow(e, element) {
+  const { top, height } = element.getBoundingClientRect();
+  return e.clientY - top > height / 2;
+}
+
 export function createDragAndDropManager(dependencies) {
   const { getSteps, findItemInTree, removeFromTree, renderSidebar, persistSteps } = dependencies;
 
@@ -210,8 +215,7 @@ export function setupFlatListDraggable({
     e.preventDefault();
     if (element.classList.contains('dragging')) return;
 
-    const bounding = element.getBoundingClientRect();
-    const dropBelow = e.clientY - bounding.top > bounding.height / 2;
+    const dropBelow = isDropBelow(e, element);
 
     element.classList.toggle('drag-over-bottom', dropBelow);
     element.classList.toggle('drag-over-top', !dropBelow);
@@ -230,10 +234,7 @@ export function setupFlatListDraggable({
     const incomingData = e.dataTransfer.getData(dragType);
     if (!incomingData) return;
 
-    const bounding = element.getBoundingClientRect();
-    const dropBelow = e.clientY - bounding.top > bounding.height / 2;
-
-    await onDrop(incomingData, dropBelow);
+    await onDrop(incomingData, isDropBelow(e, element));
   });
 
   element.addEventListener('dragend', () => {

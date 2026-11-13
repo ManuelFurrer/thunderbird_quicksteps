@@ -3,6 +3,15 @@ import { DEFAULT_SETTINGS } from './utils/quickstep-settings.js';
 
 const CURRENT_SCHEMA = 1;
 
+const MESSAGE_UPDATES = Object.freeze({
+  mark_read: { read: true },
+  mark_unread: { read: false },
+  flag: { flagged: true },
+  unflag: { flagged: false },
+  mark_junk: { junk: true },
+  mark_not_junk: { junk: false }
+});
+
 function getDefaultQuickSteps() {
   return [
     {
@@ -174,82 +183,52 @@ async function getAllFolders() {
   }
 }
 
+function getTargetFolderId(action) {
+  if (!action.folder) {
+    throw new Error(messenger.i18n.getMessage('errorNoFolderSpecified'));
+  }
+
+  return action.folder.id;
+}
+
+async function runAction(action, messageIds) {
+  if (Object.hasOwn(MESSAGE_UPDATES, action.type)) {
+    const props = MESSAGE_UPDATES[action.type];
+
+    await Promise.all(messageIds.map((id) => messenger.messages.update(id, props)));
+    return;
+  }
+
+  switch (action.type) {
+    case 'move':
+      return messenger.messages.move(messageIds, getTargetFolderId(action));
+    case 'copy':
+      return messenger.messages.copy(messageIds, getTargetFolderId(action));
+    case 'delete':
+      return messenger.messages.delete(messageIds);
+    case 'delete_permanent':
+      return messenger.messages.delete(messageIds, { deletePermanently: true });
+    case 'archive':
+      return messenger.messages.archive(messageIds);
+    default:
+      throw new Error(messenger.i18n.getMessage('errorUnknownActionType'));
+  }
+}
+
 async function executeActions(messages, actions) {
+  const messageIds = messages.map((m) => m.id);
   const results = [];
 
-  /* eslint-disable no-await-in-loop */
   for (const action of actions) {
-    const messageIds = messages.map((m) => m.id);
-
     try {
-      switch (action.type) {
-        case 'move':
-          if (!action.folder) {
-            throw new Error(messenger.i18n.getMessage('errorNoFolderSpecified'));
-          }
-          await messenger.messages.move(messageIds, action.folder.id);
-          break;
-
-        case 'copy':
-          if (!action.folder) {
-            throw new Error(messenger.i18n.getMessage('errorNoFolderSpecified'));
-          }
-          await messenger.messages.copy(messageIds, action.folder.id);
-          break;
-
-        case 'delete':
-          await messenger.messages.delete(messageIds);
-          break;
-
-        case 'delete_permanent':
-          await messenger.messages.delete(messageIds, {
-            deletePermanently: true
-          });
-          break;
-
-        case 'archive':
-          await messenger.messages.archive(messageIds);
-          break;
-
-        case 'mark_read':
-          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { read: true })));
-          break;
-
-        case 'mark_unread':
-          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { read: false })));
-          break;
-
-        case 'flag':
-          await Promise.all(
-            messageIds.map((id) => messenger.messages.update(id, { flagged: true }))
-          );
-          break;
-
-        case 'unflag':
-          await Promise.all(
-            messageIds.map((id) => messenger.messages.update(id, { flagged: false }))
-          );
-          break;
-
-        case 'mark_junk':
-          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { junk: true })));
-          break;
-
-        case 'mark_not_junk':
-          await Promise.all(messageIds.map((id) => messenger.messages.update(id, { junk: false })));
-          break;
-
-        default:
-          throw new Error(messenger.i18n.getMessage('errorUnknownActionType'));
-      }
-
+      // oxlint-disable-next-line no-await-in-loop
+      await runAction(action, messageIds);
       results.push({ action: action.type, success: true });
     } catch (e) {
       results.push({ action: action.type, success: false, error: e.message });
       break;
     }
   }
-
   return results;
 }
 
